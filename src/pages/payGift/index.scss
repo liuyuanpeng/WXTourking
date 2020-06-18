@@ -1,0 +1,199 @@
+.pay-gift {
+  background-color: #f7f7f7;
+  width: 100%;
+  height: calc(100% - 128px);
+  position: absolute;
+  top: 128px;
+  .address {
+    margin: 24px;
+    border-radius: 20px;
+    background-color: white;
+    .address-icon {
+      background-image: url('../../asset/images/address.png');
+      width: 60px;
+      height: 60px;
+      background-size: 100% 100%;
+      margin-top: 80px;
+      margin-left: 24px;
+      display: inline-block;
+      vertical-align: top;
+    }
+    .address-details {
+      display: inline-block;
+      margin-left: 20px;
+      margin-top: 60px;
+      font-weight: 400;
+      margin-bottom: 68px;
+      vertical-align: top;
+      .name {
+        font-size: 32px;
+        height: 44px;
+        line-height: 44px;
+      }
+      .phone {
+        font-size: 24px;
+        color: #999999;
+        margin-left: 30px;
+        margin-top: 6px;
+        height: 34px;
+        line-height: 34px;
+      }
+      .address-text {
+        margin-top: 8px;
+        font-size: 24px;
+        color: black;
+        height: 36px;
+        line-height: 36px;
+        width: 506px;
+      }
+    }
+
+    .more-address {
+      display: inline-block;
+      margin-left: 50px;
+      margin-top: 90px;
+      width: 28px;
+      height: 54px;
+      background-image: url('../../asset/images/more.png');
+      background-size: 100% 100%;
+      vertical-align: top;
+    }
+  }
+  .gift-container {
+    margin: 0 24px;
+    border-radius: 20px;
+    background-color: white;
+    height: 420px;
+    .gift-image {
+      width: 288px;
+      height: 196px;
+      margin: 24px;
+      border-radius: 8px;
+      display: inline-block;
+      vertical-align: top;
+      background-color: gray;
+    }
+    .gift-detail {
+      margin-top: 24px;
+      margin-left: 6px;
+      display: inline-block;
+      vertical-align: top;
+      font-weight: 500;
+      width: 360px;
+      .gift-name {
+        margin-top: 24px;
+        height: 32px;
+        font-size: 32px;
+        line-height: 32px;
+        color: #333333;
+      }
+      .gift-subtitle {
+        margin-top: 8px;
+        font-size: 24px;
+        height: 34px;
+        line-height: 34px;
+        font-weight: 400;
+        color: #bdbdbd;
+      }
+      .gift-transport {
+        margin-top: 8px;
+        height: 34px;
+        line-height: 34px;
+        font-size: 24px;
+        color: #f6ba31;
+      }
+      .gift-price {
+        margin-top: 8px;
+        height: 32px;
+        line-height: 32px;
+        font-size: 32px;
+        font-weight: 400;
+        color: #333333;
+      }
+      .gift-count-minus {
+        float: right;
+        margin-right: 16px;
+        height: 34px;
+        line-height: 34px;
+        font-size: 24px;
+        color: #bdbdbd;
+      }
+    }
+    .gift-count {
+      margin-left: 24px;
+      height: 70px;
+      line-height: 70px;
+      font-size: 28px;
+      font-weight: 400;
+      color: #333333;
+      .input-number {
+        float: right;
+        font-size: 20px;
+        margin-right: 24px;
+      }
+    }
+
+    .summary {
+      float: right;
+      font-weight: 400;
+      font-size: 24px;
+      color: #333333;
+      height: 34px;
+      line-height: 34px;
+      margin-top: 40px;
+      margin-right: 24px;
+      .sum {
+        color: #bdbdbd;
+      }
+      .total {
+        color: #fd7d59;
+      }
+    }
+  }
+  .pay-gift-footer {
+    position: absolute;
+    bottom: 0;
+    height: 140px;
+    width: 100%;
+    background-color: white;
+    line-height: 40px;
+    font-weight: 400;
+    padding-top: 46px;
+    box-sizing: border-box;
+    .sum-footer {
+      color: #bdbdbd;
+      font-size: 28px;
+      float: right;
+    }
+    .sum-text {
+      color: #333333;
+      font-size: 28px;
+      float: right;
+    }
+
+    .total-footer {
+      color: #fd7d59;
+      font-size: 36px;
+      float: right;
+    }
+    .pay-it {
+      width: 220px;
+      font-size: 32px;
+      font-weight: 500;
+      line-height: 80px;
+      text-align: center;
+      color: white;
+      height: 80px;
+      margin-top: -14px;
+      margin-left: 30px;
+      margin-right: 24px;
+      float: right;
+      background: linear-gradient(
+        90deg,
+        rgba(255, 132, 14, 1) 0%,
+        rgba(254, 66, 53, 1) 100%
+      );
+      border-radius: 8px;
+    }
+  }
+}

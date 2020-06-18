@@ -1,0 +1,48 @@
+.switch-button {
+  margin: 0 auto;
+  width: 360px;
+  height: 60px;
+  background-color: #F7F7F7;
+  border-radius: 30px;
+  text-align: center;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 60px;
+  position: relative;
+  .gray {
+    color: #BDBDBD;
+  }
+  .switch-left {
+    z-index: 999;
+    display: inline-block;
+    width: 180px;
+    height: 100%;
+    position: absolute;
+    left: 0;
+  }
+  .switch-right {
+    z-index: 999;
+    display: inline-block;
+    width: 180px;
+    height: 100%;
+    left: 180px;
+    position: absolute;
+  }
+  .switch-hover {
+    z-index: 9;
+    background:linear-gradient(90deg,rgba(254,213,0,1) 0%,rgba(254,200,2,1) 100%);
+    border-radius:30px;
+    width: 180px;
+    position: absolute;
+    height: 100%;
+    display: inline-block;
+  }
+  .on {
+    transition: left 0.3s cubic-bezier(0.5, -0.5, 0.5, 1.5);
+    left: 180px;
+  }
+  .off {
+    transition: left 0.3s cubic-bezier(0.5, -0.5, 0.5, 1.5);
+    left: 0px;
+  }
+}

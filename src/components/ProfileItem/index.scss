@@ -1,0 +1,43 @@
+.profile-list-item {
+  height: 100px;
+  font-weight: 400;
+  font-size: 32px;
+  position: relative;
+  .profile-list-item-title {
+    display: inline-block;
+    top: 50%;
+    left: 24px;
+    width: 250px;
+    color: #333333;
+    height: 44px;
+    line-height: 44px;
+    margin-top: -22px;
+    position: absolute;
+  }
+  .profile-list-item-subtitle {
+    display: inline-block;
+    top: 50%;
+    position: absolute;
+    right: 60px;
+    width: 400px;
+    color: #999999;
+    height: 44px;
+    line-height: 44px;
+    margin-top: -22px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: right;
+  }
+  .profile-list-item-right {
+    position: absolute;
+    top: 50%;
+    background-image: url('../../asset/images/more.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    right: 24px;
+    width: 14px;
+    height: 24px;
+    margin-top: -12px;
+  }
+}

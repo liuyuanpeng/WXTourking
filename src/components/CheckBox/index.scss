@@ -1,0 +1,22 @@
+.check-box {
+  display: flex;
+  position: relative;
+  height: 40px;
+  .check-box-icon{
+    width: 32px;
+    height: 32px;
+    top: 50%;
+    position: absolute;
+    margin-top: -16px;
+    margin-right: 4px;
+  }
+  .check-box-title {
+    position: absolute;
+    color: #333333;
+    font-size: 28px;
+    height: 40px;
+    line-height: 40px;
+    font-weight: 400;
+    left: 40px;
+  }
+}

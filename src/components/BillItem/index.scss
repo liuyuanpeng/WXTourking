@@ -1,0 +1,150 @@
+.bill-item {
+  border-radius: 8px;
+  background-color: white;
+  margin: 24px;
+  position: relative;
+  color: #666666;
+  padding-bottom: 34px;
+  .bill-item-check {
+    display: inline-block;
+    width: 60px;
+    top: 50%;
+    margin-top: -20px;
+    position: absolute;
+    left: 24px;
+  }
+  .bill-item-right {
+    display: inline-block;
+    margin-left: 60px;
+    width: 640px;
+  }
+  .bill-item-icon {
+    width: 20px;
+    height: 16px;
+    margin-left: 24px;
+    margin-top: 26px;
+  }
+  .bill-item-type-text {
+    width: 100px;
+    height: 32px;
+    line-height: 32px;
+    font-size: 20px;
+    font-weight: 400;
+    margin-top: 18px;
+    margin-left: 8px;
+    display: inline-block;
+  }
+
+  .bill-item-status-text {
+    width: 150px;
+    text-align: right;
+    position: absolute;
+    right: 24px;
+    top: 18px;
+    color: #f6ba31;
+    font-size: 22px;
+    height: 32px;
+    line-height: 32px;
+  }
+
+  .bill-normal {
+    margin-top: 50px;
+    font-size: 24px;
+    .bill-normal-title {
+      color: #333333;
+      font-size: 32px;
+      font-weight: 500;
+      height: 44px;
+      line-height: 44px;
+      margin-left: 56px;
+    }
+    .bill-normal-text {
+      margin-top: 14px;
+      height: 34px;
+      line-height: 34px;
+      margin-left: 56px;
+    }
+    
+  }
+
+  .bill-price {
+    position: relative;
+    width: 100%;
+    text-align: right;
+    right: 24px;
+    color: #999999;
+    font-size: 22px;
+    height: 32px;
+    line-height: 32px;
+    .bill-price-total {
+      color: black;
+      font-size: 32px;
+      font-weight: 500;
+      height: 44px;
+      line-height: 44px;
+      margin-top: 16px;
+      margin-left: 4px;
+    }
+  }
+
+  .bill-buttons {
+    display: flex;
+    position: relative;
+    width: 100%;
+    padding-bottom: 52px;
+    flex-direction: row-reverse;
+    .bill-btn-red {
+      margin-top: 52px;
+      height: 64px;
+      color: #f6ba31;
+      line-height: 64px;
+      font-size: 28px;
+      padding: 0 32px;
+      margin-right: 20px;
+      border-radius: 8px;
+      border: 1px solid #f6ba31;
+    }
+
+    .bill-btn {
+      margin-top: 52px;
+      height: 64px;
+      color: #666666;
+      line-height: 64px;
+      font-size: 28px;
+      padding: 0 32px;
+      margin-right: 20px;
+      border-radius: 8px;
+      border: 1px solid #666666;
+    }
+  }
+
+  .bill-template {
+    margin-top: 36px;
+    font-size: 24px;
+    .bill-template-image {
+      width: 240px;
+      height: 196px;
+      border-radius: 8px;
+      margin-left: 24px;
+    }
+    .bill-template-detail {
+      display: inline-block;
+      vertical-align: top;
+      margin-left: 24px;
+      font-weight: 400;
+      .bill-template-title {
+        color: #333333;
+        font-size: 32px;
+        height: 44px;
+        line-height: 44px;
+        font-weight: 500;
+        margin: 14px 0;
+      }
+      .bill-template-text {
+        height: 34px;
+        line-height: 34px;
+        margin-top: 2px;
+      }
+    }
+  }
+}

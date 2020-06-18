@@ -1,0 +1,182 @@
+.location-page {
+  position: relative;
+  top: 128px;
+  background-color: white;
+  .location-search-bar {
+    width: 702px;
+    height: 70px;
+    margin: 22px auto 30px auto;
+    border-radius: 35px;
+    background-color: #f7f7f7;
+    padding: 0 42px;
+    position: relative;
+    box-sizing: border-box;
+    .location-city {
+      font-size: 32px;
+      line-height: 70px;
+      color: #333333;
+      font-weight: 500;
+      &::after {
+        content: '';
+        width: 12px;
+        height: 8px;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 8px solid #333333;
+        left: 8px;
+        top: 25px;
+        position: relative;
+      }
+    }
+    .location-search-bar-split {
+      position: absolute;
+      width: 2px;
+      height: 38px;
+      top: 50%;
+      margin-top: -19px;
+      left: 150px;
+      background-color: #d8d8d8;
+    }
+    .location-search-bar-icon {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      left: 174px;
+      top: 50%;
+      margin-top: -14px;
+    }
+    .location-search-bar-input {
+      display: inline-block;
+      width: 450px;
+      position: absolute;
+      height: 50px;
+      left: 210px;
+      top: 10px;
+      background: #f7f7f7;
+      font-size: 28px;
+      color: #666666;
+      font-weight: 400;
+    }
+  }
+  .split-title {
+    width: 100%;
+    height: 64px;
+    font-size: 24px;
+    padding: 0 24px;
+    line-height: 64px;
+    font-weight: 400;
+    color: #666666;
+    background-color: #f7f7f7;
+  }
+  .split-line {
+    height: 0;
+    margin: auto 64px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .suggestion-item {
+    width: 100%;
+    height: 135px;
+    background-color: white;
+    position: relative;
+    .location-icon {
+      width: 20px;
+      height: 24px;
+      margin: 38px 20px 0 24px;
+      background-image: url('../../../asset/images/address.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      position: absolute;
+    }
+    .location-title {
+      position: absolute;
+      width: 650px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      height: 44px;
+      top: 28px;
+      left: 64px;
+      line-height: 44px;
+      color: #333333;
+      font-size: 32px;
+      font-weight: 400;
+    }
+    .location-address {
+      position: absolute;
+      width: 650px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      height: 34px;
+      top: 72px;
+      left: 64px;
+      line-height: 34px;
+      color: #bdbdbd;
+      font-size: 24px;
+      font-weight: 400;
+    }
+  }
+  .airport-item {
+    width: 100%;
+    height: 88px;
+    background-color: white;
+    position: relative;
+    .airport-icon {
+      width: 20px;
+      height: 20px;
+      margin: 34px 20px 0 24px;
+      background-image: url('../../../asset/images/airport.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      position: absolute;
+    }
+    .airport-title {
+      position: absolute;
+      width: 650px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      height: 44px;
+      top: 20px;
+      left: 64px;
+      line-height: 44px;
+      color: #333333;
+      font-size: 32px;
+      font-weight: 400;
+    }
+  }
+
+  .train-item {
+    width: 100%;
+    height: 88px;
+    background-color: white;
+    position: relative;
+    .train-icon {
+      width: 20px;
+      height: 20px;
+      margin: 34px 20px 0 24px;
+      background-image: url('../../../asset/images/train.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      position: absolute;
+    }
+    .train-title {
+      position: absolute;
+      width: 650px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      height: 44px;
+      top: 20px;
+      left: 64px;
+      line-height: 44px;
+      color: #333333;
+      font-size: 32px;
+      font-weight: 400;
+    }
+  }
+
+  .location-scroll-view {
+    position: relative;
+  }
+}

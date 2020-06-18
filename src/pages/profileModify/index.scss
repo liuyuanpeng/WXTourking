@@ -1,0 +1,50 @@
+.profile-modify-page {
+  position: relative;
+  top: 128px;
+  background-color: #f7f7f7;
+  .profile-modifier {
+    position: relative;
+    height: 100px;
+    background-color: white;
+    .profile-title {
+      position: absolute;
+      color: #999999;
+      font-size: 32px;
+      font-weight: 400;
+      height: 44px;
+      line-height: 44px;
+      top: 50%;
+      margin-top: -22px;
+      margin-left: 24px;
+      width: 150px;
+    }
+    .profile-input {
+      position: absolute;
+      color: #333333;
+      font-size: 32px;
+      font-weight: 400;
+      height: 70px;
+      line-height: 70px;
+      top: 50%;
+      margin-top: -22px;
+      left: 200px;
+      width: 500px;
+    }
+  }
+  .profile-btn {
+    margin: 60px auto;
+    width: 700px;
+    height: 100px;
+    font-size: 32px;
+    line-height: 100px;
+    text-align: center;
+    color: black;
+    font-weight: 400;
+    background: linear-gradient(
+      90deg,
+      rgba(254, 213, 0, 1) 0%,
+      rgba(254, 200, 2, 1) 100%
+    );
+    border-radius: 8px;
+  }
+}

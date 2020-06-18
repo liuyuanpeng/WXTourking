@@ -1,0 +1,163 @@
+.pay-product {
+  background-color: #f7f7f7;
+  width: 100%;
+  height: calc(100% - 128px);
+  position: absolute;
+  top: 128px;
+  .pay-product-header {
+    margin: 24px;
+    width: 702px;
+    background-color: white;
+    font-weight: 400;
+    border-radius: 20px;
+    .header-image {
+      display: inline-block;
+      vertical-align: top;
+      margin: 24px;
+      width: 288px;
+      height: 196px;
+      border-radius: 8px;
+    }
+    .header-right {
+      display: inline-block;
+      vertical-align: top;
+      margin-left: 6px;
+      margin-top: 48px;
+      margin-bottom: 24px;
+      margin-right: 24px;
+      .header-title {
+        height: 32px;
+        font-size: 32px;
+        line-height: 32px;
+        font-weight: 500;
+        color: #333333;
+      }
+      .header-subtitle {
+        margin-top: 8px;
+        height: 34px;
+        line-height: 34px;
+        font-size: 24px;
+        color: #BDBDBD;
+      }
+      .header-declare {
+
+      margin-top:2px;
+        height: 34px;
+        line-height: 34px;
+        color: #F6BA31;
+        font-size: 24px;
+      }
+      .header-price {
+        margin-top: 12px;
+        height: 32px;
+        line-height: 32px;
+        color: #333333;
+        font-size: 32px;
+      }
+    }
+  }
+
+  .pay-product-detail {
+    background-color: white;
+    width: 702px;
+    margin: 0 auto;
+    color: #333333;
+    font-weight: 400;
+    border-radius: 20px;
+    .detail-item {
+      padding-top: 44px;
+      padding-left: 24px;
+      padding-right: 24px;
+      width: 654px;
+      .detail-label {
+        font-size: 28px;
+        height: 40px;
+        line-height: 40px;
+      }
+      .detail-content {
+        margin-top: 18px;
+        display: inline-block;
+        font-size: 34px;
+        height: 48px;
+        line-height: 48px;
+      }
+      .location-icon {
+        float: right;
+        background-image: url('../../asset/images/locate.png');
+        background-size: 100% 100%;
+        width: 32px;
+        height: 32px;
+        top: 25px;
+        position: relative;
+      }
+      .detail-input {
+        margin-top: 18px;
+        font-size: 34px;
+        height: 48px;
+        line-height: 48px;
+      }
+      .time-icon {
+        float: right;
+        width: 30px;
+        height: 28px;
+        background-image: url('../../asset/images/pay_date.png');
+        background-size: 100% 100%;
+        position: relative;
+        top: 22rpx;
+      }
+    }
+    .detail-split {
+      margin-left: 24px;
+      margin-top: 12px;
+      width: 654px;
+      height: 0;
+      border-bottom: 1PX solid #F0F0F0;
+    }
+  }
+  .pay-gift-footer {
+    position: absolute;
+    bottom: 0;
+    height: 140px;
+    width: 100%;
+    background-color: white;
+    line-height: 40px;
+    font-weight: 400;
+    padding-top: 46px;
+    box-sizing: border-box;
+    .sum-footer {
+      color: #bdbdbd;
+      font-size: 28px;
+      float: right;
+    }
+    .sum-text {
+      color: #333333;
+      font-size: 28px;
+      float: right;
+    }
+
+    .total-footer {
+      color: #fd7d59;
+      font-size: 36px;
+      float: right;
+    }
+    .pay-it {
+      width: 220px;
+      font-size: 32px;
+      font-weight: 500;
+      line-height: 80px;
+      text-align: center;
+      color: white;
+      height: 80px;
+      margin-top: -14px;
+      margin-left: 30px;
+      margin-right: 24px;
+      float: right;
+      background: linear-gradient(
+        90deg,
+        rgba(255, 132, 14, 1) 0%,
+        rgba(254, 66, 53, 1) 100%
+      );
+      border-radius: 8px;
+    }
+  }
+}

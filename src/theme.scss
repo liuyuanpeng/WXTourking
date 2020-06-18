@@ -2,4 +2,35 @@
 $color-brand: #fed101;
 $color-brand-light: #fedd41;
 $color-brand-dark: #cba701;
+
 @import "~taro-ui/dist/style/index.scss";
+.at-search-bar::after {
+  border: none;
+}
+
+.at-switch::after {
+  border: none;
+}
+.at-input {
+  padding: 0;
+  margin: 0;
+}
+.at-input::after {
+  border: none;
+}
+.custom-switch {
+  $custom-switch-width: 78px;
+  $custom-switch-height: 48px;
+  .wx-switch-input {
+    width: $custom-switch-width !important;
+    height: $custom-switch-height !important;
+    &::before {
+      width: $custom-switch-width - 1 !important;
+      height: $custom-switch-height - 3 !important;
+    }
+    &::after {
+      width: $custom-switch-height - 3 !important;
+      height: $custom-switch-height - 3 !important;
+    }
+  }
+}

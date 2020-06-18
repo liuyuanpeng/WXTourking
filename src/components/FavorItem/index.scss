@@ -1,0 +1,66 @@
+.favor-item {
+  margin: 0 24px;
+  position: relative;
+  height: 196px;
+  border-bottom: 1px solid #f7f7f7;
+  padding: 24px 0;
+  .favor-item-image {
+    width: 240px;
+    height: 100%;
+    border-radius: 8px;
+  }
+  .favor-detail {
+    width: 430px;
+    vertical-align: top;
+    color: #333333;
+    display: inline-block;
+    height: 100%;
+    margin-left: 32px;
+    .favor-item-title {
+      margin-top: 14px;
+      font-size: 32px;
+      font-weight: 500;
+      height: 88px;
+      line-height: 44px;
+    }
+    .favor-item-texts {
+      display: flex;
+      flex-direction: row-reverse;
+      position: absolute;
+      right: 0;
+      bottom: 42px;
+      .favor-icon-text {
+        font-size: 24px;
+        font-weight: 400;
+        margin-left: 58px;
+        .favor-icon-like {
+          display: inline-block;
+          background-image: url('../../asset//images//like.png');
+          background-size: 100% 100%;
+          background-repeat: no-repeat;
+          width: 28px;
+          height: 28px;
+          margin-right: 4px;
+        }
+        .favor-icon-comment {
+          display: inline-block;
+          background-image: url('../../asset//images//comment.png');
+          background-size: 100% 100%;
+          background-repeat: no-repeat;
+          width: 28px;
+          height: 28px;
+          margin-right: 4px;
+        }
+        .favor-icon-favor {
+          display: inline-block;
+          background-image: url('../../asset//images//favor.png');
+          background-size: 100% 100%;
+          background-repeat: no-repeat;
+          width: 28px;
+          height: 28px;
+          margin-right: 4px;
+        }
+      }
+    }
+  }
+}
