@@ -63,6 +63,13 @@ class More extends Component {
     console.log('onMoreGift')
   }
 
+  handleProduct = e => {
+    e.stopPropagation()
+    Taro.navigateTo({
+      url: '../routeDetail/index'
+    })
+  }
+
   render() {
     const { windowHeight = 0 } = this.props.info
     if (!windowHeight) return <View></View>
@@ -227,7 +234,7 @@ class More extends Component {
             ))}
             </View>
             {scenes.map((item, index) => (
-              <ProductItem key={`scene-item-${index}`} {...item} />
+              <ProductItem onClick={this.handleProduct} key={`scene-item-${index}`} {...item} />
             ))}
           </View>
         </ScrollView>

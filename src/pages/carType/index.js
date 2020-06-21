@@ -59,6 +59,9 @@ class CarType extends Component {
 
   handleOK = e => {
     e.stopPropagation()
+    Taro.navigateTo({
+      url: '../createOrder/index'
+    })
   }
 
   showLuggageInfo = (visible = true) => {
@@ -242,7 +245,7 @@ class CarType extends Component {
                       {item.price}
                       <Label className='car-list-item-price-unit'>/起</Label>
                     </View>
-                    <View className='car-list-item-btn'>立即预约</View>
+                    <View className='car-list-item-btn' onClick={this.handleOK}>立即预约</View>
                   </View>
                 </View>
               ))}

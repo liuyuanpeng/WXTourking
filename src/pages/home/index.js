@@ -102,6 +102,12 @@ class Home extends Component {
     })
   }
 
+  gotoHref = href => {
+    Taro.navigateTo({
+      url: `../${href}/index`
+    })
+  }
+
   render() {
     const { windowHeight = 0 } = this.props.info
     if (!windowHeight) return <View></View>
@@ -114,17 +120,17 @@ class Home extends Component {
       {
         name: '按天包车',
         icon: daySchedulePng,
-        href: 'daySchedule'
+        href: 'dayChartered'
       },
       {
         name: '接送机',
         icon: airCarPng,
-        href: 'airCar'
+        href: 'airport'
       },
       {
         name: '线路包车',
         icon: routeSchedulePng,
-        href: 'routeSchedule'
+        href: 'more'
       }
     ]
     const tabList = [
@@ -239,7 +245,7 @@ class Home extends Component {
           <View className='container'>
             <View className='menu'>
               {icons.map((item, index) => (
-                <View key={`menu-icon-${index}`}>
+                <View key={`menu-icon-${index}`} onClick={this.gotoHref.bind(this, item.href)}>
                   <Image
                     className='icon-image'
                     src={item.icon}

@@ -64,6 +64,13 @@ class ProductDetail extends Component {
     }
   }
 
+  handleOK = e => {
+    e.stopPropagation()
+    Taro.navigateTo({
+      url: '../carType/index'
+    })
+  }
+
   render() {
     const { type } = this.state
     const detail = {
@@ -323,7 +330,7 @@ class ProductDetail extends Component {
             ￥{detail.price}
             <Label className='footer-price-unit'>起</Label>
           </View>
-          <View className='footer-btn'>下一步</View>
+          <View className='footer-btn' onClick={this.handleOK}>下一步</View>
         </View>
       </View>
     )

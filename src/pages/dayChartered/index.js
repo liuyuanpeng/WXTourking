@@ -55,6 +55,9 @@ class DayChartered extends PureComponent {
   handleChartered = e => {
     e.stopPropagation()
     // 立即包车
+    Taro.navigateTo({
+      url: '../pkg/index'
+    })
   }
 
   render() {

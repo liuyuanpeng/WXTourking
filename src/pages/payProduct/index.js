@@ -44,6 +44,9 @@ class PayProduct extends Component {
   handlePay = e => {
     e.stopPropagation()
     console.log('handlePay')
+    Taro.navigateTo({
+      url: '../orderStatus/index'
+    })
   }
 
   timeAction = e => {

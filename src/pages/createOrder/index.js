@@ -103,6 +103,9 @@ class CarType extends Component {
 
   handlePay = e => {
     e.stopPropagation()
+    Taro.navigateTo({
+      url: '../orderStatus/index'
+    })
   }
 
   getRouteDetail(routeDetail) {

@@ -3,9 +3,6 @@ import { View, Image } from '@tarojs/components'
 
 import '../common/index.scss'
 
-import homePng from '../../asset/images/bkg2.png'
-import SwitchButton from '../../components/SwitchButton'
-
 class Home extends PureComponent {
   config = {
     navigationBarTitleText: '发现'
@@ -19,20 +16,10 @@ class Home extends PureComponent {
     }  
   }
 
-  state = {
-    isRight: false
-  }
-  onChange = isRight => {
-    this.setState({
-      isRight
-    })
-  }
   render() {
-    const {isRight} = this.state
     return (
       <View className='page'>   
-        <Image className='common-image' src={homePng} />
-        <SwitchButton isRight={isRight} onChange={this.onChange} />
+
       </View>
     )
   }

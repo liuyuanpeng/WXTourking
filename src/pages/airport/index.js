@@ -112,6 +112,13 @@ class JSJPage extends Component {
     e.stopPropagation()
   }
 
+  handleOK = e => {
+    e.stopPropagation()
+    Taro.navigateTo({
+      url: '../carType/index'
+    })
+  }
+
   render() {
     const {
       isSJ,
@@ -246,7 +253,7 @@ class JSJPage extends Component {
                   )}
                 </View>
               )}
-              <View className='JSJ-content-button'>立即预约</View>
+              <View className='JSJ-content-button' onClick={this.handleOK}>立即预约</View>
               <View className='JSJ-content-ensure'>
                 {ensures.map((item, index) => (
                   <View className='ensure-item' key={`ensure-item-${index}`}>
