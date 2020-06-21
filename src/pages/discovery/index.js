@@ -1,7 +1,7 @@
 import Taro, { PureComponent } from '@tarojs/taro'
 import { View, Image } from '@tarojs/components'
 
-import '../common/index.less'
+import '../common/index.scss'
 
 import homePng from '../../asset/images/bkg2.png'
 import SwitchButton from '../../components/SwitchButton'

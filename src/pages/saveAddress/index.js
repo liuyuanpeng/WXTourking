@@ -2,7 +2,7 @@ import Taro, { Component } from '@tarojs/taro'
 import { View, Input, Label, ScrollView, SwiperItem } from '@tarojs/components'
 import NavBar from '../../components/NavBar'
 import { connect } from '@tarojs/redux'
-import '../common/index.less'
+import '../common/index.scss'
 import './index.scss'
 
 import daySchedulePng from '../../asset/images/day_schedule.png'

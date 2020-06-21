@@ -3,7 +3,7 @@ import { View, Image, ScrollView } from '@tarojs/components'
 import MineListItem from '../../components/MineListItem'
 import { connect } from '@tarojs/redux'
 
-import '../common/index.less'
+import '../common/index.scss'
 import './index.scss'
 
 import homePng from '../../asset/images/bkg2.png'

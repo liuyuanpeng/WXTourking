@@ -2,7 +2,7 @@ import Taro, { Component } from '@tarojs/taro'
 import { View, Image, Label } from '@tarojs/components'
 import NavBar from '../../components/NavBar'
 import { connect } from '@tarojs/redux'
-import '../common/index.less'
+import '../common/index.scss'
 import './index.scss'
 
 import daySchedulePng from '../../asset/images/bkg4.png'
@@ -11,6 +11,7 @@ import CommentItem from '../../components/CommentItem'
 import SysNavBar from '../../components/SysNavBar'
 import { returnFloat } from '../../utils/tool'
 import DateTimePicker from '../../components/DateTimePicker'
+import LocationInput from '../../components/LocationInput'
 
 @connect(({ system }) => ({
   info: system.info
@@ -50,6 +51,12 @@ class PayProduct extends Component {
     console.log('timeAction')
   }
 
+  handleLocationChange = obj => {
+    this.setState({
+      start_place: obj.title
+    })
+  }
+
   render() {
     const { start_place = '厦门市思明区', name, phone, start_time } = this.state
     return (
@@ -71,9 +78,12 @@ class PayProduct extends Component {
         <View className='pay-product-detail'>
           <View className='detail-item'>
             <View className='detail-label'>上车地点</View>
-            <View className='detail-content' onClick={this.onLocate}>
-              厦门市思明区
-            </View>
+            <LocationInput
+              wrap-class='detail-content'
+              title={start_place}
+              placeholder='请选择上车地点'
+              onChange={this.handleLocationChange}
+            />
             <View className='location-icon' onClick={this.onLocate}></View>
           </View>
           <View className='detail-split' />
@@ -89,6 +99,7 @@ class PayProduct extends Component {
           <View className='detail-item'>
             <View className='detail-label'>乘车人手机号</View>
             <AtInput
+              type='phone'
               className='detail-input'
               value={phone}
               placeholder='请输入手机号'

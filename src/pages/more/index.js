@@ -3,7 +3,7 @@ import { View, Image, ScrollView, Label } from '@tarojs/components'
 import { AtTag } from 'taro-ui'
 import NavBar from '../../components/NavBar'
 import { connect } from '@tarojs/redux'
-import '../common/index.less'
+import '../common/index.scss'
 import './index.less'
 
 import homePng from '../../asset/images/bkg4.png'

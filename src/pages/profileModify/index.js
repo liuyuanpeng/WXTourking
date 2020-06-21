@@ -4,7 +4,7 @@ import {
 } from '@tarojs/components'
 import NavBar from '../../components/NavBar'
 import { connect } from '@tarojs/redux'
-// import '../common/index.less'
+// import '../common/index.scss'
 import './index.scss'
 
 import {

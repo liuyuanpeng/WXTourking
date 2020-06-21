@@ -1,0 +1,31 @@
+.comments-page {
+  position: absolute;
+  top: 128px;
+  background-color: white;
+  .tags-container {
+    margin-top: 52px;
+    padding: 0 24px;
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    height: 60px;
+    .tag-item {
+      height: 52px;
+      border-radius: 26px;
+      padding: 0 26px;
+      line-height: 52px;
+      font-size: 24px;
+      color: #F6BA31;
+      background-color: #FFF9ED;
+      margin-right: 16px;
+    }
+  }
+  .comments-container{
+    padding: 24px;
+    background-color: white;
+    .split-line {
+      height: 0;
+      border: 1px solid #F0F0F0;
+    }
+  }
+}

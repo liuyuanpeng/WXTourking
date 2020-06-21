@@ -7,7 +7,7 @@ import checkPng from '../../asset/images/check.png'
 import checkedPng from '../../asset/images/check_focus.png'
 
 class CheckBox extends Taro.Component {
-  static externalClasses = ['wrap-class']
+  static externalClasses = ['wrap-class', 'text-class']
 
 
   static defaultProps = {
@@ -29,7 +29,7 @@ class CheckBox extends Taro.Component {
       <View className='wrap-class'>
         <View className='check-box' onClick={this.onChange}>
         <Image className='check-box-icon' src={checked?checkedPng:checkPng} mode='aspectFill' />
-        <Label className='check-box-title'>{title}</Label>
+        <Label className='check-box-title text-class'>{title}</Label>
       </View>
       </View>
     )

@@ -9,6 +9,7 @@ class SwitchButton extends Taro.Component {
     onChange: null
   }
 
+  static externalClasses = ['wrap-class']
 
   handleClick = (isRight, e) => {
     e.stopPropagation()
@@ -19,7 +20,7 @@ class SwitchButton extends Taro.Component {
   render() {
     const { isRight } = this.props
     return (
-      <View className='switch-button' onClick={this.handleClick}>
+      <View className='switch-button wrap-class' onClick={this.handleClick}>
         <View
           className={`switch-left ${isRight?'gray':''}`}
           onClick={this.handleClick.bind(this, false)}

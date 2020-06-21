@@ -3,7 +3,7 @@ import { View, Image, Label, ScrollView } from '@tarojs/components'
 import { AtInput, AtInputNumber } from 'taro-ui'
 import { connect } from '@tarojs/redux'
 
-import '../common/index.less'
+import '../common/index.scss'
 import './index.scss'
 
 import SysNavBar from '../../components/SysNavBar'

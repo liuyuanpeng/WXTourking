@@ -1,0 +1,38 @@
+.page {
+  background-color: #f7f7f7;
+  position: relative;
+  width: 100%;
+}
+
+.common-image {
+  width: 100%;
+}
+
+@mixin after-more {
+  &::after {
+    content: '';
+  position: absolute;
+  width: 14px;
+  height: 26px;
+  background-image: url('../../asset/images/more.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  top: 50%;
+  margin-top: -13px;
+  right: -36px;
+  }
+}
+
+@mixin large-button {
+  margin: 24px;
+  text-align: center;
+  border-radius: 20px;
+  height: 100px;
+  line-height: 100px;
+}
+
+@mixin image($name) {
+  background-image: url('../../asset/images/' + $name + '.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}

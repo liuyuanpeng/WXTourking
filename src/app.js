@@ -61,7 +61,12 @@ class App extends Component {
       'pages/dayChartered/index',
       'pages/utilPages/location/index',
       'pages/pkg/index',
-      'pages/carType/index'
+      'pages/carType/index',
+      'pages/createOrder/index',
+      'pages/comments/index',
+      'pages/orderStatus/index',
+      'pages/airport/index',
+      'pages/routeDetail/index'
     ],
     window: {
       backgroundTextStyle: 'light',

@@ -4,7 +4,7 @@ import { View, ScrollView } from '@tarojs/components'
 import { AtTabs, AtTabsPane } from 'taro-ui'
 import SysNavBar from '../../components/SysNavBar'
 import OrderItem from '../../components/OrderItem'
-import '../common/index.less'
+import '../common/index.scss'
 import './index.scss'
 
 @connect(({ system }) => ({

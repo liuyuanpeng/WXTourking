@@ -1,0 +1,440 @@
+.car-page {
+  position: absolute;
+  background-color: #f7f7f7;
+  font-weight: 500;
+  color: #333333;
+  top: 0;
+  height: 100%;
+  &-bkg {
+    z-index: 1;
+    position: absolute;
+    width: 100%;
+    height: 442px;
+    background: linear-gradient(
+      135deg,
+      rgba(254, 213, 0, 1) 0%,
+      rgba(254, 200, 2, 1) 100%
+    );
+  }
+  .car-header {
+    z-index: 2;
+    margin: 168px 24px 42px 24px;
+    position: relative;
+    box-sizing: border-box;
+    &-title {
+      font-size: 44px;
+      height: 60px;
+      line-height: 60px;
+    }
+    &-start {
+      font-size: 30px;
+      height: 42px;
+      line-height: 42px;
+      margin-left: 12px;
+      margin-top: 14px;
+    }
+    &-time {
+      font-size: 24px;
+      height: 34px;
+      line-height: 34px;
+      margin-top: 4px;
+      margin-left: 28px;
+      position: relative;
+      &::before {
+        content: '';
+        position: absolute;
+        left: -28px;
+        top: 50%;
+        margin-top: -11px;
+        width: 22px;
+        height: 22px;
+        background-image: url('../../asset/images/time.png');
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+      }
+    }
+    &-car-type {
+      font-size: 24px;
+      height: 34px;
+      line-height: 34px;
+      margin-top: 4px;
+      margin-left: 28px;
+      position: relative;
+      &::before {
+        content: '';
+        position: absolute;
+        left: -28px;
+        top: 50%;
+        margin-top: -11px;
+        width: 22px;
+        height: 22px;
+        border-color: #333333;
+        border: 1px solid #333333;
+        border-radius: 100px;
+        background-image: url('../../asset/images/chair.png');
+        background-size: 60% 60%;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+    }
+    &-assurance {
+      margin-top: 16px;
+      width: 702px;
+      height: 72px;
+      background-color: white;
+      opacity: 0.7;
+      border-radius: 8px;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: space-around;
+      &-item {
+        font-size: 24px;
+        line-height: 72px;
+        color: #333333;
+        font-weight: 400;
+        position: relative;
+        &::before {
+          content: '';
+          width: 20px;
+          height: 24px;
+          position: absolute;
+          top: 50%;
+          left: -28px;
+          margin-top: -12px;
+          background-image: url('../../asset/images/service_assurance.png');
+          background-size: 100% 100%;
+          background-repeat: no-repeat;
+        }
+      }
+    }
+    &-detail {
+      position: absolute;
+      top: 56px;
+      height: 48px;
+      padding: 0 24px;
+      right: 24px;
+      border: 1px solid #333333;
+      border-radius: 24px;
+      text-align: center;
+      font-size: 24px;
+      line-height: 48px;
+    }
+  }
+
+  .content-scroll {
+    z-index: 9;
+    width: 100%;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    overflow: hidden;
+    top: 424px;
+    position: absolute;
+    background-color: #f7f7f7;
+    .phones {
+      width: 100%;
+      height: 624px;
+      overflow: hidden;
+      padding: 24px;
+      box-sizing: border-box;
+      background-color: white;
+      &-header {
+        margin-top: 10px;
+        &-title {
+          font-size: 34px;
+          height: 48px;
+          line-height: 48px;
+        }
+        &-subtitle {
+          font-size: 22px;
+          height: 32px;
+          line-height: 32px;
+          color: #bdbdbd;
+        }
+      }
+      &-item {
+        position: relative;
+        &-label {
+          margin-top: 44px;
+          height: 40px;
+          line-height: 40px;
+          font-size: 28px;
+        }
+        &-input {
+          margin-top: 18px;
+          height: 48px;
+          font-size: 34px;
+          line-height: 48px;
+          margin-bottom: 12px;
+        }
+      }
+      &-split-line {
+        height: 0;
+        border-bottom: 2px solid #f0f0f0;
+      }
+    }
+    .coupon-container {
+      margin-top: 24px;
+      width: 100%;
+      height: 148px;
+      background-color: white;
+      overflow: hidden;
+      padding: 24px;
+      box-sizing: border-box;
+      position: relative;
+      .title-label {
+        position: relative;
+        top: 6px;
+        height: 48px;
+        font-size: 32px;
+        line-height: 48px;
+        &::after {
+          content: '';
+          position: absolute;
+          width: 40px;
+          height: 28px;
+          background-image: url('../../asset/images/coupon.png');
+          background-size: 100% 100%;
+          background-repeat: no-repeat;
+          left: 120px;
+          top: 10px;
+        }
+      }
+      .subtitle-label {
+        margin-top: 4px;
+        font-size: 26px;
+        line-height: 36px;
+        height: 36px;
+        color: #bdbdbd;
+      }
+      .coupon-right {
+        position: absolute;
+        right: 60px;
+        text-align: right;
+        top: 50%;
+        height: 40px;
+        margin-top: -20px;
+        color: #fd7d59;
+        &-gray {
+          color: #bdbdbd;
+        }
+        &::after {
+          content: '';
+          position: absolute;
+          width: 14px;
+          height: 26px;
+          background-image: url('../../asset/images/more.png');
+          background-size: 100% 100%;
+          background-repeat: no-repeat;
+          top: 50%;
+          margin-top: -13px;
+          right: -36px;
+        }
+      }
+    }
+    .contact {
+      margin-top: 24px;
+      width: 100%;
+      height: 148px;
+      background-color: white;
+      overflow: hidden;
+      padding: 24px;
+      box-sizing: border-box;
+      position: relative;
+      &-title {
+        margin-top: 6px;
+        font-size: 34px;
+        height: 48px;
+        line-height: 48px;
+      }
+      &-subtitle {
+        margin-top: 4px;
+        height: 36px;
+        line-height: 36px;
+        color: #bdbdbd;
+        font-size: 26px;
+      }
+      &-right {
+        display: flex;
+        justify-content: space-between;
+        position: absolute;
+        top: 50%;
+        margin-top: -19px;
+        width: 150px;
+        height: 38px;
+        right: 24px;
+        &-chat {
+          background-image: url('../../asset/images/message.png');
+          background-size: 100% 100%;
+          background-repeat: no-repeat;
+          width: 38px;
+          height: 38px;
+        }
+        &-phone {
+          background-image: url('../../asset/images/phone.png');
+          background-size: 100% 100%;
+          background-repeat: no-repeat;
+          width: 38px;
+          height: 38px;
+        }
+      }
+    }
+    .platform-assurance {
+      margin-top: 24px;
+      background-color: white;
+      width: 100%;
+      padding: 24px;
+      box-sizing: border-box;
+      position: relative;
+      &-item {
+        margin-top: 6px;
+        margin-bottom: 26px;
+        &-title {
+          font-size: 34px;
+          height: 48px;
+          line-height: 48px;
+        }
+        &-subtitle {
+          font-size: 26px;
+          line-height: 36px;
+          font-weight: 400;
+        }
+      }
+    }
+  }
+  .pay-tip {
+    position: absolute;
+    bottom: 140px;
+    width: 100%;
+    height: 54px;
+    background-color: #f6ba31;
+    color: #fd7d59;
+    font-size: 24px;
+    line-height: 54px;
+    text-align: center;
+  }
+  .footer {
+    position: absolute;
+    bottom: 0;
+    height: 140px;
+    width: 100%;
+    background-color: white;
+    .price {
+      height: 50px;
+      line-height: 50px;
+      position: absolute;
+      top: 50%;
+      margin-top: -25px;
+      left: 24px;
+      color: #fd7d59;
+      font-size: 36px;
+    }
+    .detail {
+      position: absolute;
+      right: 282px;
+      text-align: right;
+      height: 40px;
+      top: 50%;
+      margin-top: -20px;
+      color: #bdbdbd;
+      &::after {
+        content: '';
+        width: 12px;
+        height: 8px;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 8px solid #bdbdbd;
+        left: 8px;
+        top: 25px;
+        position: relative;
+      }
+    }
+    .pay-button {
+      color: white;
+      background: linear-gradient(
+        90deg,
+        rgba(255, 132, 14, 1) 0%,
+        rgba(254, 66, 53, 1) 100%
+      );
+      border-radius: 8px;
+      position: absolute;
+      width: 220px;
+      height: 80px;
+      top: 50%;
+      margin-top: -40px;
+      right: 24px;
+      text-align: center;
+      font-size: 32px;
+      line-height: 80px;
+    }
+  }
+  .pop-container {
+    padding: 0 36px;
+    .price-detail-item {
+      width: 100%;
+      height: 64px;
+      display: flex;
+      justify-content: space-between;
+      &-name {
+        height: 40px;
+        line-height: 40px;
+        font-size: 28px;
+        margin: auto 0;
+      }
+      &-name-total {
+        height: 43px;
+        line-height: 43px;
+        font-size: 32px;
+        margin: auto 0;
+      }
+      &-value {
+        height: 40px;
+        line-height: 40px;
+        font-size: 28px;
+        margin: auto 0;
+      }
+      &-value-total {
+        height: 43px;
+        line-height: 43px;
+        font-size: 32px;
+        margin: auto 0;
+        color: #fd7d59;
+      }
+    }
+    .route-detail-item {
+      margin-bottom: 18px;
+      &-title {
+        font-size: 32px;
+        height: 44px;
+        line-height: 44px;
+      }
+      &-subtitle {
+        margin-top: 2px;
+        font-size: 24px;
+        height: 34px;
+        line-height: 34px;
+        color: #999999;
+      }
+      &-subtitles {
+        &-tip {
+          font-size: 28px;
+          height: 40px;
+          line-height: 40px;
+          color: #f6ba31;
+        }
+        &-title {
+          margin-top: 14px;
+          font-size: 28px;
+          height: 40px;
+          line-height: 40px;
+        }
+        &-subtitle {
+          margin-top: 2px;
+          font-size: 24px;
+          height: 34px;
+          line-height: 34px;
+          color: #999999;
+        }
+      }
+    }
+  }
+}
