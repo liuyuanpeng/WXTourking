@@ -12,8 +12,7 @@ import {
 } from 'taro-ui'
 import SysNavBar from '../../components/SysNavBar'
 
-@connect(({ system }) => ({
-  info: system.info
+@connect(({ user }) => ({
 }))
 class Profile extends Component {
   config = {
@@ -21,25 +20,13 @@ class Profile extends Component {
   }
 
   state = {
-    title: ''
-  }
-
-  componentWillMount() {
-    if (this.props.info.windowHeight) return
-    try {
-      const res = Taro.getSystemInfoSync()
-      const { dispatch } = this.props
-      dispatch({
-        type: 'system/updateSystemInfo',
-        payload: res
-      })
-    } catch (e) {
-      console.log('no system info')
-    }
+    title: '',
+    value: ''
   }
 
   componentDidMount() {
     const key = this.$router.params.key || ''
+    const value = this.$router.params.value || ''
     let title = '个人昵称'
     if (key === 'nickname') {
       title = '个人昵称'
@@ -52,23 +39,53 @@ class Profile extends Component {
     }
 
     this.setState({
-      title
+      title,
+      value
     })
   }
 
   onOK = e => {
     e.stopPropagation();
-    Taro.navigateBack()
+
+    const key = this.$router.params.key || ''
+    const payload = {}
+    const {value, title} = this.state
+    if (key === 'name') {
+      payload.name = value
+      
+    } else if (key === 'place') {
+      payload.place = value
+    } else if (key === 'signature') {
+      payload.signature = value
+    } 
+
+    this.props.dispatch({
+      type: 'user/updateUserInfo',
+      payload,
+      success: ()=>{
+        Taro.navigateBack()
+      },
+      fail: msg => {
+        Taro.showToast({title: msg || `修改${title}失败`, icon: 'none'})
+      }
+    })
+
+  }
+
+  handleChange = value => {
+    this.setState({
+      value
+    })
   }
 
   render() {
-    const { title } = this.state
+    const { title, value } = this.state
     return (
-      <View className='profile-modify-page'>
+      <View className='profile-modify-page' style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}>
         <SysNavBar title='我的资料' />
         <View className='profile-modifier'>
           <View className='profile-title'>{title}</View>
-          <AtInput className='profile-input' placeholder={`请输入${title}`} />
+          <AtInput value={value} className='profile-input' onChange={this.handleChange} placeholder={`请输入${title}`} />
           
         </View>
         <View className='profile-btn' onClick={this.onOK}>

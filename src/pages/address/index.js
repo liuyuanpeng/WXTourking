@@ -11,8 +11,7 @@ import CommentItem from '../../components/CommentItem'
 import SysNavBar from '../../components/SysNavBar'
 import { returnFloat } from '../../utils/tool'
 
-@connect(({ system }) => ({
-  info: system.info
+@connect(({  }) => ({
 }))
 class Address extends Component {
   config = {}
@@ -89,7 +88,7 @@ class Address extends Component {
       }
     ]
     return (
-      <View className='address-page'>
+      <View className='address-page' style={{top: 88 + Taro.$statusBarHeight + 'rpx'}}>
         <SysNavBar title='我的地址' />
         {addresses.map((item, index) => (
           <View className='address-item' key={`address-item-${index}`}>

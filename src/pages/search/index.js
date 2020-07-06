@@ -12,9 +12,7 @@ import SysNavBar from '../../components/SysNavBar'
 import {returnFloat} from '../../utils/tool'
 import ProductItem from '../../components/ProductItem'
 
-@connect(({ system }) => ({
-  info: system.info
-}))
+
 class Search extends Component {
   config = {
   }
@@ -45,7 +43,7 @@ class Search extends Component {
     ]
 
     return (
-      <View className='search-page'>
+      <View className='search-page' style={{top: `${Taro.$statusBarHeight + 184}rpx`}}>
         <NavBar opacity={1} title='搜索' showBack />
         <View className='tag-title'>历史搜索</View>
         {

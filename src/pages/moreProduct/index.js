@@ -12,9 +12,7 @@ import SysNavBar from '../../components/SysNavBar'
 import {returnFloat} from '../../utils/tool'
 import ProductItem from '../../components/ProductItem'
 
-@connect(({ system }) => ({
-  info: system.info
-}))
+
 class MoreProduct extends Component {
   config = {
     navigationBarTitleText: '订单支付'
@@ -31,19 +29,7 @@ class MoreProduct extends Component {
     })
   }
 
-  componentWillMount() {
-    if (this.props.info.windowHeight) return
-    try {
-      const res = Taro.getSystemInfoSync()
-      const { dispatch } = this.props
-      dispatch({
-        type: 'system/updateSystemInfo',
-        payload: res
-      })
-    } catch (e) {
-      console.log('no system info')
-    }
-  }
+  
 
   componentDidMount() {
     const type = this.$router.params.type
@@ -224,14 +210,13 @@ class MoreProduct extends Component {
       }
     ]
 
-    const { windowHeight = 0 } = this.props.info
-    if (!windowHeight) return <View></View>
+    
     const scrollStyle = {
-      height: `${windowHeight - 128}px`
+      height: `${Taro.$windowHeight - Taro.$statusBarHeight - 88}px`
     }
 
     return (
-      <View className='more-product-page'>
+      <View className='more-product-page' style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}>
         <SysNavBar title='' />
         <View className='more-product-tabs'>
               <AtTabs

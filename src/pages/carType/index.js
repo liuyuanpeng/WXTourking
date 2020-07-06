@@ -13,9 +13,7 @@ import CheckBox from '../../components/CheckBox'
 import PopView from '../../components/PopView'
 import dayjs from 'dayjs'
 
-@connect(({ system }) => ({
-  info: system.info
-}))
+
 class CarType extends Component {
   config = {
     navigationBarTitleText: '选择车型'
@@ -41,19 +39,7 @@ class CarType extends Component {
     })
   }
 
-  componentWillMount() {
-    if (this.props.info.windowHeight) return
-    try {
-      const res = Taro.getSystemInfoSync()
-      const { dispatch } = this.props
-      dispatch({
-        type: 'system/updateSystemInfo',
-        payload: res
-      })
-    } catch (e) {
-      console.log('no system info')
-    }
-  }
+  
 
   componentDidMount() {}
 
@@ -171,10 +157,9 @@ class CarType extends Component {
       }
     ]
 
-    const { windowHeight = 0, windowWidth } = this.props.info
-    if (!windowHeight) return <View></View>
+    
     const scrollStyle = {
-      height: `${windowHeight * (750 / windowWidth) - 414}rpx`
+      height: `${Taro.$windowHeight - Taro.$statusBarHeight - 350}rpx`
     }
 
     return (

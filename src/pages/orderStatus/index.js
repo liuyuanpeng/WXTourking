@@ -12,9 +12,7 @@ import SysNavBar from '../../components/SysNavBar'
 import { returnFloat } from '../../utils/tool'
 import dayjs from 'dayjs'
 
-@connect(({ system }) => ({
-  info: system.info
-}))
+
 class PayProduct extends Component {
   config = {
     navigationBarTitleText: '确认订单'
@@ -22,19 +20,7 @@ class PayProduct extends Component {
 
   state = {}
 
-  componentWillMount() {
-    if (this.props.info.windowHeight) return
-    try {
-      const res = Taro.getSystemInfoSync()
-      const { dispatch } = this.props
-      dispatch({
-        type: 'system/updateSystemInfo',
-        payload: res
-      })
-    } catch (e) {
-      console.log('no system info')
-    }
-  }
+  
 
   render() {
     const {
@@ -72,10 +58,10 @@ class PayProduct extends Component {
       }
     ]
 
-    const { windowHeight = 0, windowWidth } = this.props.info
-    if (!windowHeight) return <View></View>
+    
     const scrollStyle = {
-      height: `${windowHeight * (750 / windowWidth) - 128}rpx`
+      top: 88 + Taro.$statusBarHeight + 'rpx',
+      height: Taro.$windowHeight - 88 - Taro.$statusBarHeight + 'rpx'
     }
 
     return (

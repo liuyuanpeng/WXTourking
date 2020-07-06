@@ -11,9 +11,7 @@ import CommentItem from '../../components/CommentItem'
 import SysNavBar from '../../components/SysNavBar'
 import {returnFloat} from '../../utils/tool'
 
-@connect(({ system }) => ({
-  info: system.info
-}))
+
 class PayGift extends Component {
   config = {
     navigationBarTitleText: '订单支付'
@@ -48,7 +46,7 @@ class PayGift extends Component {
     const { count } = this.state
     const { price = 1 } = this.props
     return (
-      <View className='pay-gift'>
+      <View className='pay-gift' style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}>
         <SysNavBar title='订单支付' />
         <View className='address'>
           <View className='address-icon' />

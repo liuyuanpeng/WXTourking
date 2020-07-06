@@ -19,9 +19,7 @@ import precious_png from '../../asset/images/precious.png'
 import free_waiting_png from '../../asset/images/free_waiting.png'
 import safe_png from '../../asset/images/safe.png'
 
-@connect(({ system }) => ({
-  info: system.info
-}))
+
 class DayChartered extends PureComponent {
   config = {
     navigationBarTitleText: ''
@@ -33,18 +31,7 @@ class DayChartered extends PureComponent {
     days: 2
   }
 
-  componentWillMount() {
-    try {
-      const res = Taro.getSystemInfoSync()
-      const { dispatch } = this.props
-      dispatch({
-        type: 'system/updateSystemInfo',
-        payload: res
-      })
-    } catch (e) {
-      console.log('no system info')
-    }
-  }
+  
 
   handleLocationChange = location => {
     this.setState({
@@ -61,10 +48,9 @@ class DayChartered extends PureComponent {
   }
 
   render() {
-    const { windowHeight = 0, windowWidth } = this.props.info
-    if (!windowHeight) return <View></View>
+    
     const scrollStyle = {
-      height: `${windowHeight * (750 / windowWidth)}rpx`
+      height: `${Taro.$windowHeight}rpx`
     }
     const comments = [
       {

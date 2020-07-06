@@ -13,9 +13,7 @@ import { returnFloat } from '../../utils/tool'
 import DateTimePicker from '../../components/DateTimePicker'
 import LocationInput from '../../components/LocationInput'
 
-@connect(({ system }) => ({
-  info: system.info
-}))
+
 class PayProduct extends Component {
   config = {
     navigationBarTitleText: '订单支付'
@@ -63,7 +61,7 @@ class PayProduct extends Component {
   render() {
     const { start_place = '厦门市思明区', name, phone, start_time } = this.state
     return (
-      <View className='pay-product'>
+      <View className='pay-product' style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}>
         <SysNavBar title='订单支付' />
         <View className='pay-product-header'>
           <Image

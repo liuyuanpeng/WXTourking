@@ -16,9 +16,7 @@ import { AtDivider, AtNavBar, AtInputNumber, AtTabs, AtTabsPane } from 'taro-ui'
 import CommentItem from '../../components/CommentItem'
 import SysNavBar from '../../components/SysNavBar'
 
-@connect(({ system }) => ({
-  info: system.info
-}))
+
 class Comments extends Component {
   config = {
     navigationBarTitleText: '全部评论'
@@ -35,19 +33,7 @@ class Comments extends Component {
     })
   }
 
-  componentWillMount() {
-    if (this.props.info.windowHeight) return
-    try {
-      const res = Taro.getSystemInfoSync()
-      const { dispatch } = this.props
-      dispatch({
-        type: 'system/updateSystemInfo',
-        payload: res
-      })
-    } catch (e) {
-      console.log('no system info')
-    }
-  }
+  
 
   componentDidMount() {}
 
@@ -120,14 +106,13 @@ class Comments extends Component {
       }
     ]
 
-    const { windowHeight = 0, windowWidth} = this.props.info
-    if (!windowHeight) return <View></View>
+    
     const scrollStyle = {
-      height: `${windowHeight*(750/windowWidth) - 240}rpx`
+      height: `${Taro.$windowHeight - Taro.$statusBarHeight - 200}rpx`
     }
 
     return (
-      <View className='comments-page'>
+      <View className='comments-page' style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}>
         <SysNavBar title='全部评论' />
         <View className='tags-container'>
           {tagList.map((item, index)=>(

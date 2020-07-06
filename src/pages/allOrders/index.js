@@ -19,8 +19,7 @@ import SysNavBar from '../../components/SysNavBar'
 import { returnFloat } from '../../utils/tool'
 import OrderItem from '../../components/OrderItem'
 
-@connect(({ system }) => ({
-  info: system.info
+@connect(({  }) => ({
 }))
 class AllOrders extends Component {
   config = {
@@ -39,17 +38,6 @@ class AllOrders extends Component {
   }
 
   componentWillMount() {
-    if (this.props.info.windowHeight) return
-    try {
-      const res = Taro.getSystemInfoSync()
-      const { dispatch } = this.props
-      dispatch({
-        type: 'system/updateSystemInfo',
-        payload: res
-      })
-    } catch (e) {
-      console.log('no system info')
-    }
   }
 
   componentDidMount() {
@@ -155,14 +143,16 @@ class AllOrders extends Component {
       }
     ]
 
-    const { windowHeight = 0 } = this.props.info
-    if (!windowHeight) return <View></View>
+    
     const scrollStyle = {
-      height: `${windowHeight - 108}px`
+      height: `${Taro.$windowHeight - 85 - 88 - Taro.$statusBarHeight}rpx`
     }
 
     return (
-      <View className='all-order-page'>
+      <View
+        className='all-order-page'
+        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+      >
         <SysNavBar title='全部订单' />
         <View className='all-order-tabs'>
           <AtTabs

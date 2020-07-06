@@ -14,9 +14,7 @@ import PopView from '../../components/PopView'
 import dayjs from 'dayjs'
 import { AtInput } from 'taro-ui'
 
-@connect(({ system }) => ({
-  info: system.info
-}))
+
 class CarType extends Component {
   config = {
     navigationBarTitleText: '填写订单'
@@ -46,19 +44,7 @@ class CarType extends Component {
     })
   }
 
-  componentWillMount() {
-    if (this.props.info.windowHeight) return
-    try {
-      const res = Taro.getSystemInfoSync()
-      const { dispatch } = this.props
-      dispatch({
-        type: 'system/updateSystemInfo',
-        payload: res
-      })
-    } catch (e) {
-      console.log('no system info')
-    }
-  }
+  
 
   componentDidMount() {}
 
@@ -265,14 +251,13 @@ class CarType extends Component {
       intro: routeDetail
     }
 
-    const { windowHeight = 0, windowWidth } = this.props.info
-    if (!windowHeight) return <View></View>
+    
     const scrollStyle = {
-      height: `${windowHeight * (750 / windowWidth) - 424 - 194}rpx`
+      height: `${Taro.$windowHeight - 424 - 194}rpx`
     }
 
     const scrollStylePop = {
-      height: `${windowHeight * (750 / windowWidth) - 400}rpx`
+      height: `${Taro.$windowHeight - 400}rpx`
     }
 
     return (

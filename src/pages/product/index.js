@@ -9,9 +9,7 @@ import daySchedulePng from '../../asset/images/bkg4.png'
 import { AtDivider } from 'taro-ui'
 import CommentItem from '../../components/CommentItem'
 
-@connect(({ system }) => ({
-  info: system.info
-}))
+
 class ProductDetail extends Component {
   config = {}
 

@@ -18,48 +18,91 @@ import CommentItem from '../../components/CommentItem'
 import SysNavBar from '../../components/SysNavBar'
 import { returnFloat } from '../../utils/tool'
 import ProfileItem from '../../components/ProfileItem'
+import TPickerView from '../../components/TPickerView'
 
-@connect(({ system }) => ({
-  info: system.info
+@connect(({ user }) => ({
+  userInfo: user
 }))
 class Profile extends Component {
   config = {
     navigationBarTitleText: '我的资料'
   }
 
-
-  componentWillMount() {
-    if (this.props.info.windowHeight) return
-    try {
-      const res = Taro.getSystemInfoSync()
-      const { dispatch } = this.props
-      dispatch({
-        type: 'system/updateSystemInfo',
-        payload: res
-      })
-    } catch (e) {
-      console.log('no system info')
-    }
+  state = {
+    visible: false,
+    active: [0]
   }
 
-  componentDidMount() {
+  componentDidMount() {}
+
+  openModal = genderText => {
+    this.setState({
+      visible: true,
+      active: [genderText === '女' ? 1 : 0]
+    })
+  }
+
+  handleOK = current => {
+    const gender = current.gender === '女' ? 'FEMALE' : 'MALE'
+    this.props.dispatch({
+      type: 'user/updateUserInfo',
+      payload: {
+        gender
+      },
+      success: () => {
+        this.setState({
+          visible: false,
+          active: [current.gender === '女' ? 1 : 0]
+        })
+      },
+      fail: msg => {
+        Taro.showToast({ title: msg || '修改性别失败', icon: 'none' })
+      }
+    })
+  }
+
+  handleCancel = () => {
+    this.setState({
+      visible: false
+    })
   }
 
   render() {
+    const { visible, active } = this.state
+    const app = Taro.getApp()
+    const { wxInfo } = app.globalData
+    const avatarUrl = wxInfo.avatarUrl
+    const nickName = wxInfo.nickName
+    const wxGender = wxInfo.gender
+
+    const { userInfo } = this.props
+    const { name, gender, location } = userInfo
+
+    const genderText =
+      gender === 'UNKNOWN'
+        ? wxGender === 0
+          ? '未知'
+          : wxGender === 1
+          ? '男'
+          : '女'
+        : gender === 'MALE'
+        ? '男'
+        : '女'
 
     const profileList = [
       {
         title: '个人昵称',
-        subtitle: 'aurevoir',
+        subtitle: nickName,
         action: () => {
-          Taro.navigateTo({
-            url: `../profileModify/index?key=nickname`
-          })
+          // 微信昵称不允许修改
+          // Taro.navigateTo({
+          //   url: `../profileModify/index?key=nickname`
+          // })
         }
       },
       {
         title: '真实姓名',
-        subtitle: 'aurevoir',
+        subtitle: name,
         action: () => {
           Taro.navigateTo({
             url: `../profileModify/index?key=name`
@@ -68,15 +111,15 @@ class Profile extends Component {
       },
       {
         title: '性别',
-        subtitle: '男',
+        subtitle: genderText,
         hideRight: true,
         action: () => {
-
+          this.openModal(genderText)
         }
       },
       {
         title: '常住地',
-        subtitle: '',
+        subtitle: location || '',
         action: () => {
           Taro.navigateTo({
             url: `../profileModify/index?key=place`
@@ -91,19 +134,37 @@ class Profile extends Component {
             url: `../profileModify/index?key=signature`
           })
         }
-      },
+      }
     ]
 
     return (
-      <View className='profile-page'>
+      <View
+        className='profile-page'
+        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+      >
         <SysNavBar title='我的资料' />
         <View className='profile-header'>
           <View className='profile-header-title'>个人头像</View>
-          <Image className='profile-header-image' mode='aspectFill' src='https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1592246709686&di=30081e07fdab9019b4aae97170c52194&imgtype=0&src=http%3A%2F%2Fa3.att.hudong.com%2F14%2F75%2F01300000164186121366756803686.jpg' />
+          {avatarUrl && (
+            <Image
+              className='profile-header-image'
+              mode='aspectFill'
+              src={avatarUrl}
+            />
+          )}
         </View>
-        {profileList.map((item, index)=>(
+        {profileList.map((item, index) => (
           <ProfileItem key={`profile-item-${index}`} {...item} />
         ))}
+        {visible && (
+          <TPickerView
+            onOK={this.handleOK}
+            onCancel={this.handleCancel}
+            title='请选择性别'
+            lists={[{ key: 'gender', list: ['男', '女'] }]}
+            active={active}
+          />
+        )}
       </View>
     )
   }

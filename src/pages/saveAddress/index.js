@@ -11,9 +11,7 @@ import CommentItem from '../../components/CommentItem'
 import SysNavBar from '../../components/SysNavBar'
 import { returnFloat } from '../../utils/tool'
 
-@connect(({ system }) => ({
-  info: system.info
-}))
+
 class SaveAddress extends Component {
   config = {}
 
@@ -82,7 +80,7 @@ class SaveAddress extends Component {
       }
     ]
     return (
-      <View className='save-address-page'>
+      <View className='save-address-page' style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}>
         <SysNavBar title={`${id ? '编辑' : '新增'}收货地址`} />
         {formItems.map((item, index) => (
           <View className='form-item' key={`form-item-${index}`}>

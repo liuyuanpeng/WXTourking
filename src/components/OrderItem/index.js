@@ -1,6 +1,8 @@
 import Taro from '@tarojs/taro'
 import { View, Image, Label } from '@tarojs/components'
 import dayjs from 'dayjs'
+import ORDER_STATUS from '../../constants/status'
+import ORDER_TYPE from '../../constants/types'
 
 import './index.scss'
 
@@ -9,29 +11,30 @@ import giftPng from '../../asset/images/gift.png'
 
 class OrderItem extends Taro.Component {
   static defaultProps = {
-    type: '',
     data: {}
   }
 
   render() {
-    const { type, data } = this.props
+    const { data } = this.props
+    console.log('item data:', data)
+    const type = ORDER_TYPE[data.scene] || ''
     return (
       <View className='order-item'>
         <Image
           className='order-item-icon'
-          src={type === 'gift' ? giftPng : carPng}
+          src={type === '伴手礼' ? giftPng : carPng}
           mode='aspectFill'
         />
         <View className='order-item-type-text'>{type}</View>
-        <View className='order-item-status-text'>{data.status}</View>
-        {type === 'jiesongji' || type === 'daySchedule' ? (
+        <View className='order-item-status-text'>{ORDER_STATUS[data.status]}</View>
+        {data.scene === 'JIEJI' || data.scene === 'SONGJI' || type === '按天包车' ? (
           <View className='order-normal'>
-            <View className='order-normal-title'>{`${data.start_place}-${data.target_place}`}</View>
+            <View className='order-normal-title'>{`${data.start_place}-${data.target_place ? data.target_place : '无'}`}</View>
             {data.day && (
               <View className='order-normal-text'>{`包车天数${data.day}天`}</View>
             )}
             <View className='order-normal-text'>{`用车时间:${dayjs(
-              data.time
+              data.start_time
             ).format('YYYY-MM-DD')}`}</View>
             <View className='order-normal-text'>
               {`车型:${data.car.type}${data.car.sit}座`}
@@ -64,10 +67,10 @@ class OrderItem extends Taro.Component {
                 <View className='order-template-text'>{`商品数量: x${data.count}`}</View>
               )}
               <View className='order-template-text'>
-                {type === 'gift' ? '下单' : '用车'}
-                {`时间: ${dayjs(data.time).format('YYYY-MM-DD')}`}
+                {type === '伴手礼' ? '下单' : '用车'}
+                {`时间: ${dayjs(data.start_time).format('YYYY-MM-DD')}`}
               </View>
-              {type !== 'gift' && (
+              {type !== '伴手礼' && (
               <View className='order-template-text'>{`车型: ${data.car.type}${data.car.sit}座`}</View>
             )}
             </View>

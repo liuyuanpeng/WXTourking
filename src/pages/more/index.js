@@ -10,9 +10,7 @@ import homePng from '../../asset/images/bkg4.png'
 import ProductItem from '../../components/ProductItem'
 import DecorateTitle from '../../components/DecorateTitle'
 
-@connect(({ system }) => ({
-  info: system.info
-}))
+
 class More extends Component {
   config = {
     navigationBarTitleText: '旅王出行'
@@ -22,18 +20,7 @@ class More extends Component {
     opacity: 0
   }
 
-  componentWillMount() {
-    try {
-      const res = Taro.getSystemInfoSync()
-      const { dispatch } = this.props
-      dispatch({
-        type: 'system/updateSystemInfo',
-        payload: res
-      })
-    } catch (e) {
-      console.log('no system info')
-    }
-  }
+  
 
   onScroll = e => {
     const rate = e.detail.scrollTop / 200
@@ -71,10 +58,8 @@ class More extends Component {
   }
 
   render() {
-    const { windowHeight = 0 } = this.props.info
-    if (!windowHeight) return <View></View>
     const scrollStyle = {
-      height: `${windowHeight}px`
+      height: `${Taro.$windowHeight}rpx`
     }
     const { opacity } = this.state
 
@@ -192,14 +177,14 @@ class More extends Component {
     return (
       <View className='page'>
         <NavBar opacity={opacity} showBack />
+          <View className='bkg' />
         <ScrollView
           style={scrollStyle}
           scrollY
           scrollWithAnimation
           onScroll={this.onScroll}
         >
-          <View className='bkg' />
-          <Image className='home-png' src={homePng} mode='widthFix' />
+          <Image className='home-png' style={{marginTop: Taro.$statusBarHeight + 220 + 'rpx'}} src={homePng} mode='widthFix' />
           <View className='container-choice'>
             <DecorateTitle title='旅王精选' />
             <View className='choice'>

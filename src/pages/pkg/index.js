@@ -19,9 +19,7 @@ import { returnFloat } from '../../utils/tool'
 import BillItem from '../../components/BillItem'
 import CheckBox from '../../components/CheckBox'
 
-@connect(({ system }) => ({
-  info: system.info
-}))
+
 class Pkg extends Component {
   config = {
     navigationBarTitleText: '选择里程套餐'
@@ -105,7 +103,7 @@ class Pkg extends Component {
     }
 
     return (
-      <View className='pkg-page'>
+      <View className='pkg-page' style={{top: 88 + Taro.$statusBarHeight + 'rpx', minHeight: Taro.$windowHeight - 88 - Taro.$statusBarHeight + 'rpx'}}>
         <SysNavBar title='选择里程套餐' />
         <View className='pkg-header'>
           <View className='pkg-header-split-line' />
@@ -141,7 +139,10 @@ class Pkg extends Component {
             </View>
           ))}
         </View>
+        <View className='pkg-footer'>
+
         <View className='pkg-ok-btn' onClick={this.handleOK}>选车型</View>
+        </View>
       </View>
     )
   }

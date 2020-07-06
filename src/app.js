@@ -26,7 +26,31 @@ if (process.env.NODE_ENV !== 'production' && process.env.TARO_ENV === 'h5') {
 }
 
 class App extends Component {
-  componentDidMount() {}
+
+  globalData = {
+    wxInfo: {},
+    userInfo: {}
+  }
+  componentWillMount() {
+    const res = Taro.getSystemInfoSync()
+    console.log('systemInfo: ', res)
+    Taro.$statusBarHeight = res.windowWidth ? res.statusBarHeight/(res.windowWidth/750) : 0
+    Taro.$screenWidth = res.windowWidth
+    Taro.$screenHeight = res.windowHeight
+    Taro.$windowHeight = res.windowWidth ? res.windowHeight/(res.windowWidth/750) : 0
+  }
+
+  componentDidMount() {
+    Taro.getSetting({
+      success: res => {
+        if (!res.authSetting['scope.userLocation']) {
+          Taro.authorize({
+            scope: 'scope.userLocation'
+          })
+        }
+      }
+    })
+  }
 
   componentDidShow() {}
 
@@ -39,6 +63,9 @@ class App extends Component {
   config = {
     pages: [
       'pages/home/index',
+      'pages/login/index',
+      'pages/manualLogin/index',
+      'pages/captcha/index',
       'pages/discovery/index',
       'pages/schedule/index',
       'pages/mine/index',
@@ -74,6 +101,11 @@ class App extends Component {
       navigationBarTextStyle: 'black',
       backgroundColorTop: '#0068C4',
       enablePullDownRefresh: false
+    },
+    permission: {
+      'scope.userLocation': {
+        desc: '你的位置信息将用于小程序位置接口的效果展示'
+      }
     },
     tabBar: {
       custom: true,

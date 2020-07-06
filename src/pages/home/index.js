@@ -12,10 +12,9 @@ import airCarPng from '../../asset/images/air_car.png'
 import routeSchedulePng from '../../asset/images/route_schedule.png'
 import ProductItem from '../../components/ProductItem'
 import DecorateTitle from '../../components/DecorateTitle'
+import STORAGE from '../../constants/storage'
 
-@connect(({ system }) => ({
-  info: system.info
-}))
+@connect(({}) => ({}))
 class Home extends Component {
   config = {
     navigationBarTitleText: '旅王出行'
@@ -26,12 +25,16 @@ class Home extends Component {
     current: 0
   }
 
-  componentDidShow () { 
-    if (Taro.getEnv() === Taro.ENV_TYPE.WEAPP && typeof this.$scope.getTabBar === 'function' && this.$scope.getTabBar()) {
+  componentDidShow() {
+    if (
+      Taro.getEnv() === Taro.ENV_TYPE.WEAPP &&
+      typeof this.$scope.getTabBar === 'function' &&
+      this.$scope.getTabBar()
+    ) {
       this.$scope.getTabBar().$component.setState({
         selected: 0
       })
-    }  
+    }
   }
 
   handleClick = (value, e) => {
@@ -41,17 +44,53 @@ class Home extends Component {
     })
   }
 
-  componentWillMount() {
-    try {
-      const res = Taro.getSystemInfoSync()
-      const { dispatch } = this.props
-      dispatch({
-        type: 'system/updateSystemInfo',
-        payload: res
-      })
-    } catch (e) {
-      console.log('no system info')
-    }
+  gotoLogin = () => {
+    Taro.login({
+      success: res => {
+        Taro.setStorageSync(STORAGE.USER_CODE, res.code)
+        this.props.dispatch({
+          type: 'user/getSession',
+          success: () => {
+            console.log('wtf')
+            Taro.navigateTo({
+              url:'../login/index'
+            })
+          },
+          fail: msg => {
+            Taro.showToast({title: msg || '获取session失败，请稍后重试。', icon: 'none'})
+          }
+        })
+      }
+    })
+  }
+
+  componentDidMount() {
+    // 尝试获取/更新微信信息
+    Taro.getUserInfo({
+      lang: 'zh_CN',  
+      success: res => {
+        const app = Taro.getApp()
+        app.globalData.wxInfo = {...res.userInfo}
+        console.log('wxInfo: ', app.globalData.wxInfo)
+      }
+    })
+
+    // 判断是否登录小程序
+    Taro.checkSession({
+      success: () => {
+        // 判断是否登录旅王系统
+        if (Taro.getStorageSync(STORAGE.TOKEN)) {
+          this.props.dispatch({
+            type: 'user/getUserInfo'
+          })
+        } else {
+          this.gotoLogin()
+        }
+      },
+      fail: () => {
+        this.gotoLogin()
+      }
+    })
   }
 
   onScroll = e => {
@@ -96,7 +135,7 @@ class Home extends Component {
   onMoreGift = e => {
     e.stopPropagation()
     console.log('onMoreGift')
-    
+
     Taro.navigateTo({
       url: `../moreProduct/index?type=gift`
     })
@@ -109,10 +148,8 @@ class Home extends Component {
   }
 
   render() {
-    const { windowHeight = 0 } = this.props.info
-    if (!windowHeight) return <View></View>
     const scrollStyle = {
-      height: `${windowHeight - 50}px`
+      height: `${Taro.$windowHeight - 100}rpx`
     }
     const { opacity } = this.state
 
@@ -245,7 +282,10 @@ class Home extends Component {
           <View className='container'>
             <View className='menu'>
               {icons.map((item, index) => (
-                <View key={`menu-icon-${index}`} onClick={this.gotoHref.bind(this, item.href)}>
+                <View
+                  key={`menu-icon-${index}`}
+                  onClick={this.gotoHref.bind(this, item.href)}
+                >
                   <Image
                     className='icon-image'
                     src={item.icon}
@@ -277,7 +317,11 @@ class Home extends Component {
                 <AtTabsPane current={this.state.current} index={0}>
                   <View>
                     {scenes.map((item, index) => (
-                      <ProductItem onClick={this.onSeeProduct.bind(this, item)} key={`scene-item-${index}`} {...item} />
+                      <ProductItem
+                        onClick={this.onSeeProduct.bind(this, item)}
+                        key={`scene-item-${index}`}
+                        {...item}
+                      />
                     ))}
                     <View className='more-btn' onClick={this.onMoreScene}>
                       更多景点
@@ -287,7 +331,11 @@ class Home extends Component {
                 <AtTabsPane current={this.state.current} index={1}>
                   <View>
                     {foods.map((item, index) => (
-                      <ProductItem onClick={this.onSeeProduct.bind(this, item)} key={`scene-item-${index}`} {...item} />
+                      <ProductItem
+                        onClick={this.onSeeProduct.bind(this, item)}
+                        key={`scene-item-${index}`}
+                        {...item}
+                      />
                     ))}
                     <View className='more-btn' onClick={this.onMoreFood}>
                       更多美食
@@ -297,7 +345,11 @@ class Home extends Component {
                 <AtTabsPane current={this.state.current} index={2}>
                   <View>
                     {gifts.map((item, index) => (
-                      <ProductItem onClick={this.onSeeProduct.bind(this, item)} key={`scene-item-${index}`} {...item} />
+                      <ProductItem
+                        onClick={this.onSeeProduct.bind(this, item)}
+                        key={`scene-item-${index}`}
+                        {...item}
+                      />
                     ))}
                     <View className='more-btn' onClick={this.onMoreGift}>
                       更多伴手礼

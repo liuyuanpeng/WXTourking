@@ -19,9 +19,7 @@ import { returnFloat } from '../../utils/tool'
 import BillItem from '../../components/BillItem'
 import CheckBox from '../../components/CheckBox'
 
-@connect(({ system }) => ({
-  info: system.info
-}))
+
 class MyBill extends Component {
   config = {
     navigationBarTitleText: '我的发票'
@@ -40,19 +38,7 @@ class MyBill extends Component {
     })
   }
 
-  componentWillMount() {
-    if (this.props.info.windowHeight) return
-    try {
-      const res = Taro.getSystemInfoSync()
-      const { dispatch } = this.props
-      dispatch({
-        type: 'system/updateSystemInfo',
-        payload: res
-      })
-    } catch (e) {
-      console.log('no system info')
-    }
-  }
+  
 
   componentDidMount() {
     const current = this.$router.params.index || 0
@@ -181,22 +167,26 @@ class MyBill extends Component {
 
     const { checks, allCheck } = this.state
 
-    const { windowHeight = 0, windowWidth = 0 } = this.props.info
-    if (!windowHeight) return <View></View>
     const scrollStyle = {
-      height: `${windowHeight * (750 / windowWidth) -
-        128 -
+      height: `${Taro.$windowHeight -
+        Taro.$statusBarHeight -
+        88 -
         88 -
         140 -
         (checks.length ? 40 : 0)}rpx`
     }
 
     const scrollStyle2 = {
-      height: `${windowHeight * (750 / windowWidth) - 128 - 88}rpx`
+      height: `${Taro.$windowHeight -
+        Taro.$statusBarHeight -
+        88 - 88}rpx`
     }
 
     return (
-      <View className='all-bill-page'>
+      <View
+        className='all-bill-page'
+        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+      >
         <SysNavBar title='我的发票' />
         <View className='all-bill-tabs'>
           <AtTabs
@@ -207,7 +197,7 @@ class MyBill extends Component {
             <AtTabsPane current={this.state.current} index={0}>
               <ScrollView scrollY style={scrollStyle}>
                 {this.orders.map((item, index) => {
-                  console.log('checked:',  checks[item.id] || false )
+                  console.log('checked:', checks[item.id] || false)
                   return (
                     <BillItem
                       canCheck

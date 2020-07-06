@@ -26,9 +26,6 @@ import QQMapWX from './qqmap'
 
 let qqMapSDK = null
 
-@connect(({ system }) => ({
-  info: system.info
-}))
 class Location extends Component {
   config = {}
 
@@ -56,20 +53,6 @@ class Location extends Component {
     ]
   }
 
-  componentWillMount() {
-    if (this.props.info.windowHeight) return
-    try {
-      const res = Taro.getSystemInfoSync()
-      const { dispatch } = this.props
-      dispatch({
-        type: 'system/updateSystemInfo',
-        payload: res
-      })
-    } catch (e) {
-      console.log('no system info')
-    }
-  }
-
   componentDidMount() {
     qqMapSDK = new QQMapWX({
       key: 'JTKBZ-LCG6U-GYOVE-BJMJ5-E3DA5-HTFAJ' // 必填
@@ -79,13 +62,6 @@ class Location extends Component {
       keyword: '公交站  ',
       region: '厦门',
       success: res => {
-        console.log(res)
-      },
-      fail: error => {
-        console.log(error)
-      },
-      complete: res => {
-        console.log(res)
         const nearby = []
         res.data.map(item => {
           nearby.push({
@@ -98,12 +74,10 @@ class Location extends Component {
       }
     })
 
-    const { windowWidth = 0 } = this.props.info
     Taro.createSelectorQuery()
-      .select('#scrollView')
+      .select('#nearby')
       .boundingClientRect(rect => {
-        this.originTop = rect.top + 88 / (750 / windowWidth)
-        console.log('originTop:', rect.top)
+        this.originTop = rect.top
       })
       .exec()
   }
@@ -185,19 +159,14 @@ class Location extends Component {
   onScroll = e => {
     console.log('e: ', e.target.scrollTop)
 
-    const { windowHeight = 0, windowWidth } = this.props.info
-    if (!windowHeight) return
-    const scrollViewTop = (174 + 88) / (750 / windowWidth)
-    console.log('scrollHeight: ', scrollViewTop)
-
     Taro.createSelectorQuery()
-      .select('#nearby')
-      .boundingClientRect(nearby => {
-        if (nearby.top - this.originTop < -700) {
+      .select('#airport')
+      .boundingClientRect(airport => {
+        if (airport.top - this.originTop <= 0) {
           Taro.createSelectorQuery()
-            .select('#airport')
-            .boundingClientRect(airport => {
-              if (airport.top - this.originTop < 700) {
+            .select('#train_station')
+            .boundingClientRect(train => {
+              if (train.top - this.originTop <= 0) {
                 this.setTabs(2)
               } else {
                 this.setTabs(1)
@@ -214,7 +183,7 @@ class Location extends Component {
   setValue(data) {
     console.log(this)
     const eventChannel = this.$scope.getOpenerEventChannel()
-    eventChannel.emit('acceptLocation', {...data})
+    eventChannel.emit('acceptLocation', { ...data })
     Taro.navigateBack()
   }
 
@@ -251,22 +220,27 @@ class Location extends Component {
       }
     ]
 
-    const city = ['厦门', '泉州', '漳州']
 
     const tabList = [{ title: '周边' }, { title: '机场' }, { title: '火车站' }]
 
-    const { windowHeight = 0, windowWidth } = this.props.info
-    if (!windowHeight) return <View></View>
     const scrollStyle = {
-      height: `${windowHeight * (750 / windowWidth) - 250 - 88}rpx`
+      height: `${Taro.$windowHeight -
+        Taro.$statusBarHeight -
+        88 -
+        88 -
+        70 -
+        44}rpx`
     }
 
     const scrollStyle2 = {
-      height: `${windowHeight * (750 / windowWidth) - 150 - 70}rpx`
+      height: `${Taro.$windowHeight - Taro.$statusBarHeight - 88 - 70 - 44}rpx`
     }
 
     return (
-      <View className='location-page'>
+      <View
+        className='location-page'
+        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+      >
         <SysNavBar title={title || '确认乘车地点'} />
         <View className='location-search-bar'>
           <View className='location-city' onClick={this.handleSelectCity}>
@@ -289,7 +263,7 @@ class Location extends Component {
           />
         </View>
         {keyword ? (
-          <ScrollView scrollY scrollStyle={scrollStyle2}>
+          <ScrollView scrollY style={scrollStyle2}>
             {suggestion.map((item, index) => (
               <View
                 className='suggestion-item'

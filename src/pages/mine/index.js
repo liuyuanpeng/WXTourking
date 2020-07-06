@@ -6,7 +6,7 @@ import { connect } from '@tarojs/redux'
 import '../common/index.scss'
 import './index.scss'
 
-import homePng from '../../asset/images/bkg2.png'
+import passengerPng from '../../asset/images/passenger.png'
 
 import myBillPng from '../../asset/images/my_bill.png'
 import myFavorPng from '../../asset/images/my_favor.png'
@@ -18,28 +18,15 @@ import locationPng from '../../asset/images/location.png'
 import inviteGiftPng from '../../asset/images/invite_gift.png'
 import myCouponPng from '../../asset/images/my_coupon.png'
 import profilePng from '../../asset/images/profile.png'
+import { AtIcon } from 'taro-ui'
 
-@connect(({ system }) => ({
-  info: system.info
+@connect(({ user }) => ({
+  userInfo: user
 }))
 class Home extends PureComponent {
   config = {
     navigationBarTitleText: '我的'
   }
-
-  componentWillMount() {
-    try {
-      const res = Taro.getSystemInfoSync()
-      const { dispatch } = this.props
-      dispatch({
-        type: 'system/updateSystemInfo',
-        payload: res
-      })
-    } catch (e) {
-      console.log('no system info')
-    }
-  }
-  
 
   componentDidShow() {
     if (
@@ -101,7 +88,11 @@ class Home extends PureComponent {
       {
         title: '我的评论',
         icon: myCommentPng,
-        action: () => {}
+        action: () => {
+          Taro.navigateTo({
+            url: '../comments/index'
+          })
+        }
       },
       {
         title: '我的点赞',
@@ -157,65 +148,85 @@ class Home extends PureComponent {
       }
     ]
 
-    const { windowHeight = 0 } = this.props.info
-    if (!windowHeight) return <View></View>
     const scrollStyle = {
-      height: `${windowHeight - 50}px`
+      height: Taro.$windowHeight - 690 - Taro.$statusBarHeight + 'rpx',
+      top: Taro.$statusBarHeight + 590 + 'rpx',
+      position: 'absolute'
     }
 
-    return (
-      <View className='page-mine'>
-        <View className='navigation-bar'>我的</View>
+    const app = Taro.getApp()
+    const avatarUrl = app.globalData.wxInfo.avatarUrl
 
-        <ScrollView style={scrollStyle} scrollY scrollWithAnimation>
-          <View className='mine-container'>
-            <View className='mine-bkg' />
-            <View className='mine-header'>
-              <Image className='mine-avatar' src={homePng} mode='aspectFill' />
-              <View className='mine-info'>
-                <View className='mine-nickname'>用户昵称</View>
-                <View className='mine-signature'>
-                  用户签名用户签名用户签名用户签名用户签名用户签名
-                </View>
-              </View>
+    return (
+      <View
+        className='page-mine'
+        style={{ height: Taro.$windowHeight - 100 + 'rpx' }}
+      >
+        <View
+          className='navigation-bar'
+          style={{ height: Taro.$statusBarHeight + 88 + 'rpx' }}
+        >
+          我的
+        </View>
+        <View className='mine-bkg' />
+        <View
+          className='mine-header'
+          style={{ top: Taro.$statusBarHeight + 108 + 'rpx' }}
+        >
+          {avatarUrl ? (
+            <Image className='mine-avatar' src={avatarUrl} mode='aspectFill' />
+          ) : (
+            <AtIcon className='mine-avatar' size={64} value='user' />
+          )}
+          <View className='mine-info'>
+            <View className='mine-nickname'>用户昵称</View>
+            <View className='mine-signature'>
+              用户签名用户签名用户签名用户签名用户签名用户签名
             </View>
-            <View className='mine-order-container'>
-              <View className='mine-order-title'>我的订单</View>
-              <View className='mine-all-order' onClick={this.showAllOrders}>
-                全部订单
-              </View>
-              <View className='mine-order-split' />
-              <View className='mine-order-category'>
-                <View
-                  className='mine-order-category-item'
-                  onClick={this.showOrder.bind(this, 1)}
-                >
-                  <View className='mine-order-icon-1' />
-                  <View className='mine-order-category-text'>待付款</View>
-                </View>
-                <View
-                  className='mine-order-category-item'
-                  onClick={this.showOrder.bind(this, 2)}
-                >
-                  <View className='mine-order-icon-2' />
-                  <View className='mine-order-category-text'>待出行</View>
-                </View>
-                <View
-                  className='mine-order-category-item'
-                  onClick={this.showOrder.bind(this, 3)}
-                >
-                  <View className='mine-order-icon-3' />
-                  <View className='mine-order-category-text'>已完成</View>
-                </View>
-                <View
-                  className='mine-order-category-item'
-                  onClick={this.showOrder.bind(this, 4)}
-                >
-                  <View className='mine-order-icon-4' />
-                  <View className='mine-order-category-text'>待评价</View>
-                </View>
-              </View>
+          </View>
+        </View>{' '}
+        <View
+          className='mine-order-container'
+          style={{ top: Taro.$statusBarHeight + 302 + 'rpx' }}
+        >
+          <View className='mine-order-title'>我的订单</View>
+          <View className='mine-all-order' onClick={this.showAllOrders}>
+            全部订单
+          </View>
+          <View className='mine-order-split' />
+          <View className='mine-order-category'>
+            <View
+              className='mine-order-category-item'
+              onClick={this.showOrder.bind(this, 1)}
+            >
+              <View className='mine-order-icon-1' />
+              <View className='mine-order-category-text'>待付款</View>
             </View>
+            <View
+              className='mine-order-category-item'
+              onClick={this.showOrder.bind(this, 2)}
+            >
+              <View className='mine-order-icon-2' />
+              <View className='mine-order-category-text'>待出行</View>
+            </View>
+            <View
+              className='mine-order-category-item'
+              onClick={this.showOrder.bind(this, 3)}
+            >
+              <View className='mine-order-icon-3' />
+              <View className='mine-order-category-text'>已完成</View>
+            </View>
+            <View
+              className='mine-order-category-item'
+              onClick={this.showOrder.bind(this, 4)}
+            >
+              <View className='mine-order-icon-4' />
+              <View className='mine-order-category-text'>待评价</View>
+            </View>
+          </View>
+        </View>
+        <View className='mine-container'>
+          <ScrollView style={scrollStyle} scrollY scrollWithAnimation>
             <View className='mine-list'>
               {mineList.map((item, index) => {
                 return (
@@ -230,8 +241,8 @@ class Home extends PureComponent {
                 )
               })}
             </View>
-          </View>
-        </ScrollView>
+          </ScrollView>
+        </View>
       </View>
     )
   }

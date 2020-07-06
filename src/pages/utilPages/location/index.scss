@@ -1,6 +1,5 @@
 .location-page {
   position: relative;
-  top: 128px;
   background-color: white;
   .location-search-bar {
     width: 702px;
@@ -15,7 +14,7 @@
       font-size: 32px;
       line-height: 70px;
       color: #333333;
-      font-weight: 500;
+      font-weight: bold;
       &::after {
         content: '';
         width: 12px;

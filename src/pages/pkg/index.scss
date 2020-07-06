@@ -1,6 +1,5 @@
 .pkg-page {
   background-color: #f7f7f7;
-  top: 128px;
   position: relative;
   .pkg-header {
     background-color: white;
@@ -26,7 +25,7 @@
       height: 34px;
       margin: 8px 0;
       font-size: 24px;
-      font-weight: 500;
+      font-weight: bold;
       text-align: left;
       overflow: hidden;
       white-space: nowrap;
@@ -55,7 +54,7 @@
       border-radius: 30px;
       text-align: center;
       font-size: 28px;
-      font-weight: 500;
+      font-weight: bold;
       line-height: 60px;
       border: none;
       &-active {
@@ -76,7 +75,7 @@
     &-title {
       color: #333333;
       font-size: 36px;
-      font-weight: 500;
+      font-weight: bold;
       height: 50px;
       line-height: 50px;
       margin-bottom: 72px;
@@ -87,7 +86,7 @@
       right: 28px;
       text-align: right;
       font-size: 32px;
-      font-weight: 500;
+      font-weight: bold;
       color: #fd7d59;
       &-unit {
         font-size: 22px;
@@ -101,7 +100,7 @@
       text-align: right;
       color: #bdbdbd;
       font-size: 22px;
-      font-weight: 500;
+      font-weight: bold;
       height: 32px;
       line-height: 32px;
     }
@@ -112,7 +111,7 @@
         height: 36px;
         line-height: 36px;
         color: #333333;
-        font-weight: 500;
+        font-weight: bold;
       }
       &-subtitle {
         margin-top: 10px;
@@ -123,19 +122,22 @@
       }
     }
   }
-  .pkg-ok-btn {
-    margin: 40px 24px;
-    height: 88px;
-    line-height: 88px;
-    background: linear-gradient(
-      90deg,
-      rgba(254, 213, 0, 1) 0%,
-      rgba(254, 200, 2, 1) 100%
-    );
-    border-radius: 10px;
-    color: #333333;
-    font-size: 32px;
-    font-weight: 500;
-    text-align: center;
+  .pkg-footer {
+    height: 126px;
+    .pkg-ok-btn {
+      margin: 40px 24px;
+      height: 88px;
+      line-height: 88px;
+      background: linear-gradient(
+        90deg,
+        rgba(254, 213, 0, 1) 0%,
+        rgba(254, 200, 2, 1) 100%
+      );
+      border-radius: 10px;
+      color: #333333;
+      font-size: 32px;
+      font-weight: bold;
+      text-align: center;
+    }
   }
 }

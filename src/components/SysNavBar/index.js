@@ -3,18 +3,12 @@ import { View } from '@tarojs/components'
 
 import './index.scss'
 
-/**
- * static defaultProps = {
-    title: ''
-  }
-
-  height: 128px
- */
 class SysNavBar extends Taro.Component {
   static defaultProps = {
     title: '',
     transparent: false,
-    hideBack: false
+    hideBack: false,
+    noBorder: false
   }
 
   onBack = e => {
@@ -24,12 +18,21 @@ class SysNavBar extends Taro.Component {
   }
 
   render() {
-    const { title, transparent, hideBack } = this.props
+    const { title, transparent, hideBack, noBorder } = this.props
+    const barHeight = Taro.$statusBarHeight + 88 + 'rpx'
     return (
       <View
         className='sys-nav-bar'
         style={
-          transparent ? { backgroundColor: 'transparent', border: 'none' } : {}
+          transparent
+            ? {
+                height: barHeight,
+                backgroundColor: 'transparent',
+                border: 'none'
+              }
+            : noBorder
+            ? { height: barHeight, border: 'none' }
+            : { height: barHeight }
         }
       >
         {!hideBack && <View className='back-btn' onClick={this.onBack} />}

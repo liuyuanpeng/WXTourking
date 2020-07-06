@@ -7,8 +7,10 @@ import OrderItem from '../../components/OrderItem'
 import '../common/index.scss'
 import './index.scss'
 
-@connect(({ system }) => ({
-  info: system.info
+@connect(({ order }) => ({
+  baocheOrders: order.baocheOrders,
+  jiejiOrders: order.jiejiOrders,
+  xianluOrders: order.xianluOrders
 }))
 class Home extends PureComponent {
   config = {
@@ -19,18 +21,16 @@ class Home extends PureComponent {
     current: 0
   }
 
-  componentWillMount() {
-    if (this.props.info.windowHeight) return
-    try {
-      const res = Taro.getSystemInfoSync()
-      const { dispatch } = this.props
-      dispatch({
-        type: 'system/updateSystemInfo',
-        payload: res
-      })
-    } catch (e) {
-      console.log('no system info')
-    }
+  componentDidMount() {
+    this.props.dispatch({
+      type: 'order/getBAOCHE',
+      fail: msg => {
+        Taro.showToast({
+          title: msg || '获取行程失败',
+          icon: 'none'
+        })
+      }
+    })
   }
 
   componentDidShow() {
@@ -50,9 +50,35 @@ class Home extends PureComponent {
     this.setState({
       current: value
     })
+    let scene
+    switch (value) {
+      case 0:
+        scene = 'BAOCHE'
+        break
+      case 1:
+        scene = 'JIEJI'
+        break
+      case 2:
+        scene = 'XIANLU'
+        break
+      default:
+        break
+    }
+    this.props.dispatch({
+      type: `order/get${scene}`,
+      fail: msg => {
+        Taro.showToast({
+          title: msg || '获取行程失败',
+          icon: 'none'
+        })
+      }
+    })
   }
 
   render() {
+    const {baocheOrders, jiejiOrders, xianluOrders} = this.props
+
+    console.log('baoche:', baocheOrders.data_list)
     const tabList = [
       { title: '包车行程' },
       { title: '接机行程' },
@@ -141,14 +167,15 @@ class Home extends PureComponent {
       }
     ]
 
-    const { windowHeight = 0, windowWidth } = this.props.info
-    if (!windowHeight) return <View></View>
     const scrollStyle = {
-      height: `${windowHeight*(750/windowWidth) - 128 - 88 - 100}rpx`
+      height: `${Taro.$windowHeight - Taro.$statusBarHeight - 88 - 88 - 100}rpx`
     }
 
     return (
-      <View className='schedule-page'>
+      <View
+        className='schedule-page'
+        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+      >
         <SysNavBar title='行程' />
         <View className='schedule-tabs'>
           <AtTabs
@@ -158,22 +185,22 @@ class Home extends PureComponent {
           >
             <AtTabsPane current={this.state.current} index={0}>
               <ScrollView scrollY style={scrollStyle}>
-                {orders.map((item, index) => (
-                  <OrderItem key={`order-item-${index}`} {...item} />
+                {baocheOrders.data_list.map((item, index) => (
+                  <OrderItem key={`order-item-${index}`} data={item} />
                 ))}
               </ScrollView>
             </AtTabsPane>
             <AtTabsPane current={this.state.current} index={1}>
               <ScrollView scrollY style={scrollStyle}>
-                {orders.map((item, index) => (
-                  <OrderItem key={`order-item-${index}`} {...item} />
+                {jiejiOrders.data_list.map((item, index) => (
+                  <OrderItem key={`order-item-${index}`} data={item} />
                 ))}
               </ScrollView>
             </AtTabsPane>
             <AtTabsPane current={this.state.current} index={2}>
               <ScrollView scrollY style={scrollStyle}>
-                {orders.map((item, index) => (
-                  <OrderItem key={`order-item-${index}`} {...item} />
+                {xianluOrders.data_list.map((item, index) => (
+                  <OrderItem key={`order-item-${index}`} data={item} />
                 ))}
               </ScrollView>
             </AtTabsPane>

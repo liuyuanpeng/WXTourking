@@ -1,3 +1,5 @@
+const path = require('path')
+
 const config = {
   projectName: 'Tourking',
   date: '2020-4-24',
@@ -36,6 +38,13 @@ const config = {
   },
   plugins: [],
   defineConstants: {},
+  alias: {
+    '@images': path.resolve(__dirname, '..', 'src/asset/images'),
+    '@components': path.resolve(__dirname, '..', 'src/components'),
+    '@constants': path.resolve(__dirname, '..', 'src/constants'),
+    '@services': path.resolve(__dirname, '..', 'src/services'),
+    '@utils': path.resolve(__dirname, '..', 'src/utils')
+  },
   mini: {
     postcss: {
       pxtransform: {

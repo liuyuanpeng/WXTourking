@@ -18,8 +18,7 @@ import LocationInput from '../../components/LocationInput'
 import DateTimePicker from '../../components/DateTimePicker'
 import CheckBox from '../../components/CheckBox'
 
-@connect(({ system }) => ({
-  info: system.info
+@connect(({ }) => ({
 }))
 class JSJPage extends Component {
   config = {
@@ -45,17 +44,6 @@ class JSJPage extends Component {
   }
 
   componentWillMount() {
-    if (this.props.info.windowHeight) return
-    try {
-      const res = Taro.getSystemInfoSync()
-      const { dispatch } = this.props
-      dispatch({
-        type: 'system/updateSystemInfo',
-        payload: res
-      })
-    } catch (e) {
-      console.log('no system info')
-    }
   }
 
   componentDidMount() {}
@@ -141,10 +129,9 @@ class JSJPage extends Component {
       { icon: free_waiting_png, title: '免费等待', subtitle: '免费等待60分钟' },
       { icon: safe_png, title: '出行安心', subtitle: '百万保险&爽约包赔' }
     ]
-    const { windowHeight = 0, windowWidth } = this.props.info
-    if (!windowHeight) return <View></View>
+    
     const scrollStyle = {
-      height: `${windowHeight * (705 / windowWidth) - 350}rpx`
+      height: `${Taro.$windowHeight  - 434}rpx`
     }
 
     return (

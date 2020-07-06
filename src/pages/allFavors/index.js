@@ -19,8 +19,7 @@ import SysNavBar from '../../components/SysNavBar'
 import { returnFloat } from '../../utils/tool'
 import FavorItem from '../../components/FavorItem'
 
-@connect(({ system }) => ({
-  info: system.info
+@connect(({  }) => ({
 }))
 class AllFavors extends Component {
   config = {
@@ -39,21 +38,9 @@ class AllFavors extends Component {
   }
 
   componentWillMount() {
-    if (this.props.info.windowHeight) return
-    try {
-      const res = Taro.getSystemInfoSync()
-      const { dispatch } = this.props
-      dispatch({
-        type: 'system/updateSystemInfo',
-        payload: res
-      })
-    } catch (e) {
-      console.log('no system info')
-    }
   }
 
-  componentDidMount() {
-  }
+  componentDidMount() {}
 
   render() {
     const tabList = [
@@ -67,57 +54,66 @@ class AllFavors extends Component {
 
     const favors = [
       {
-        image:'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1592246709686&di=30081e07fdab9019b4aae97170c52194&imgtype=0&src=http%3A%2F%2Fa3.att.hudong.com%2F14%2F75%2F01300000164186121366756803686.jpg',
+        image:
+          'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1592246709686&di=30081e07fdab9019b4aae97170c52194&imgtype=0&src=http%3A%2F%2Fa3.att.hudong.com%2F14%2F75%2F01300000164186121366756803686.jpg',
         title: '东方的圣托里尼，这里是离台 湾最近的秘境胜地',
         likes: 387,
-        comments: 23      
+        comments: 23
       },
       {
-        image:'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1592246709686&di=30081e07fdab9019b4aae97170c52194&imgtype=0&src=http%3A%2F%2Fa3.att.hudong.com%2F14%2F75%2F01300000164186121366756803686.jpg',
+        image:
+          'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1592246709686&di=30081e07fdab9019b4aae97170c52194&imgtype=0&src=http%3A%2F%2Fa3.att.hudong.com%2F14%2F75%2F01300000164186121366756803686.jpg',
         title: '东方的圣托里尼，这里是离台 湾最近的秘境胜地',
         likes: 387,
-        comments: 23      
+        comments: 23
       },
       {
-        image:'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1592246709686&di=30081e07fdab9019b4aae97170c52194&imgtype=0&src=http%3A%2F%2Fa3.att.hudong.com%2F14%2F75%2F01300000164186121366756803686.jpg',
+        image:
+          'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1592246709686&di=30081e07fdab9019b4aae97170c52194&imgtype=0&src=http%3A%2F%2Fa3.att.hudong.com%2F14%2F75%2F01300000164186121366756803686.jpg',
         title: '东方的圣托里尼，这里是离台 湾最近的秘境胜地',
         likes: 387,
-        comments: 23      
+        comments: 23
       },
       {
-        image:'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1592246709686&di=30081e07fdab9019b4aae97170c52194&imgtype=0&src=http%3A%2F%2Fa3.att.hudong.com%2F14%2F75%2F01300000164186121366756803686.jpg',
+        image:
+          'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1592246709686&di=30081e07fdab9019b4aae97170c52194&imgtype=0&src=http%3A%2F%2Fa3.att.hudong.com%2F14%2F75%2F01300000164186121366756803686.jpg',
         title: '东方的圣托里尼，这里是离台 湾最近的秘境胜地',
         likes: 387,
-        comments: 23      
+        comments: 23
       },
       {
-        image:'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1592246709686&di=30081e07fdab9019b4aae97170c52194&imgtype=0&src=http%3A%2F%2Fa3.att.hudong.com%2F14%2F75%2F01300000164186121366756803686.jpg',
+        image:
+          'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1592246709686&di=30081e07fdab9019b4aae97170c52194&imgtype=0&src=http%3A%2F%2Fa3.att.hudong.com%2F14%2F75%2F01300000164186121366756803686.jpg',
         title: '东方的圣托里尼，这里是离台 湾最近的秘境胜地',
         likes: 387,
-        comments: 23      
+        comments: 23
       },
       {
-        image:'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1592246709686&di=30081e07fdab9019b4aae97170c52194&imgtype=0&src=http%3A%2F%2Fa3.att.hudong.com%2F14%2F75%2F01300000164186121366756803686.jpg',
+        image:
+          'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1592246709686&di=30081e07fdab9019b4aae97170c52194&imgtype=0&src=http%3A%2F%2Fa3.att.hudong.com%2F14%2F75%2F01300000164186121366756803686.jpg',
         title: '东方的圣托里尼，这里是离台 湾最近的秘境胜地',
         likes: 387,
-        comments: 23      
+        comments: 23
       },
       {
-        image:'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1592246709686&di=30081e07fdab9019b4aae97170c52194&imgtype=0&src=http%3A%2F%2Fa3.att.hudong.com%2F14%2F75%2F01300000164186121366756803686.jpg',
+        image:
+          'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1592246709686&di=30081e07fdab9019b4aae97170c52194&imgtype=0&src=http%3A%2F%2Fa3.att.hudong.com%2F14%2F75%2F01300000164186121366756803686.jpg',
         title: '东方的圣托里尼，这里是离台 湾最近的秘境胜地',
         likes: 387,
-        comments: 23      
+        comments: 23
       }
     ]
 
-    const { windowHeight = 0 } = this.props.info
-    if (!windowHeight) return <View></View>
+    
     const scrollStyle = {
-      height: `${windowHeight - 108}px`
+      height: `${Taro.$windowHeight - 85 - 88 - Taro.$statusBarHeight}rpx`
     }
 
     return (
-      <View className='all-favor-page'>
+      <View
+        className='all-favor-page'
+        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+      >
         <SysNavBar title='我的收藏' />
         <View className='all-favor-tabs'>
           <AtTabs
@@ -134,28 +130,28 @@ class AllFavors extends Component {
             </AtTabsPane>
             <AtTabsPane current={this.state.current} index={1}>
               <ScrollView scrollY style={scrollStyle}>
-              {favors.map((item, index) => (
+                {favors.map((item, index) => (
                   <FavorItem key={`favor-item-${index}`} {...item} />
                 ))}
               </ScrollView>
             </AtTabsPane>
             <AtTabsPane current={this.state.current} index={2}>
               <ScrollView scrollY style={scrollStyle}>
-              {favors.map((item, index) => (
+                {favors.map((item, index) => (
                   <FavorItem key={`favor-item-${index}`} {...item} />
                 ))}
               </ScrollView>
             </AtTabsPane>
             <AtTabsPane current={this.state.current} index={3}>
               <ScrollView scrollY style={scrollStyle}>
-              {favors.map((item, index) => (
+                {favors.map((item, index) => (
                   <FavorItem key={`favor-item-${index}`} {...item} />
                 ))}
               </ScrollView>
             </AtTabsPane>
             <AtTabsPane current={this.state.current} index={4}>
               <ScrollView scrollY style={scrollStyle}>
-              {favors.map((item, index) => (
+                {favors.map((item, index) => (
                   <FavorItem key={`favor-item-${index}`} {...item} />
                 ))}
               </ScrollView>

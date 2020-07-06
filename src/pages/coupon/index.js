@@ -19,9 +19,7 @@ import { returnFloat } from '../../utils/tool'
 import CouponItem from '../../components/CouponItem'
 import dayjs from 'dayjs'
 
-@connect(({ system }) => ({
-  info: system.info
-}))
+
 class Coupon extends Component {
   config = {
     navigationBarTitleText: '我的优惠券'
@@ -38,19 +36,7 @@ class Coupon extends Component {
     })
   }
 
-  componentWillMount() {
-    if (this.props.info.windowHeight) return
-    try {
-      const res = Taro.getSystemInfoSync()
-      const { dispatch } = this.props
-      dispatch({
-        type: 'system/updateSystemInfo',
-        payload: res
-      })
-    } catch (e) {
-      console.log('no system info')
-    }
-  }
+  
 
   componentDidMount() {
     // const current = this.$router.params.index || 0
@@ -110,14 +96,12 @@ class Coupon extends Component {
       { title: '已过期' }
     ]
 
-    const { windowHeight = 0, windowWidth = 0 } = this.props.info
-    if (!windowHeight) return <View></View>
     const scrollStyle = {
-      height: `${windowHeight * (750 / windowWidth) - 128 - 88 - 100}rpx`
+      height: `${Taro.$windowHeight - Taro.$statusBarHeight-276}rpx`
     }
 
     return (
-      <View className='all-coupon-page'>
+      <View className='all-coupon-page' style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}>
         <SysNavBar title='我的优惠券' />
         <View className='all-coupon-tabs'>
           <AtTabs

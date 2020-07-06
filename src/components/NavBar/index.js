@@ -23,7 +23,8 @@ class Navbar extends Taro.Component {
     showSearch: true,
     showBack: false,
     showBackOnly: false,
-    navigate: false
+    navigate: false,
+    onFocus: null
   }
 
   state = {
@@ -58,10 +59,12 @@ class Navbar extends Taro.Component {
       url: '../search/index'
     })
   }
-  onFocus = e => {
+
+  onActionClick = e => {
     const {navigate} = this.props
     e.stopPropagation()
-    console.log('onFocus')
+    console.log('onActionClick')
+    
     navigate && Taro.navigateTo({
       url: '../search/index'
     })
@@ -83,23 +86,22 @@ class Navbar extends Taro.Component {
       )
     }
     return (
-      <View className='bar' style={showSearch ? {} : { height: '80px' }}>
+      <View className='bar' style={showSearch ? {height: Taro.$statusBarHeight+204+'rpx'} : { height:Taro.$statusBarHeight+134+'rpx'}}>
         <View className='back' style={{ opacity: opacity || 0 }} />
-        {showBack && <View className='back-btn' onClick={this.onBack} />}
-        <View className='title'>{title}</View>
+        {showBack && <View className='back-btn' style={{marginTop: Taro.$statusBarHeight + 32 + 'rpx'}} onClick={this.onBack} />}
+        <View className='title' style={{marginTop: Taro.$statusBarHeight + 38 + 'rpx'}}>{title}</View>
         {showSearch && (
           <View className='search-bar'>
             <View className='location' onClick={this.onLocate}>
               厦门
             </View>
-            <View className='weather'>多云 15°C</View>
             <View className='search'>
               <AtSearchBar
                 customStyle={{backgroundColor: 'transparent', padding: 0}}
                 inputType='text'
                 placeholder='搜索景点、美食、伴手礼'
                 value={searchText}
-                onFocus={this.onFocus}
+                onActionClick={this.onActionClick}
                 focus={!navigate}
                 onChange={this.handleChangeText}
               />

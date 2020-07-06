@@ -19,9 +19,7 @@ import { returnFloat } from '../../utils/tool'
 import BillItem from '../../components/BillItem'
 import CheckBox from '../../components/CheckBox'
 
-@connect(({ system }) => ({
-  info: system.info
-}))
+
 class MyBalance extends Component {
   config = {
     navigationBarTitleText: '我的余额'
@@ -29,19 +27,7 @@ class MyBalance extends Component {
 
   state = {}
 
-  componentWillMount() {
-    if (this.props.info.windowHeight) return
-    try {
-      const res = Taro.getSystemInfoSync()
-      const { dispatch } = this.props
-      dispatch({
-        type: 'system/updateSystemInfo',
-        payload: res
-      })
-    } catch (e) {
-      console.log('no system info')
-    }
-  }
+  
 
   componentDidMount() {}
 
@@ -50,11 +36,10 @@ class MyBalance extends Component {
   }
 
   render() {
-    const { windowHeight = 0 } = this.props.info
-    if (!windowHeight) return <View></View>
+    
 
     return (
-      <View className='my-balance-page'>
+      <View className='my-balance-page' style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}>
         <SysNavBar title='我的余额' />
         <View className='my-balance-icon' />
         <View className='my-balance-label'>我的余额</View>
