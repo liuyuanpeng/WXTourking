@@ -1,10 +1,10 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Image, Label, ScrollView, Button } from '@tarojs/components'
 import NavBar from '@components/NavBar'
-import '../../asset/common/index.scss'
+import '../../common/index.scss'
 import './index.scss'
 
-import daySchedulePng from '@images/bkg4.png'
+const daySchedulePng = IMAGE_HOST + '/images/bkg4.png'
 import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui'
 import { connect } from '@tarojs/redux'
 import CommentItem from '@components/CommentItem'

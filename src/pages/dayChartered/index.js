@@ -3,7 +3,7 @@ import { View, Image, Label, ScrollView } from '@tarojs/components'
 import { AtInput, AtInputNumber } from 'taro-ui'
 import { connect } from '@tarojs/redux'
 
-import '../../asset/common/index.scss'
+import '../../common/index.scss'
 import './index.scss'
 
 import SysNavBar from '@components/SysNavBar'
@@ -14,10 +14,10 @@ import DecorateTitle from '@components/DecorateTitle'
 import CommentItem from '@components/CommentItem'
 import dayjs from 'dayjs'
 
-import service_assurance_png from '@images/service_assurance.png'
-import precious_png from '@images/precious.png'
-import free_waiting_png from '@images/free_waiting.png'
-import safe_png from '@images/safe.png'
+const service_assurance_png = IMAGE_HOST + '/images/service_assurance.png'
+const precious_png = IMAGE_HOST + '/images/precious.png'
+const free_waiting_png = IMAGE_HOST + '/images/free_waiting.png'
+const safe_png = IMAGE_HOST + '/images/safe.png'
 
 @connect(({})=>({
 }))

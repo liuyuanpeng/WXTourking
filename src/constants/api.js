@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-undef
-export const host = HOST
+export const host = HOST + '/v5'
 
 // 获取用户信息
 export const GET_USER = `${host}/user/get`

@@ -3,13 +3,13 @@ import { View, Image, ScrollView, Label } from '@tarojs/components'
 import NavBar from '@components/NavBar'
 import { AtTabs, AtTabsPane } from 'taro-ui'
 import { connect } from '@tarojs/redux'
-import '../../asset/common/index.scss'
+import '../../common/index.scss'
 import './index.less'
 
-import homePng from '@images/bkg3.png'
-import daySchedulePng from '@images/day_schedule.png'
-import airCarPng from '@images/air_car.png'
-import routeSchedulePng from '@images/route_schedule.png'
+const homePng = IMAGE_HOST + '/images/bkg3.png'
+const daySchedulePng = IMAGE_HOST + '/images/day_schedule.png'
+const airCarPng = IMAGE_HOST + '/images/air_car.png'
+const routeSchedulePng = IMAGE_HOST + '/images/route_schedule.png'
 import ProductItem from '@components/ProductItem'
 import DecorateTitle from '@components/DecorateTitle'
 import STORAGE from '@constants/storage'
@@ -83,7 +83,6 @@ class Home extends Component {
   }
 
   componentWillMount() {
-    Taro.hideTabBar()
     // 判断是否登录小程序
     Taro.checkSession({
       success: () => {

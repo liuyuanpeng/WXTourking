@@ -2,7 +2,7 @@ import Taro from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import { AtSearchBar } from 'taro-ui'
 import { connect } from '@tarojs/redux'
-import './index.less'
+import './index.scss'
 
 /**
  * static defaultProps = {

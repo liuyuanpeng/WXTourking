@@ -3,8 +3,8 @@ import { View, Image, Label } from '@tarojs/components'
 
 import './index.scss'
 
-import checkPng from '@images/check.png'
-import checkedPng from '@images/check_focus.png'
+const checkPng = IMAGE_HOST + '/images/check.png'
+const checkedPng = IMAGE_HOST + '/images/check_focus.png'
 
 class CheckBox extends Taro.Component {
   static externalClasses = ['wrap-class', 'text-class']

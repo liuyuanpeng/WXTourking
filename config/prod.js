@@ -1,5 +1,6 @@
-// const HOST = '"https://apis.kingtrip.vip/v5"'
-const HOST = '"https://tms.kingtrip.vip/v5"'
+// const HOST = '"https://apis.kingtrip.vip"'
+const HOST = '"https://tms.kingtrip.vip"'
+const IMAGE_HOST = '"http://tms.kingtrip.vip"'
 
 // eslint-disable-next-line import/no-commonjs
 module.exports = {
@@ -7,7 +8,8 @@ module.exports = {
     NODE_ENV: '"production"'
   },
   defineConstants: {
-    HOST
+    HOST,
+    IMAGE_HOST
   },
   mini: {},
   h5: {

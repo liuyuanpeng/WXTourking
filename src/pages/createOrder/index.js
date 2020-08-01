@@ -2,7 +2,7 @@ import Taro, { Component } from '@tarojs/taro'
 import { View, Label, Text, ScrollView, Image } from '@tarojs/components'
 import NavBar from '@components/NavBar'
 import { connect } from '@tarojs/redux'
-// import '../../asset/common/index.scss'
+// import '../../common/index.scss'
 import './index.scss'
 
 import CommentItem from '@components/CommentItem'

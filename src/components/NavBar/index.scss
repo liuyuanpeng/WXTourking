@@ -1,3 +1,5 @@
+@import '../../common/index.scss';
+
 .bar {
   position: fixed;
   width: 100%;
@@ -8,7 +10,7 @@
 
 .back-btn {
   position: fixed;
-  background-image: url(../../asset/images/backto.png);
+  @include image('backto');
   background-size: 100% 100%;
   width: 60px;
   height: 60px;

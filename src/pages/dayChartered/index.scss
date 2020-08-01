@@ -1,3 +1,4 @@
+@import '../../common/index.scss';
 .day-chartered-page {
   position: relative;
   background-color: #F7F7F7;
@@ -7,7 +8,7 @@
     height: 502px;
     position: absolute;
     top: 0;
-    background-image: url('../../asset/images/bkg.png');
+    @include image('bkg');
     background-size: 100% 100%;
     background-repeat: no-repeat;
   }

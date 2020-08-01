@@ -1,13 +1,13 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Image, ScrollView } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
-// import '../../asset/common/index.scss'
+// import '../../common/index.scss'
 import './index.scss'
 
-import service_assurance_png from '@images/service_assurance.png'
-import precious_png from '@images/precious.png'
-import free_waiting_png from '@images/free_waiting.png'
-import safe_png from '@images/safe.png'
+const service_assurance_png = IMAGE_HOST + '/images/service_assurance.png'
+const precious_png = IMAGE_HOST + '/images/precious.png'
+const free_waiting_png = IMAGE_HOST + '/images/free_waiting.png'
+const safe_png = IMAGE_HOST + '/images/safe.png'
 
 import { AtInput } from 'taro-ui'
 import SysNavBar from '@components/SysNavBar'

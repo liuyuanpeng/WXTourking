@@ -1,3 +1,4 @@
+@import '../../common/index.scss';
 .page {
   height: 100%;
   font-family:PingFangSC-Regular,PingFang SC;
@@ -112,7 +113,7 @@
           width: 40px;
           height: 40px;
           margin-left: 23px;
-          background-image: url('../../asset/images/wait_for_pay.png');
+          @include image('wait_for_pay');
           background-size: 100% 100%;
           background-repeat: no-repeat;
         }
@@ -120,7 +121,7 @@
           width: 40px;
           height: 40px;
           margin-left: 23px;
-          background-image: url('../../asset/images/wait_for_go.png');
+          @include image('wait_for_go');
           background-size: 100% 100%;
           background-repeat: no-repeat;
         }
@@ -128,7 +129,7 @@
           width: 40px;
           height: 40px;
           margin-left: 23px;
-          background-image: url('../../asset/images/finish.png');
+          @include image('finish');
           background-size: 100% 100%;
           background-repeat: no-repeat;
         }
@@ -136,7 +137,7 @@
           width: 40px;
           height: 40px;
           margin-left: 23px;
-          background-image: url('../../asset/images/wait_for_comment.png');
+          @include image('wait_for_comment');
           background-size: 100% 100%;
           background-repeat: no-repeat;
         }

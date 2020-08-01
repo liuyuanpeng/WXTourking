@@ -1,3 +1,4 @@
+@import '../../common/index.scss';
 .profile-list-item {
   height: 100px;
   font-weight: 400;
@@ -32,7 +33,7 @@
   .profile-list-item-right {
     position: absolute;
     top: 50%;
-    background-image: url('../../asset/images/more.png');
+    @include image('more');
     background-size: 100% 100%;
     background-repeat: no-repeat;
     right: 24px;

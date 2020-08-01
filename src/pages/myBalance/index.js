@@ -2,10 +2,9 @@ import Taro, { Component } from '@tarojs/taro'
 import { View, Image, Label, Swiper, ScrollView } from '@tarojs/components'
 
 import { connect } from '@tarojs/redux'
-// import '../../asset/common/index.scss'
+// import '../../common/index.scss'
 import './index.scss'
 
-import daySchedulePng from '@images/day_schedule.png'
 import {
   AtCheckbox,
   AtNavBar,

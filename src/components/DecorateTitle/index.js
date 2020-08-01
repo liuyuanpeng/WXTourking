@@ -1,7 +1,7 @@
 import Taro from '@tarojs/taro'
 import { View, Label } from '@tarojs/components'
 
-import './index.less'
+import './index.scss'
 
 class DecorateTitle extends Taro.Component {
   static defaultProps = {

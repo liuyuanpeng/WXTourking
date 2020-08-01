@@ -1,3 +1,4 @@
+@import '../../common/index.scss';
 .product-detail {
   width: 100%;
   position: relative;
@@ -45,7 +46,7 @@
       margin-right: 10px;
       width: 22px;
       height: 27px;
-      background-image: url('../../asset/images/locate.png');
+      @include image('locate');
       background-size: 100% 100%;
     }
 

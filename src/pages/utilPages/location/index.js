@@ -10,7 +10,7 @@ import {
 import SysNavBar from '@components/SysNavBar'
 import { connect } from '@tarojs/redux'
 import { debounce } from 'debounce'
-// import '../../asset/common/index.scss'
+// import '../../common/index.scss'
 import './index.scss'
 
 import {

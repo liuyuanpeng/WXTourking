@@ -1,3 +1,4 @@
+@import '../../common/index.scss';
 .decorate-title {
   display: inline-block;
 }
@@ -8,7 +9,7 @@
   top: 10px;
   width: 42px;
   height: 40px;
-  background-image: url('../../asset/images/title_decorate.png');
+  @include image('title_decorate');
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }

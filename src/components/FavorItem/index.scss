@@ -1,3 +1,4 @@
+@import '../../common/index.scss';
 .favor-item {
   margin: 0 24px;
   position: relative;
@@ -35,7 +36,7 @@
         margin-left: 58px;
         .favor-icon-like {
           display: inline-block;
-          background-image: url('../../asset//images//like.png');
+          @include image('like');
           background-size: 100% 100%;
           background-repeat: no-repeat;
           width: 28px;
@@ -44,7 +45,7 @@
         }
         .favor-icon-comment {
           display: inline-block;
-          background-image: url('../../asset//images//comment.png');
+          @include image('comment');
           background-size: 100% 100%;
           background-repeat: no-repeat;
           width: 28px;
@@ -53,7 +54,7 @@
         }
         .favor-icon-favor {
           display: inline-block;
-          background-image: url('../../asset//images//favor.png');
+          @include image('favor');
           background-size: 100% 100%;
           background-repeat: no-repeat;
           width: 28px;

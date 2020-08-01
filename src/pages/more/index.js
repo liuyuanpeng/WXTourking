@@ -3,10 +3,10 @@ import { View, Image, ScrollView, Label } from '@tarojs/components'
 import { AtTag } from 'taro-ui'
 import NavBar from '@components/NavBar'
 import { connect } from '@tarojs/redux'
-import '../../asset/common/index.scss'
+import '../../common/index.scss'
 import './index.less'
 
-import homePng from '@images/bkg4.png'
+const homePng = IMAGE_HOST + '/images/bkg4.png'
 import ProductItem from '@components/ProductItem'
 import DecorateTitle from '@components/DecorateTitle'
 

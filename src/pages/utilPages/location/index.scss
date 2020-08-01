@@ -1,3 +1,4 @@
+@import '../../../common/index.scss';
 .location-page {
   position: relative;
   background-color: white;
@@ -81,7 +82,7 @@
       width: 20px;
       height: 24px;
       margin: 38px 20px 0 24px;
-      background-image: url('../../../asset/images/address.png');
+      @include image('address');
       background-size: 100% 100%;
       background-repeat: no-repeat;
       position: absolute;
@@ -124,7 +125,7 @@
       width: 20px;
       height: 20px;
       margin: 34px 20px 0 24px;
-      background-image: url('../../../asset/images/airport.png');
+      @include image('airport');
       background-size: 100% 100%;
       background-repeat: no-repeat;
       position: absolute;
@@ -154,7 +155,7 @@
       width: 20px;
       height: 20px;
       margin: 34px 20px 0 24px;
-      background-image: url('../../../asset/images/train.png');
+      @include image('train');
       background-size: 100% 100%;
       background-repeat: no-repeat;
       position: absolute;

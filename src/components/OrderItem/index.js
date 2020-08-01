@@ -6,8 +6,8 @@ import ORDER_TYPE from '@constants/types'
 
 import './index.scss'
 
-import carPng from '@images/car.png'
-import giftPng from '@images/gift.png'
+const carPng = IMAGE_HOST + '/images/car.png'
+const giftPng = IMAGE_HOST + '/images/gift.png'
 import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui'
 
 import { connect } from '@tarojs/redux'

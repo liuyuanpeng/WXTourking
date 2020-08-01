@@ -9,10 +9,10 @@ import {
 } from '@tarojs/components'
 import NavBar from '@components/NavBar'
 import { connect } from '@tarojs/redux'
-import '../../asset/common/index.scss'
+import '../../common/index.scss'
 import './index.scss'
 
-import daySchedulePng from '@images/bkg4.png'
+const daySchedulePng = IMAGE_HOST + '/images/bkg4.png'
 import { AtDivider, AtTabs } from 'taro-ui'
 import CommentItem from '@components/CommentItem'
 

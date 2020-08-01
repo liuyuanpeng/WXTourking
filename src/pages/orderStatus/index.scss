@@ -1,4 +1,4 @@
-@import '../../asset/common/index.scss';
+@import '../../common/index.scss';
 
 .pay-product-scroll {
   background-color: #f7f7f7;
@@ -24,7 +24,7 @@
         position: absolute;
         top: 18px;
         left: 24px;
-        background-image: url('../../asset/images/tip_red.png');
+        @include image('tip_red');
         background-size: 100% 100%;
         background-repeat: no-repeat;
       }
