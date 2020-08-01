@@ -4,6 +4,21 @@ export const host = HOST
 // 获取用户信息
 export const GET_USER = `${host}/user/get`
 
+// 获取城市列表
+export const GET_CITY = `${host}/travel/city/list`
+
+// 获取常用地址
+export const GET_LOCATION_LIST = `${host}/travel/address/page`
+
+// 获取车型
+export const GET_CAR_TYPES = `${host}/travel/chexing/list`
+
+// 获取座位类型
+export const GET_SIT_LIST = `${host}/travel/zuowei/list`
+
+// 获取用车服务
+export const GET_CONSUME_LIST = `${host}/travel/consume/list`
+
 // 更新用户信息
 export const UPDATE_USER = `${host}/user/update`
 
@@ -17,7 +32,7 @@ export const GET_CAPTCHA = `${host}/session/captcha`
 export const GET_PHONE = `${host}/session/decrypt_user_mobile`
 
 // 验证码登录
-export const LOGIN = `${host}/session/wechat_captcha_login`
+export const LOGIN = `${host}/user/wechat_captcha_login`
 
 // 首页获取订单数量，车辆型号
 export const HOME_INFO = `${host}/travel/consume/service`

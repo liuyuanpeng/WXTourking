@@ -17,7 +17,6 @@ class LocationInput extends Taro.Component {
 
   handleClick=e=>{
     e.stopPropagation();
-    console.log(this.$router)
     Taro.navigateTo(
       {
         url: '../../pages/utilPages/location/index',

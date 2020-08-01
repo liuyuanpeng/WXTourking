@@ -1,15 +1,15 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Input, Label, ScrollView, SwiperItem } from '@tarojs/components'
-import NavBar from '../../components/NavBar'
+import NavBar from '@components/NavBar'
 import { connect } from '@tarojs/redux'
-import '../common/index.scss'
+import '../../asset/common/index.scss'
 import './index.scss'
 
-import daySchedulePng from '../../asset/images/day_schedule.png'
+import daySchedulePng from '@images/day_schedule.png'
 import { AtDivider, AtNavBar, AtInputNumber, AtSwitch, AtInput } from 'taro-ui'
-import CommentItem from '../../components/CommentItem'
-import SysNavBar from '../../components/SysNavBar'
-import { returnFloat } from '../../utils/tool'
+import CommentItem from '@components/CommentItem'
+import SysNavBar from '@components/SysNavBar'
+import { returnFloat } from '@utils/tool'
 
 
 class SaveAddress extends Component {
@@ -38,7 +38,6 @@ class SaveAddress extends Component {
   }
 
   handleInput = (item, value) => {
-    console.log(item, value)
     if (item.name === '姓名') {
       this.setState({
         name: value

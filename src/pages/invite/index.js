@@ -4,7 +4,7 @@ import {
 } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import './index.scss'
-import SysNavBar from '../../components/SysNavBar'
+import SysNavBar from '@components/SysNavBar'
 
 
 class AllOrders extends Component {

@@ -8,13 +8,20 @@ class SysNavBar extends Taro.Component {
     title: '',
     transparent: false,
     hideBack: false,
-    noBorder: false
+    noBorder: false,
+    redirectTo: ''
   }
 
   onBack = e => {
     e.stopPropagation()
-    console.log('onBack')
-    Taro.navigateBack()
+    const { redirectTo } = this.props
+    if (redirectTo) {
+      Taro.redirectTo({
+        url: `../../pages/${redirectTo}/index`
+      })
+    } else {
+      Taro.navigateBack()
+    }
   }
 
   render() {

@@ -1,17 +1,17 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Image, Label } from '@tarojs/components'
-import NavBar from '../../components/NavBar'
+import NavBar from '@components/NavBar'
 import { connect } from '@tarojs/redux'
-import '../common/index.scss'
+import '../../asset/common/index.scss'
 import './index.scss'
 
-import daySchedulePng from '../../asset/images/bkg4.png'
+import daySchedulePng from '@images/bkg4.png'
 import { AtDivider, AtNavBar, AtInputNumber, AtInput } from 'taro-ui'
-import CommentItem from '../../components/CommentItem'
-import SysNavBar from '../../components/SysNavBar'
-import { returnFloat } from '../../utils/tool'
-import DateTimePicker from '../../components/DateTimePicker'
-import LocationInput from '../../components/LocationInput'
+import CommentItem from '@components/CommentItem'
+import SysNavBar from '@components/SysNavBar'
+import { returnFloat } from '@utils/tool'
+import DateTimePicker from '@components/DateTimePicker'
+import LocationInput from '@components/LocationInput'
 
 
 class PayProduct extends Component {

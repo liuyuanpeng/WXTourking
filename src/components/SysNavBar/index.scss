@@ -5,15 +5,16 @@
   background-color: white;
   text-align: center;
   z-index: 999;
-  border-bottom: solid 1px #F3F3F3;
+  border-bottom: solid 1px #f3f3f3;
   .back-btn {
     position: absolute;
     bottom: 28px;
     margin-left: 24px;
-    width: 18px;
-    height: 30px;
-    background-image: url('../../asset/images/back.png');
+    background-image: url('../../asset/images/backto.png');
     background-size: 100% 100%;
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
     z-index: 9999;
   }
 

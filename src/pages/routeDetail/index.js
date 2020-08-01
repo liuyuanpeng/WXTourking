@@ -7,14 +7,14 @@ import {
   SwiperItem,
   Text
 } from '@tarojs/components'
-import NavBar from '../../components/NavBar'
+import NavBar from '@components/NavBar'
 import { connect } from '@tarojs/redux'
-import '../common/index.scss'
+import '../../asset/common/index.scss'
 import './index.scss'
 
-import daySchedulePng from '../../asset/images/bkg4.png'
+import daySchedulePng from '@images/bkg4.png'
 import { AtDivider, AtTabs } from 'taro-ui'
-import CommentItem from '../../components/CommentItem'
+import CommentItem from '@components/CommentItem'
 
 
 class ProductDetail extends Component {
@@ -36,7 +36,6 @@ class ProductDetail extends Component {
   }
 
   componentWillMount() {
-    console.log('router: ', this.$router)
     this.setState({
       type: this.$router.params.type || 'scene'
     })

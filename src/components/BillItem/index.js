@@ -5,8 +5,8 @@ import CheckBox from '../CheckBox'
 
 import './index.scss'
 
-import carPng from '../../asset/images/car.png'
-import giftPng from '../../asset/images/gift.png'
+import carPng from '@images/car.png'
+import giftPng from '@images/gift.png'
 
 class BillItem extends Taro.Component {
   static defaultProps = {

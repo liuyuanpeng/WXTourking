@@ -1,7 +1,7 @@
 import Taro from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import { AtSearchBar } from 'taro-ui'
-
+import { connect } from '@tarojs/redux'
 import './index.less'
 
 /**
@@ -16,6 +16,11 @@ import './index.less'
 
   height: 224px
  */
+
+@connect(({city}) => ({
+  cityList: city.list,
+  currentCity: city.current
+}))
 class Navbar extends Taro.Component {
   static defaultProps = {
     opacity: 0,
@@ -40,7 +45,6 @@ class Navbar extends Taro.Component {
   handleChangeText = value => {
     const {navigate} = this.props
     if (navigate) {
-      console.log('test')
       this.setState({
         searchText: ' '
       })
@@ -53,7 +57,6 @@ class Navbar extends Taro.Component {
   onLocate = e => {
     const {navigate} = this.props
     e.stopPropagation()
-    console.log('onLocate')
     
     navigate && Taro.navigateTo({
       url: '../search/index'
@@ -63,7 +66,6 @@ class Navbar extends Taro.Component {
   onActionClick = e => {
     const {navigate} = this.props
     e.stopPropagation()
-    console.log('onActionClick')
     
     navigate && Taro.navigateTo({
       url: '../search/index'
@@ -72,13 +74,12 @@ class Navbar extends Taro.Component {
 
   onBack = e => {
     e.stopPropagation()
-    console.log('onBack')
     Taro.navigateBack()
   }
 
   render() {
     const {searchText} = this.state
-    const { opacity, title, showSearch, showBack, showBackOnly, navigate} = this.props
+    const { opacity, title, showSearch, showBack, showBackOnly, navigate, cityList, currentCity} = this.props
 
     if (showBackOnly) {
       return (
@@ -93,7 +94,7 @@ class Navbar extends Taro.Component {
         {showSearch && (
           <View className='search-bar'>
             <View className='location' onClick={this.onLocate}>
-              厦门
+              {currentCity.name}
             </View>
             <View className='search'>
               <AtSearchBar

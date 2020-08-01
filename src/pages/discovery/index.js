@@ -1,7 +1,7 @@
 import Taro, { PureComponent } from '@tarojs/taro'
 import { View, Image } from '@tarojs/components'
 
-import '../common/index.scss'
+import '../../asset/common/index.scss'
 
 class Home extends PureComponent {
   config = {

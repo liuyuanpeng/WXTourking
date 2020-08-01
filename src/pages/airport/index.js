@@ -1,24 +1,29 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Image, ScrollView } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
-// import '../common/index.scss'
+// import '../../asset/common/index.scss'
 import './index.scss'
 
-import service_assurance_png from '../../asset/images/service_assurance.png'
-import precious_png from '../../asset/images/precious.png'
-import free_waiting_png from '../../asset/images/free_waiting.png'
-import safe_png from '../../asset/images/safe.png'
+import service_assurance_png from '@images/service_assurance.png'
+import precious_png from '@images/precious.png'
+import free_waiting_png from '@images/free_waiting.png'
+import safe_png from '@images/safe.png'
 
 import { AtInput } from 'taro-ui'
-import SysNavBar from '../../components/SysNavBar'
-import { returnFloat } from '../../utils/tool'
-import SwitchButton from '../../components/SwitchButton'
+import SysNavBar from '@components/SysNavBar'
+import { returnFloat } from '@utils/tool'
+import SwitchButton from '@components/SwitchButton'
 import dayjs from 'dayjs'
-import LocationInput from '../../components/LocationInput'
-import DateTimePicker from '../../components/DateTimePicker'
-import CheckBox from '../../components/CheckBox'
+import LocationInput from '@components/LocationInput'
+import DateTimePicker from '@components/DateTimePicker'
+import CheckBox from '@components/CheckBox'
 
-@connect(({ }) => ({
+import QQMapWX from '../utilPages/location/qqmap'
+
+let qqMapSDK = null
+
+@connect(({ city }) => ({
+  currentCity: city.current
 }))
 class JSJPage extends Component {
   config = {
@@ -43,8 +48,7 @@ class JSJPage extends Component {
     })
   }
 
-  componentWillMount() {
-  }
+  componentWillMount() {}
 
   componentDidMount() {}
 
@@ -52,12 +56,36 @@ class JSJPage extends Component {
     this.setState({
       start_place: location
     })
+    const { target_place } = this.state
+    if (
+      location.latitude &&
+      location.longitude &&
+      target_place.latitude &&
+      target_place.longitude
+    ) {
+      this.getDistance({
+        from: location.latitude + ',' + location.longitude,
+        to: target_place.latitude + ',' + target_place.longitude
+      })
+    }
   }
 
   handleTargetPlace = location => {
     this.setState({
       target_place: location
     })
+    const {start_place} = this.state
+    if (
+      location.latitude &&
+      location.longitude &&
+      start_place.latitude &&
+      start_place.longitude
+    ) {
+      this.getDistance({
+        from: start_place.latitude + ',' + start_place.longitude,
+        to: location.latitude + ',' + location.longitude
+      })
+    }
   }
 
   handleStartPlaceBack = location => {
@@ -100,10 +128,97 @@ class JSJPage extends Component {
     e.stopPropagation()
   }
 
+  getDistance = params => {
+    qqMapSDK = new QQMapWX({
+      key: 'JTKBZ-LCG6U-GYOVE-BJMJ5-E3DA5-HTFAJ' // 必填
+    })
+    const { from, to } = params
+    qqMapSDK.calculateDistance({
+      mode: 'driving', //可选值：'driving'（驾车）、'walking'（步行），不填默认：'walking',可不填
+      from, //若起点有数据则采用起点坐标，若为空默认当前地址
+      to, //终点坐标
+      success: (res) => {
+        //成功后的回调
+
+        if (res.status == 0 && res.result.elements.length > 0) {
+          this.distance = res.result.elements[0].distance
+          this.duration = res.result.elements[0].duration
+        }
+      },
+      fail: function(error) {
+        console.error(error)
+      }
+    })
+  }
+
   handleOK = e => {
     e.stopPropagation()
-    Taro.navigateTo({
-      url: '../carType/index'
+    const {
+      backCheck,
+      isSJ,
+      start_place,
+      target_place,
+      start_place_back,
+      target_place_back,
+      start_time,
+      start_time_back,
+      fly
+    } = this.state
+    let msg
+    if (!start_place.title) {
+      msg = isSJ ? '请输入上车地点' : '请输入机场/火车站'
+    } else if (!target_place.title) {
+      msg = '请输入送达地点'
+    } else if (start_time.isBefore(dayjs())) {
+      msg = '请选择正确的上车时间'
+    } else if (!isSJ && backCheck) {
+      if (!start_place_back.title) {
+        msg = '请输入返程机场/火车站'
+      } else if (!target_place_back.title) {
+        msg = '请输入返程送达地点'
+      } else if (start_time_back.isBefore(start_time)) {
+        msg = '请输入正确的返程时间'
+      }
+    }
+    if (msg) {
+      Taro.showToast({
+        title: msg,
+        icon: 'none'
+      })
+      return
+    }
+
+    const { dispatch, currentCity } = this.props
+    dispatch({
+      type: 'consume/getConsumeList',
+      payload: {
+        params: {
+          scene: isSJ ? 'SONGJI' : 'JIEJI',
+          city_id: currentCity.id
+        }
+      },
+      success: () => {
+        Taro.navigateTo({
+          url: '../carType/index',
+          success: res => {
+            res.eventChannel.emit('acceptData', {
+              start_place,
+              target_place,
+              start_time,
+              fly: isSJ ? '' : fly,
+              scene: isSJ ? 'SONGJI' : 'JIEJI',
+              kilo: this.distance,
+              time: this.duration
+            })
+          }
+        })
+      },
+      fail: () => {
+        Taro.showToast({
+          title: '获取用车服务失败',
+          icon: 'none'
+        })
+      }
     })
   }
 
@@ -129,9 +244,9 @@ class JSJPage extends Component {
       { icon: free_waiting_png, title: '免费等待', subtitle: '免费等待60分钟' },
       { icon: safe_png, title: '出行安心', subtitle: '百万保险&爽约包赔' }
     ]
-    
+
     const scrollStyle = {
-      height: `${Taro.$windowHeight  - 434}rpx`
+      height: `${Taro.$windowHeight - 434}rpx`
     }
 
     return (
@@ -189,25 +304,23 @@ class JSJPage extends Component {
                     <View className='JSJ-content-item-label'>航班号/班次</View>
                     <AtInput
                       className='JSJ-content-item-value'
-                      onOk={this.handleFlyChange}
+                      onChange={this.handleFlyChange}
                       value={fly}
                       placeholder='请填写航班号'
                     />
                   </View>
-                  <CheckBox
+                  {/* <CheckBox
                     wrap-class='JSJ-content-check'
                     text-class='JSJ-content-check-text'
                     checked={backCheck}
                     title='添加返程送机'
                     onChange={this.handleBackCheck}
                   />
-                  <View className='JSJ-content-check-tip'>往返更优惠</View>
+                  <View className='JSJ-content-check-tip'>往返更优惠</View> */}
                   {backCheck && (
                     <View>
                       <View className='JSJ-content-item'>
-                        <View className='JSJ-content-item-label'>
-                          机场/火车站
-                        </View>
+                        <View className='JSJ-content-item-label'>上车地点</View>
                         <LocationInput
                           wrap-class='JSJ-content-item-value'
                           title={start_place_back.title}
@@ -240,7 +353,9 @@ class JSJPage extends Component {
                   )}
                 </View>
               )}
-              <View className='JSJ-content-button' onClick={this.handleOK}>立即预约</View>
+              <View className='JSJ-content-button' onClick={this.handleOK}>
+                立即预约
+              </View>
               <View className='JSJ-content-ensure'>
                 {ensures.map((item, index) => (
                   <View className='ensure-item' key={`ensure-item-${index}`}>

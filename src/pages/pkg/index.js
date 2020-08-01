@@ -1,11 +1,11 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Text, Label, Swiper, ScrollView } from '@tarojs/components'
-import NavBar from '../../components/NavBar'
+import NavBar from '@components/NavBar'
 import { connect } from '@tarojs/redux'
-// import '../common/index.scss'
+// import '../../asset/common/index.scss'
 import './index.scss'
 
-import daySchedulePng from '../../asset/images/day_schedule.png'
+import daySchedulePng from '@images/day_schedule.png'
 import {
   AtCheckbox,
   AtNavBar,
@@ -13,20 +13,23 @@ import {
   AtTabs,
   AtTabsPane
 } from 'taro-ui'
-import CommentItem from '../../components/CommentItem'
-import SysNavBar from '../../components/SysNavBar'
-import { returnFloat } from '../../utils/tool'
-import BillItem from '../../components/BillItem'
-import CheckBox from '../../components/CheckBox'
+import CommentItem from '@components/CommentItem'
+import SysNavBar from '@components/SysNavBar'
+import { returnFloat } from '@utils/tool'
+import BillItem from '@components/BillItem'
+import CheckBox from '@components/CheckBox'
 
-
+@connect(({ city }) => ({
+  currentCity: city.current
+}))
 class Pkg extends Component {
   config = {
     navigationBarTitleText: '选择里程套餐'
   }
 
   state = {
-    current: 0
+    current: 0,
+    charterData: {}
   }
 
   handleClick = (value, e) => {
@@ -36,45 +39,80 @@ class Pkg extends Component {
     })
   }
 
-  componentWillMount() {
-    
-  }
+  componentWillMount() {}
 
   componentDidMount() {
     const current = this.$router.params.index || 0
-    console.log(current, this.$router)
     this.setState({
       current: parseInt(current)
+    })
+
+    const eventChannel = this.$scope.getOpenerEventChannel()
+    eventChannel.on('acceptCharterData', data => {
+      this.setState({
+        charterData: data || {}
+      })
     })
   }
 
   handleOK = e => {
     e.stopPropagation()
-    Taro.navigateTo({
-      url: '../carType/index'
+    const { dispatch, currentCity } = this.props
+    const { charterData, current } = this.state
+    const { start_place, target_place, start_time, days } = charterData
+    dispatch({
+      type: 'consume/getConsumeList',
+      payload: {
+        params: {
+          scene: 'DAY_PRIVATE',
+          city_id: currentCity.id,
+          taocan: current ? 'meal_2' : 'meal_1'
+        }
+      },
+      success: () => {
+        Taro.navigateTo({
+          url: '../carType/index',
+          success: res => {
+            res.eventChannel.emit('acceptData', {
+              start_place,
+              target_place,
+              start_time,
+              scene: 'DAY_PRIVATE',
+              days
+            })
+          }
+        })
+      },
+      fail: () => {
+        Taro.showToast({
+          title: '获取用车服务失败',
+          icon: 'none'
+        })
+      }
     })
   }
 
   render() {
-    const { current } = this.state
+    const { current, charterData = {} } = this.state
     const tabList = [{ title: '8小时100公里' }, { title: '8小时200公里' }]
-
+    const { start_place, target_place, start_time, days } = charterData
+    if (!start_place) return null
     const headers = [
       {
         label: '上车',
-        title: '厦门-厦门高崎国际机场'
+        title: start_place.title
       },
       {
         label: '发车时间',
-        title: '2020-04-02 15:30'
+        title: start_time.format('YYYY-MM-DD HH:mm')
       },
       {
         label: '下车',
-        title: '厦门-厦门高崎国际机场'
+        title: target_place.title
       },
       {
         label: '包车时间',
-        title: '1天'
+        title: `${days}天`
       }
     ]
 
@@ -84,7 +122,9 @@ class Pkg extends Component {
       details: [
         {
           title: '套餐说明',
-          subtitle: `用车当日可使用8小时，包含${current===0?1:2}00公里（多日包车中当日未用完的部分不可累计）`
+          subtitle: `用车当日可使用8小时，包含${
+            current === 0 ? 1 : 2
+          }00公里（多日包车中当日未用完的部分不可累计）`
         },
         {
           title: '套餐包含',
@@ -92,7 +132,8 @@ class Pkg extends Component {
         },
         {
           title: '套餐不含',
-          subtitle: '套餐中，不包含以下内容产生的费用：\r\n\
+          subtitle:
+            '套餐中，不包含以下内容产生的费用：\r\n\
           1、超时长费：超出套餐时长产生的费用（收费标准详见订单填写页）\r\n\
           2、超公里费：超出套餐公里数产生的费用（收费标准详见订单填写页）\r\n\
           3、空驶费：实际下车地点与下单时填写的不一致导致的司机车辆空驶费用。（收费标准详见订单填写页）\r\n\
@@ -103,7 +144,13 @@ class Pkg extends Component {
     }
 
     return (
-      <View className='pkg-page' style={{top: 88 + Taro.$statusBarHeight + 'rpx', minHeight: Taro.$windowHeight - 88 - Taro.$statusBarHeight + 'rpx'}}>
+      <View
+        className='pkg-page'
+        style={{
+          top: 88 + Taro.$statusBarHeight + 'rpx',
+          minHeight: Taro.$windowHeight - 88 - Taro.$statusBarHeight + 'rpx'
+        }}
+      >
         <SysNavBar title='选择里程套餐' />
         <View className='pkg-header'>
           <View className='pkg-header-split-line' />
@@ -117,7 +164,9 @@ class Pkg extends Component {
         <View className='pkg-tabs'>
           {tabList.map((item, index) => (
             <View
-              className={`pkg-tabs-item${current === index ? ' pkg-tabs-item-active' : ''}`}
+              className={`pkg-tabs-item${
+                current === index ? ' pkg-tabs-item-active' : ''
+              }`}
               key={`pkg-tabs-item-${index}`}
               onClick={this.handleClick.bind(this, index)}
             >
@@ -132,16 +181,20 @@ class Pkg extends Component {
             <Label className='pkg-content-price-unit'>起/车</Label>
           </View>
           <View className='pkg-content-unit-tip'>1天总价</View>
-          {detail.details.map((item, index)=>(
-            <View className='pkg-content-item' key={`pkg-content-item-${index}`}>
+          {detail.details.map((item, index) => (
+            <View
+              className='pkg-content-item'
+              key={`pkg-content-item-${index}`}
+            >
               <View className='pkg-content-item-title'>{item.title}</View>
               <Text className='pkg-content-item-subtitle'>{item.subtitle}</Text>
             </View>
           ))}
         </View>
         <View className='pkg-footer'>
-
-        <View className='pkg-ok-btn' onClick={this.handleOK}>选车型</View>
+          <View className='pkg-ok-btn' onClick={this.handleOK}>
+            选车型
+          </View>
         </View>
       </View>
     )

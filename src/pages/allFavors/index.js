@@ -7,17 +7,17 @@ import {
   SwiperItem,
   ScrollView
 } from '@tarojs/components'
-import NavBar from '../../components/NavBar'
+import NavBar from '@components/NavBar'
 import { connect } from '@tarojs/redux'
-// import '../common/index.scss'
+// import '../../asset/common/index.scss'
 import './index.scss'
 
-import daySchedulePng from '../../asset/images/day_schedule.png'
+import daySchedulePng from '@images/day_schedule.png'
 import { AtDivider, AtNavBar, AtInputNumber, AtTabs, AtTabsPane } from 'taro-ui'
-import CommentItem from '../../components/CommentItem'
-import SysNavBar from '../../components/SysNavBar'
-import { returnFloat } from '../../utils/tool'
-import FavorItem from '../../components/FavorItem'
+import CommentItem from '@components/CommentItem'
+import SysNavBar from '@components/SysNavBar'
+import { returnFloat } from '@utils/tool'
+import FavorItem from '@components/FavorItem'
 
 @connect(({  }) => ({
 }))

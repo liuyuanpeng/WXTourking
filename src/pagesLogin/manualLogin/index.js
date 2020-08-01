@@ -2,9 +2,8 @@ import Taro, { Component } from '@tarojs/taro'
 import { View, Button } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import './index.scss'
-import SysNavBar from '../../components/SysNavBar'
+import SysNavBar from '@components/SysNavBar'
 import { AtInput } from 'taro-ui'
-import STORAGE from '../../constants/storage'
 
 @connect(({  }) => ({
 }))

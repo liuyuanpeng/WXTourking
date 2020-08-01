@@ -2,10 +2,10 @@ import Taro, { Component } from '@tarojs/taro'
 import { View, Button } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import './index.scss'
-import SysNavBar from '../../components/SysNavBar'
+import SysNavBar from '@components/SysNavBar'
 import STORAGE from '@constants/storage'
 
-@connect(({})=>({}))
+@connect(({}) => ({}))
 class Login extends Component {
   config = {
     navigationBarTitleText: '登录'
@@ -13,6 +13,40 @@ class Login extends Component {
   componentWillMount() {}
 
   componentDidMount() {
+    Taro.login({
+      success: res => {
+        // 尝试获取/更新微信信息
+        Taro.getUserInfo({
+          lang: 'zh_CN',
+          success: response => {
+            const app = Taro.getApp()
+            app.globalData.wxInfo = { ...response.userInfo }
+          }
+        })
+        Taro.setStorageSync(STORAGE.USER_CODE, res.code)
+        this.fetchSession()
+      }
+    })
+  }
+
+  fetchSession = () => {
+    this.props.dispatch({
+      type: 'user/getSession',
+      success: () => {
+        console.log('获取session成功')
+      },
+      refetch: () => {
+        setTimeout(() => {
+          this.fetchSession()
+        }, 200)
+      },
+      fail: msg => {
+        Taro.showToast({
+          title: msg || '获取session失败，请稍后重试。',
+          icon: 'none'
+        })
+      }
+    })
   }
 
   handleWXLogin = e => {
@@ -21,7 +55,7 @@ class Login extends Component {
       return
     }
 
-    const {encryptedData, iv} = e.detail
+    const { encryptedData, iv } = e.detail
     this.props.dispatch({
       type: 'user/getPhone',
       payload: {
@@ -41,7 +75,8 @@ class Login extends Component {
           },
           fail: msg => {
             Taro.showToast({
-              title: msg || '发送验证码失败，请稍后重试'
+              title: msg || '发送验证码失败，请稍后重试',
+              icon: 'none'
             })
           }
         })
@@ -64,7 +99,10 @@ class Login extends Component {
 
   render() {
     return (
-      <View className='login-page' style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}>
+      <View
+        className='login-page'
+        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+      >
         <SysNavBar title='登录' noBorder hideBack />
         <View className='login-logo' />
         <Button

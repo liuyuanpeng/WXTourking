@@ -2,7 +2,7 @@ import Taro, { Component } from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import './index.scss'
-import SysNavBar from '../../components/SysNavBar'
+import SysNavBar from '@components/SysNavBar'
 import { AtInput } from 'taro-ui'
 import CountDown from '@components/CountDown'
 
@@ -33,7 +33,7 @@ class Captcha extends Component {
     this.setState({
       captcha: value
     })
-    if (value && value.length === 6) {
+    if (value && value.length === 4) {
       this.setState({
         nextEnable: true
       })
@@ -55,6 +55,22 @@ class Captcha extends Component {
         captcha
       },
       success: () => {
+        // 获取用户信息
+        this.props.dispatch({
+          type: 'user/getUserInfo'
+        })
+
+        this.props.dispatch({
+          type: 'city/getCityList'
+        })
+
+        this.props.dispatch({
+          type: 'carTypes/getCarTypes'
+        })
+
+        this.props.dispatch({
+          type: 'sit/getSitList'
+        })
         Taro.navigateBack({
           delta
         })
@@ -103,13 +119,13 @@ class Captcha extends Component {
         <AtInput
           className='phone-input'
           type='number'
-          maxLength={6}
+          maxLength={4}
           value={captcha}
           onChange={this.handlePhoneChange}
           placeholder='请输入验证码'
         />
         <View className='captcha-tip'>
-          <View className='captcha-tip-text'>6位数字验证码</View>
+          <View className='captcha-tip-text'>4位数字验证码</View>
           {showCountDown ? (
             <CountDown
               wrap-class='captcha-tip-countdown'

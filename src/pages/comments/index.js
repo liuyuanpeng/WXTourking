@@ -10,11 +10,11 @@ import {
 import { connect } from '@tarojs/redux'
 import './index.scss'
 
-import safe_png from '../../asset/images/safe.png'
+import safe_png from '@images/safe.png'
 
 import { AtDivider, AtNavBar, AtInputNumber, AtTabs, AtTabsPane } from 'taro-ui'
-import CommentItem from '../../components/CommentItem'
-import SysNavBar from '../../components/SysNavBar'
+import CommentItem from '@components/CommentItem'
+import SysNavBar from '@components/SysNavBar'
 
 
 class Comments extends Component {

@@ -26,18 +26,20 @@ if (process.env.NODE_ENV !== 'production' && process.env.TARO_ENV === 'h5') {
 }
 
 class App extends Component {
-
   globalData = {
     wxInfo: {},
     userInfo: {}
   }
   componentWillMount() {
     const res = Taro.getSystemInfoSync()
-    console.log('systemInfo: ', res)
-    Taro.$statusBarHeight = res.windowWidth ? res.statusBarHeight/(res.windowWidth/750) : 0
+    Taro.$statusBarHeight = res.windowWidth
+      ? res.statusBarHeight / (res.windowWidth / 750)
+      : 0
     Taro.$screenWidth = res.windowWidth
     Taro.$screenHeight = res.windowHeight
-    Taro.$windowHeight = res.windowWidth ? res.windowHeight/(res.windowWidth/750) : 0
+    Taro.$windowHeight = res.windowWidth
+      ? res.windowHeight / (res.windowWidth / 750)
+      : 0
   }
 
   componentDidMount() {
@@ -63,9 +65,9 @@ class App extends Component {
   config = {
     pages: [
       'pages/home/index',
-      'pages/login/index',
-      'pages/manualLogin/index',
-      'pages/captcha/index',
+      // 'pages/login/index',
+      // 'pages/manualLogin/index',
+      // 'pages/captcha/index',
       'pages/discovery/index',
       'pages/schedule/index',
       'pages/mine/index',
@@ -99,7 +101,6 @@ class App extends Component {
       backgroundTextStyle: 'light',
       navigationStyle: 'custom',
       navigationBarTextStyle: 'black',
-      backgroundColorTop: '#0068C4',
       enablePullDownRefresh: false
     },
     permission: {
@@ -111,7 +112,7 @@ class App extends Component {
       custom: true,
       color: '#B2B1AF',
       selectedColor: '#000000',
-      backgroundColor: '#FFFFFF',
+      backgroundColor: 'transparent',
       borderStyle: 'black',
       list: [
         {
@@ -139,7 +140,13 @@ class App extends Component {
           selectedIconPath: './asset/images/mine_focus.png'
         }
       ]
-    }
+    },
+    subPackages: [
+      {
+        root: 'pagesLogin/',
+        pages: ['login/index', 'manualLogin/index', 'captcha/index']
+      }
+    ]
   }
 
   // 在 App 类中的 render() 函数没有实际作用

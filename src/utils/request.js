@@ -19,7 +19,6 @@ export default function fetch(opt) {
           url: '../login/index'
         })
       } else if (data.code !== 'SUCCESS') {
-        Taro.hideToast()
         Taro.showToast({title: data.message, icon: 'none'})
       }
       return data;

@@ -25,7 +25,6 @@ class TPickerView extends Component {
     const { current } = this.state
     const { lists } = this.props
     const result = {}
-    console.log('ok')
     lists.map((item, index) => {
       result[item.key] = item.list[current[index]]
     })

@@ -2,15 +2,15 @@ import Taro, { Component } from '@tarojs/taro'
 import {
   View
 } from '@tarojs/components'
-import NavBar from '../../components/NavBar'
+import NavBar from '@components/NavBar'
 import { connect } from '@tarojs/redux'
-// import '../common/index.scss'
+// import '../../asset/common/index.scss'
 import './index.scss'
 
 import {
   AtInput
 } from 'taro-ui'
-import SysNavBar from '../../components/SysNavBar'
+import SysNavBar from '@components/SysNavBar'
 
 @connect(({ user }) => ({
 }))

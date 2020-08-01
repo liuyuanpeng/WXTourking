@@ -1,20 +1,26 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Image, ScrollView, Label } from '@tarojs/components'
-import NavBar from '../../components/NavBar'
+import NavBar from '@components/NavBar'
 import { AtTabs, AtTabsPane } from 'taro-ui'
 import { connect } from '@tarojs/redux'
-import '../common/index.scss'
+import '../../asset/common/index.scss'
 import './index.less'
 
-import homePng from '../../asset/images/bkg3.png'
-import daySchedulePng from '../../asset/images/day_schedule.png'
-import airCarPng from '../../asset/images/air_car.png'
-import routeSchedulePng from '../../asset/images/route_schedule.png'
-import ProductItem from '../../components/ProductItem'
-import DecorateTitle from '../../components/DecorateTitle'
-import STORAGE from '../../constants/storage'
+import homePng from '@images/bkg3.png'
+import daySchedulePng from '@images/day_schedule.png'
+import airCarPng from '@images/air_car.png'
+import routeSchedulePng from '@images/route_schedule.png'
+import ProductItem from '@components/ProductItem'
+import DecorateTitle from '@components/DecorateTitle'
+import STORAGE from '@constants/storage'
 
-@connect(({}) => ({}))
+@connect(({ product, city }) => ({
+  hot: product.hot,
+  hotJINGDIAN: product.hotJINGDIAN,
+  hotMEISHI: product.hotMEISHI,
+  hotBANSHOU: product.hotBANSHOU,
+  currentCity: city.current
+}))
 class Home extends Component {
   config = {
     navigationBarTitleText: '旅王出行'
@@ -35,6 +41,32 @@ class Home extends Component {
         selected: 0
       })
     }
+    this.fetchData()
+  }
+
+  fetchData = () => {
+    if (this.checkLogin()) {
+      const { dispatch } = this.props
+      dispatch({
+        type: 'product/getHotProduct'
+      })
+      dispatch({
+        type: 'product/getHotProduct',
+        target: 'hotJINGDIAN'
+      })
+      dispatch({
+        type: 'product/getHotProduct',
+        target: 'hotMEISHI'
+      })
+      dispatch({
+        type: 'product/getHotProduct',
+        target: 'hotBANSHOU'
+      })
+    }
+  }
+
+  checkLogin = () => {
+    return Taro.getStorageSync(STORAGE.TOKEN) || false
   }
 
   handleClick = (value, e) => {
@@ -45,43 +77,44 @@ class Home extends Component {
   }
 
   gotoLogin = () => {
-    Taro.login({
-      success: res => {
-        Taro.setStorageSync(STORAGE.USER_CODE, res.code)
-        this.props.dispatch({
-          type: 'user/getSession',
-          success: () => {
-            console.log('wtf')
-            Taro.navigateTo({
-              url:'../login/index'
-            })
-          },
-          fail: msg => {
-            Taro.showToast({title: msg || '获取session失败，请稍后重试。', icon: 'none'})
-          }
-        })
-      }
+    Taro.navigateTo({
+      url: '../../pagesLogin/login/index'
     })
   }
 
-  componentDidMount() {
-    // 尝试获取/更新微信信息
-    Taro.getUserInfo({
-      lang: 'zh_CN',  
-      success: res => {
-        const app = Taro.getApp()
-        app.globalData.wxInfo = {...res.userInfo}
-        console.log('wxInfo: ', app.globalData.wxInfo)
-      }
-    })
-
+  componentWillMount() {
+    Taro.hideTabBar()
     // 判断是否登录小程序
     Taro.checkSession({
       success: () => {
+        // 尝试获取/更新微信信息
+        Taro.getUserInfo({
+          lang: 'zh_CN',
+          success: res => {
+            const app = Taro.getApp()
+            app.globalData.wxInfo = { ...res.userInfo }
+          }
+        })
         // 判断是否登录旅王系统
         if (Taro.getStorageSync(STORAGE.TOKEN)) {
+          // 获取用户信息
           this.props.dispatch({
             type: 'user/getUserInfo'
+          })
+
+          this.props.dispatch({
+            type: 'carTypes/getCarTypes'
+          })
+
+          this.props.dispatch({
+            type: 'sit/getSitList'
+          })
+
+          this.props.dispatch({
+            type: 'city/getCityList',
+            success: () => {
+              this.fetchData()
+            }
           })
         } else {
           this.gotoLogin()
@@ -176,98 +209,16 @@ class Home extends Component {
       { title: '伴手礼' }
     ]
 
-    const scenes = [
-      {
-        type: 'scene',
-        image: '',
-        title: '厦门胡里山炮台',
-        pointDesc: '4.9分 非常棒',
-        pointTail: '2015条点评',
-        subtitle: '厦门市 | 湖里区',
-        endTitle: '八闽门户，天南锁钥'
-      },
-      {
-        type: 'scene',
-        image: '',
-        title: '厦门海底世界',
-        pointDesc: '4.9分 非常棒',
-        pointTail: '2015条点评',
-        subtitle: '厦门市 | 湖里区',
-        endTitle: '八闽门户，天南锁钥'
-      },
-      {
-        type: 'scene',
-        image: '',
-        title: '厦门鼓浪屿',
-        pointDesc: '4.9分 非常棒',
-        pointTail: '2015条点评',
-        subtitle: '厦门市 | 湖里区',
-        endTitle: '八闽门户，天南锁钥'
-      }
-    ]
 
-    const foods = [
-      {
-        type: 'food',
-        image: '',
-        title: '厦门沙茶面',
-        pointDesc: '4.9分 非常棒',
-        pointTail: '2015条点评',
-        subtitle: '厦门市 | 湖里区',
-        endTitle: '八闽门户，天南锁钥'
-      },
-      {
-        type: 'food',
-        image: '',
-        title: '厦门海蛎煎',
-        pointDesc: '4.9分 非常棒',
-        pointTail: '2015条点评',
-        subtitle: '厦门市 | 湖里区',
-        endTitle: '八闽门户，天南锁钥'
-      },
-      {
-        type: 'food',
-        image: '',
-        title: '厦门烧肉粽',
-        pointDesc: '4.9分 非常棒',
-        pointTail: '2015条点评',
-        subtitle: '厦门市 | 湖里区',
-        endTitle: '八闽门户，天南锁钥'
-      }
-    ]
 
-    const gifts = [
-      {
-        type: 'gift',
-        image: '',
-        isGift: true,
-        title: '苏小糖牛轧糖',
-        pointDesc: '4.9分 非常棒',
-        pointTail: '距离我10公里',
-        subtitle: '912买过的推荐',
-        price: 24
-      },
-      {
-        type: 'gift',
-        image: '',
-        isGift: true,
-        title: '鼓浪屿馅饼',
-        pointDesc: '4.9分 非常棒',
-        pointTail: '距离我10公里',
-        subtitle: '912买过的推荐',
-        price: 24
-      },
-      {
-        type: 'gift',
-        image: '',
-        isGift: true,
-        title: '台湾凤梨酥',
-        pointDesc: '4.9分 非常棒',
-        pointTail: '距离我10公里',
-        subtitle: '912买过的推荐',
-        price: 24
-      }
-    ]
+
+    const {
+      hot,
+      hotJINGDIAN,
+      hotMEISHI,
+      hotBANSHOU,
+      currentCity = {name: ''}
+    } = this.props
 
     return (
       <View className='page'>
@@ -301,10 +252,50 @@ class Home extends Component {
                 查看更多
               </Label>
               <View className='guess-you-like-container'>
-                <View className='like-1'></View>
+                {hot && hot[0] && (
+                  <View className='like-1'>
+                    <Image
+                      className='like-image'
+                      src={hot[0].private_consume.images.split(',')[0]}
+                    />
+                    <View className='like-tag'>
+                {currentCity.name}{' '}{hot[0].private_consume.tag}
+                    </View>
+                    <View className='like-name'>
+                      {hot[0].private_consume.name}
+                    </View>
+                  </View>
+                )}
                 <View className='like-2-3'>
-                  <View className='like-item'></View>
-                  <View className='like-item'></View>
+                  {hot && hot[1] && (
+                    <View className='like-item'>
+                      <Image
+                        className='like-image'
+                        src={hot[1].private_consume.images.split(',')[1]}
+                      />
+
+                      <View className='like-tag'>
+                        {currentCity.name}{' '}{hot[2].private_consume.tag}
+                      </View>
+                      <View className='like-name'>
+                        {hot[1].private_consume.name}
+                      </View>
+                    </View>
+                  )}
+                  {hot && hot[2] && (
+                    <View className='like-item'>
+                      <Image
+                        className='like-image'
+                        src={hot[2].private_consume.images.split(',')[2]}
+                      />
+                      <View className='like-tag'>
+                        {currentCity.name}{' '}{hot[2].private_consume.tag}
+                      </View>
+                      <View className='like-name'>
+                        {hot[2].private_consume.name}
+                      </View>
+                    </View>
+                  )}
                 </View>
               </View>
             </View>
@@ -316,11 +307,17 @@ class Home extends Component {
               >
                 <AtTabsPane current={this.state.current} index={0}>
                   <View>
-                    {scenes.map((item, index) => (
+                    {hotJINGDIAN.map((item, index) => (
                       <ProductItem
                         onClick={this.onSeeProduct.bind(this, item)}
                         key={`scene-item-${index}`}
-                        {...item}
+                        type='scene'
+                        image={item.private_consume.images.split(',')[0]}
+                        title={item.private_consume.name}
+                        pointDesc={`${item.private_consume.evaluate_score || 0}分 非常棒`}
+                        pointTail={`${item.private_consume.evaluate_count || 0}条点评`}
+                        subtitle={currentCity.name+'市'}
+                        endTitle={item.private_consume.description || '未设置描述'}
                       />
                     ))}
                     <View className='more-btn' onClick={this.onMoreScene}>
@@ -330,11 +327,17 @@ class Home extends Component {
                 </AtTabsPane>
                 <AtTabsPane current={this.state.current} index={1}>
                   <View>
-                    {foods.map((item, index) => (
+                    {hotMEISHI.map((item, index) => (
                       <ProductItem
                         onClick={this.onSeeProduct.bind(this, item)}
                         key={`scene-item-${index}`}
-                        {...item}
+                        type='food'
+                        image={item.private_consume.images.split(',')[0]}
+                        title={item.private_consume.name}
+                        pointDesc={`${item.private_consume.evaluate_score || 0}分 非常棒`}
+                        pointTail={`${item.private_consume.evaluate_count || 0}条点评`}
+                        subtitle={currentCity.name+'市'}
+                        endTitle={item.private_consume.description || '未设置描述'}
                       />
                     ))}
                     <View className='more-btn' onClick={this.onMoreFood}>
@@ -344,11 +347,17 @@ class Home extends Component {
                 </AtTabsPane>
                 <AtTabsPane current={this.state.current} index={2}>
                   <View>
-                    {gifts.map((item, index) => (
+                    {hotBANSHOU.map((item, index) => (
                       <ProductItem
                         onClick={this.onSeeProduct.bind(this, item)}
                         key={`scene-item-${index}`}
-                        {...item}
+                        type='gift'
+                        image={item.private_consume.images.split(',')[0]}
+                        title={item.private_consume.name}
+                        pointDesc={`${item.private_consume.evaluate_score || 0}分 非常棒`}
+                        pointTail={`${item.private_consume.evaluate_count || 0}条点评`}
+                        subtitle={(item.private_consume.recommend_count || 0)+'买过的推荐'}
+                        price={item.private_consume.price || '未定价'}
                       />
                     ))}
                     <View className='more-btn' onClick={this.onMoreGift}>

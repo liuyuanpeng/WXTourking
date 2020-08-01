@@ -3,47 +3,85 @@ import { View, Image, Label, ScrollView } from '@tarojs/components'
 import { AtInput, AtInputNumber } from 'taro-ui'
 import { connect } from '@tarojs/redux'
 
-import '../common/index.scss'
+import '../../asset/common/index.scss'
 import './index.scss'
 
-import SysNavBar from '../../components/SysNavBar'
-import LocationInput from '../../components/LocationInput'
-import DateTimePicker from '../../components/DateTimePicker'
-import DaysPicker from '../../components/DaysPicker'
-import DecorateTitle from '../../components/DecorateTitle'
-import CommentItem from '../../components/CommentItem'
+import SysNavBar from '@components/SysNavBar'
+import LocationInput from '@components/LocationInput'
+import DateTimePicker from '@components/DateTimePicker'
+import DaysPicker from '@components/DaysPicker'
+import DecorateTitle from '@components/DecorateTitle'
+import CommentItem from '@components/CommentItem'
 import dayjs from 'dayjs'
 
-import service_assurance_png from '../../asset/images/service_assurance.png'
-import precious_png from '../../asset/images/precious.png'
-import free_waiting_png from '../../asset/images/free_waiting.png'
-import safe_png from '../../asset/images/safe.png'
+import service_assurance_png from '@images/service_assurance.png'
+import precious_png from '@images/precious.png'
+import free_waiting_png from '@images/free_waiting.png'
+import safe_png from '@images/safe.png'
 
-
+@connect(({})=>({
+}))
 class DayChartered extends PureComponent {
   config = {
     navigationBarTitleText: ''
   }
 
   state = {
-    start_place: '',
+    start_place: {title: ''},
     start_time: dayjs(),
-    days: 2
+    days: 1
   }
 
+  onOK = value => {
+    this.setState({
+      start_time: value
+    })
+  }
+
+  handleDaysChange = value => {
+    this.setState({
+      days: value.currentDays
+    })
+  }
   
 
   handleLocationChange = location => {
     this.setState({
-      start_place: location.title
+      start_place: location
     })
   }
 
   handleChartered = e => {
     e.stopPropagation()
-    // 立即包车
+    const {start_place, start_time, days} = this.state
+    console.log(start_place)
+    let msg = ''
+    if (start_place && start_place.title && start_place.latitude && start_place.longitude) {
+      if (start_time && start_time.isBefore(dayjs())) {
+        msg = '请输入正确的用车时间'
+      }
+    } else {
+      msg = '请输入上下车地点'
+    }
+
+    if (msg) {
+      Taro.showToast({
+        title: msg,
+        icon: 'none'
+      })
+      return
+    }
     Taro.navigateTo({
-      url: '../pkg/index'
+      url: '../pkg/index',
+      success: res => {
+        res.eventChannel.emit('acceptCharterData', {
+          start_place,
+          target_place: start_place,
+          start_time,
+          scene: 'DAY_PRIVATE',
+          days
+        })
+      }
     })
   }
 
@@ -146,7 +184,7 @@ class DayChartered extends PureComponent {
               <View className='label-name label-place'>上下车地点</View>
               <LocationInput
                 wrap-class='label-place-input'
-                title={start_place}
+                title={start_place.title}
                 placeholder='请选择上下车地点'
                 onChange={this.handleLocationChange}
               />
@@ -165,6 +203,7 @@ class DayChartered extends PureComponent {
                 wrap-class='label-day-input'
                 selected-item-class='label-day-input-item'
                 initValue={days}
+                onOk={this.handleDaysChange}
               />
               <View className='split-line' />
               <View className='chartered-btn' onClick={this.handleChartered}>

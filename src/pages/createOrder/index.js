@@ -1,59 +1,60 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Label, Text, ScrollView, Image } from '@tarojs/components'
-import NavBar from '../../components/NavBar'
+import NavBar from '@components/NavBar'
 import { connect } from '@tarojs/redux'
-// import '../common/index.scss'
+// import '../../asset/common/index.scss'
 import './index.scss'
 
-import CommentItem from '../../components/CommentItem'
-import SysNavBar from '../../components/SysNavBar'
-import { returnFloat } from '../../utils/tool'
-import BillItem from '../../components/BillItem'
-import CheckBox from '../../components/CheckBox'
-import PopView from '../../components/PopView'
+import CommentItem from '@components/CommentItem'
+import SysNavBar from '@components/SysNavBar'
+import { returnFloat } from '@utils/tool'
+import BillItem from '@components/BillItem'
+import CheckBox from '@components/CheckBox'
+import PopView from '@components/PopView'
 import dayjs from 'dayjs'
 import { AtInput } from 'taro-ui'
+import STORAGE from '@constants/storage'
 
-
+@connect(({ city }) => ({
+  currentCity: city.current
+}))
 class CarType extends Component {
   config = {
     navigationBarTitleText: '填写订单'
   }
 
   state = {
-    current: 0,
     visible: false,
     detailVisible: false,
-    scrollTop: 0,
     name: '',
     phoneNum: '',
-    phoneNumBackup: ''
+    phoneNumBackup: '',
+    order: {}
   }
 
-  handleClick = (value, e) => {
-    e.stopPropagation()
-
-    if (this.state.current !== value) {
+  componentDidMount() {
+    const eventChannel = this.$scope.getOpenerEventChannel()
+    eventChannel.on('orderData', data => {
       this.setState({
-        scrollTop: Math.random() //不能设置为0
+        order: data
       })
-    }
+    })
 
+    const name = Taro.getStorageSync(STORAGE.ORDER_USER_NAME) || ''
+    const phoneNum = Taro.getStorageSync(STORAGE.ORDER_USER_MOBILE) || ''
+    const phoneNumBackup = Taro.getStorageSync(STORAGE.ORDER_USER_MOBILE_BACKUP) || ''
     this.setState({
-      current: value
+      name,
+      phoneNum,
+      phoneNumBackup
     })
   }
-
-  
-
-  componentDidMount() {}
 
   handleOK = e => {
     e.stopPropagation()
   }
 
   showScheduleDetail = (visible = true) => {
-    console.log('visible: ', visible)
     this.setState({
       visible
     })
@@ -62,6 +63,18 @@ class CarType extends Component {
   onChangeName = name => {
     this.setState({
       name
+    })
+  }
+
+  onChangePhone = phone => {
+    this.setState({
+      phoneNum: phone
+    })
+  }
+
+  onChangePhoneBackup = phone => {
+    this.setState({
+      phoneNumBackup: phone
     })
   }
 
@@ -81,7 +94,6 @@ class CarType extends Component {
   }
 
   showDetail = (detailVisible = true) => {
-    console.log('visible: ', detailVisible)
     this.setState({
       detailVisible
     })
@@ -89,8 +101,100 @@ class CarType extends Component {
 
   handlePay = e => {
     e.stopPropagation()
-    Taro.navigateTo({
-      url: '../orderStatus/index'
+    const { name, phoneNum, phoneNumBackup, order } = this.state
+    let msg = ''
+    const regex = /^(13|14|15|16|17|18|19)\d{9}$/
+    if (!name) {
+      msg = '请输入您的姓名'
+    } else if (!phoneNum || !regex.test(phoneNum)) {
+      msg = '请输入正确的手机号'
+    } else if (!regex.test(phoneNumBackup)) {
+      msg = '请输入正确的备用手机号'
+    }
+    if (msg) {
+      Taro.showToast({
+        title: msg,
+        icon: 'none'
+      })
+      return
+    }
+
+    const {
+      scene,
+      city_id,
+      air_no = '',
+      kilo = 0,
+      time = 0,
+      start_place,
+      target_place,
+      start_time,
+      chexing,
+      zuowei,
+      consume,
+      price,
+      days = 1,
+      private_consume
+    } = order
+    // 创建订单
+    const payload = {
+      user_id: Taro.getStorageSync(STORAGE.USER_ID),
+      user_mobile: Taro.getStorageSync(STORAGE.USER_PHONE),
+      open_id: Taro.getStorageSync(STORAGE.OPEN_ID),
+      scene,
+      common_scene: 'ORDER',
+      city_id,
+      chexing_id: chexing.id,
+      zuowei_id: zuowei.id,
+      price,
+      start_time: start_time.valueOf(),
+      kilo,
+      time,
+      air_no,
+      days,
+      start_place: start_place.title,
+      start_latitude: start_place.latitude,
+      start_longitude: start_place.longitude,
+      target_place: target_place.title,
+      target_latitude: target_place.latitude,
+      target_longitude: target_place.longitude,
+      contact_mobile: phoneNumBackup || '',
+      mobile: phoneNum,
+      order_source: 'USER',
+      consume_id: consume.id,
+      username: name
+    }
+    this.props.dispatch({
+      type: 'order/createOrder',
+      payload,
+      success: result => {
+        // 存储手机号和用户名
+        Taro.setStorageSync(STORAGE.ORDER_USER_NAME, name)
+        Taro.setStorageSync(STORAGE.ORDER_USER_MOBILE, phoneNum)
+        Taro.setStorageSync(STORAGE.ORDER_USER_MOBILE_BACKUP, phoneNumBackup)
+        // 拉起支付
+
+        this.props.dispatch({
+          type: 'order/setUserOrder',
+          payload: {
+            order: {...result},
+            chexing,
+            zuowei,
+            consume,
+            private_consume
+          },
+          success: ()=>{
+            Taro.navigateTo({
+              url: '../orderStatus/index'
+            })
+          }
+        })
+      },
+      fail: message => {
+        Taro.showToast({
+          title: message || '创建订单失败',
+          icon: 'none'
+        })
+      }
     })
   }
 
@@ -141,24 +245,18 @@ class CarType extends Component {
       visible,
       name,
       phoneNum,
-      phoneNumBackup
+      phoneNumBackup,
+      order
     } = this.state
-    const {
-      days = 1,
-      city = '厦门',
-      start_time = dayjs(),
-      coupons = 0
-    } = this.props
 
-    const carType = {
-      title: '经济5座',
-      detail: '日产尼桑/丰田Harrier',
-      sit: 5,
-      luggage: '24寸行李2件',
-      price: 1790,
-      image:
-        'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3376645129,1205322099&fm=26&gp=0.jpg'
-    }
+    const {
+      start_time = dayjs(),
+      days = 1,
+      chexing = {},
+      zuowei = {},
+      price = 0
+    } = order
+    const { currentCity, coupons = 0 } = this.props
 
     const assurance = ['专车司机', '行前联系', '免费等待30分钟']
 
@@ -236,7 +334,7 @@ class CarType extends Component {
       detailList: [
         {
           name: '用车费用',
-          value: '￥2396'
+          value: '￥' + price
         },
         {
           name: '用车保险',
@@ -244,14 +342,13 @@ class CarType extends Component {
         },
         {
           name: '合计',
-          value: '￥2396',
+          value: '￥' + price,
           total: true
         }
       ],
       intro: routeDetail
     }
 
-    
     const scrollStyle = {
       height: `${Taro.$windowHeight - 424 - 194}rpx`
     }
@@ -267,13 +364,15 @@ class CarType extends Component {
         <View className='car-header'>
           <View>
             <Label className='car-header-title'>包车{days}天</Label>
-            <Label className='car-header-start'>{city}出发</Label>
+            <Label className='car-header-start'>{currentCity.name}出发</Label>
           </View>
           <View className='car-header-time'>
-            {start_time.format('当地时间MM月DD日 HH:mm用车')}
+            {start_time ? start_time.format('当地时间MM月DD日 HH:mm用车') : ''}
           </View>
           <View className='car-header-car-type'>
-            {`${carType.title} | 乘客${carType.sit - 1}人 | ${carType.luggage}`}
+            {`${chexing.name + zuowei.name} | ${chexing.passengers} | ${
+              chexing.baggages
+            }`}
           </View>
           <View
             className='car-header-detail'
@@ -370,12 +469,12 @@ class CarType extends Component {
           </View>
         </ScrollView>
         <View className='pay-tip'>
-          {`现在支付，北京时间${dayjs().format(
+          {`现在支付，北京时间${start_time.format(
             'MM月DD日HH时mm分'
           )}前可免费取消`}
         </View>
         <View className='footer'>
-          <View className='price'>￥2396</View>
+          <View className='price'>￥{price}</View>
           <View className='detail' onClick={this.showDetail}>
             明细
           </View>

@@ -1,11 +1,11 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Image, Label, Swiper, ScrollView } from '@tarojs/components'
-import NavBar from '../../components/NavBar'
+import NavBar from '@components/NavBar'
 import { connect } from '@tarojs/redux'
-// import '../common/index.scss'
+// import '../../asset/common/index.scss'
 import './index.scss'
 
-import daySchedulePng from '../../asset/images/day_schedule.png'
+import daySchedulePng from '@images/day_schedule.png'
 import {
   AtCheckbox,
   AtNavBar,
@@ -13,11 +13,11 @@ import {
   AtTabs,
   AtTabsPane
 } from 'taro-ui'
-import CommentItem from '../../components/CommentItem'
-import SysNavBar from '../../components/SysNavBar'
-import { returnFloat } from '../../utils/tool'
-import BillItem from '../../components/BillItem'
-import CheckBox from '../../components/CheckBox'
+import CommentItem from '@components/CommentItem'
+import SysNavBar from '@components/SysNavBar'
+import { returnFloat } from '@utils/tool'
+import BillItem from '@components/BillItem'
+import CheckBox from '@components/CheckBox'
 
 
 class MyBill extends Component {
@@ -42,7 +42,6 @@ class MyBill extends Component {
 
   componentDidMount() {
     const current = this.$router.params.index || 0
-    console.log(current, this.$router)
     this.setState({
       current: parseInt(current)
     })
@@ -197,7 +196,6 @@ class MyBill extends Component {
             <AtTabsPane current={this.state.current} index={0}>
               <ScrollView scrollY style={scrollStyle}>
                 {this.orders.map((item, index) => {
-                  console.log('checked:', checks[item.id] || false)
                   return (
                     <BillItem
                       canCheck

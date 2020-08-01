@@ -7,10 +7,10 @@ import {
   SwiperItem,
   ScrollView
 } from '@tarojs/components'
-import SysNavBar from '../../../components/SysNavBar'
+import SysNavBar from '@components/SysNavBar'
 import { connect } from '@tarojs/redux'
 import { debounce } from 'debounce'
-// import '../common/index.scss'
+// import '../../asset/common/index.scss'
 import './index.scss'
 
 import {
@@ -26,41 +26,39 @@ import QQMapWX from './qqmap'
 
 let qqMapSDK = null
 
+@connect(({ location, city }) => ({
+  airports: location.airports,
+  trains: location.trains,
+  currentCity: city.current
+}))
 class Location extends Component {
   config = {}
 
   state = {
     current: 0,
-    currentCity: '厦门',
     keyword: '',
     title: '',
     suggestion: [],
     scrollTop: 0,
     toScrollView: false,
     nearby: [
-      {
-        title: '莲前西路/卧龙西路路口',
-        address: '莲前西路/卧龙西路路口'
-      },
-      {
-        title: '莲前西路/西林西三路路口',
-        address: '莲前西路/西林西三路路口'
-      },
-      {
-        title: '怡景花园西区-东门',
-        address: '福建省厦门市思明区莲前西路232-234号'
-      }
     ]
   }
 
   componentDidMount() {
+    const { dispatch, currentCity } = this.props
+
+    dispatch({
+      type: 'location/getLocationList'
+    })
+
     qqMapSDK = new QQMapWX({
       key: 'JTKBZ-LCG6U-GYOVE-BJMJ5-E3DA5-HTFAJ' // 必填
     })
 
     qqMapSDK.search({
-      keyword: '公交站  ',
-      region: '厦门',
+      keyword: '酒店',
+      region: currentCity.name,
       success: res => {
         const nearby = []
         res.data.map(item => {
@@ -68,18 +66,21 @@ class Location extends Component {
             title: item.title,
             address: item.address,
             longitude: item.location.lng,
-            latitude: item.location.la
+            latitude: item.location.lat
           })
+        })
+        this.setState({
+          nearby
         })
       }
     })
 
-    Taro.createSelectorQuery()
-      .select('#nearby')
-      .boundingClientRect(rect => {
-        this.originTop = rect.top
-      })
-      .exec()
+    // Taro.createSelectorQuery()
+    //   .select('#nearby')
+    //   .boundingClientRect(rect => {
+    //     this.originTop = rect.top
+    //   })
+    //   .exec()
   }
 
   handleSelectCity = e => {
@@ -94,10 +95,10 @@ class Location extends Component {
   }
 
   getSuggestion = keyword => {
-    const { currentCity } = this.state
+    const { currentCity } = this.props
     qqMapSDK.getSuggestion({
       keyword: keyword || '',
-      region: currentCity,
+      region: currentCity.name,
       success: res => {
         const sug = []
         res.data.map(item => {
@@ -133,10 +134,10 @@ class Location extends Component {
         break
 
       case 1:
-        viewName = 'airport'
+        viewName = 'airports'
         break
       case 2:
-        viewName = 'train_station'
+        viewName = 'trains'
         break
 
       default:
@@ -157,14 +158,13 @@ class Location extends Component {
   }
 
   onScroll = e => {
-    console.log('e: ', e.target.scrollTop)
-
+    e.stopPropagation()
     Taro.createSelectorQuery()
-      .select('#airport')
+      .select('#airports')
       .boundingClientRect(airport => {
         if (airport.top - this.originTop <= 0) {
           Taro.createSelectorQuery()
-            .select('#train_station')
+            .select('#trains')
             .boundingClientRect(train => {
               if (train.top - this.originTop <= 0) {
                 this.setTabs(2)
@@ -181,15 +181,22 @@ class Location extends Component {
   }
 
   setValue(data) {
-    console.log(this)
     const eventChannel = this.$scope.getOpenerEventChannel()
-    eventChannel.emit('acceptLocation', { ...data })
+    if (data.id) {
+      eventChannel.emit('acceptLocation', {
+        title: data.name,
+        address: data.detail,
+        latitude: data.latitude,
+        longitude: data.longitude
+       })
+    } else {
+      eventChannel.emit('acceptLocation', { ...data })
+    }
     Taro.navigateBack()
   }
 
   render() {
     const {
-      currentCity,
       title,
       keyword,
       suggestion,
@@ -199,27 +206,7 @@ class Location extends Component {
       nearby
     } = this.state
 
-    const airports = [
-      {
-        title: '高崎国际机场T3'
-      },
-      {
-        title: '高崎国际机场T4'
-      }
-    ]
-
-    const train_stations = [
-      {
-        title: '厦门站'
-      },
-      {
-        title: '厦门北站'
-      },
-      {
-        title: '厦门站高崎站'
-      }
-    ]
-
+    const { currentCity, airports, trains } = this.props
 
     const tabList = [{ title: '周边' }, { title: '机场' }, { title: '火车站' }]
 
@@ -244,7 +231,7 @@ class Location extends Component {
         <SysNavBar title={title || '确认乘车地点'} />
         <View className='location-search-bar'>
           <View className='location-city' onClick={this.handleSelectCity}>
-            {currentCity}
+            {currentCity.name}
           </View>
           <View className='location-search-bar-split' />
           <AtIcon
@@ -312,7 +299,7 @@ class Location extends Component {
                   <View className='location-address'>{item.address}</View>
                 </View>
               ))}
-              <View id='airport' className='split-title'>
+              <View id='airports' className='split-title'>
                 机场
               </View>
               {airports.map((item, index) => (
@@ -325,13 +312,13 @@ class Location extends Component {
                 >
                   {index > 0 && <View className='split-line' />}
                   <Label className='airport-icon' />
-                  <Label className='airport-title'>{item.title}</Label>
+                  <Label className='airport-title'>{item.name}</Label>
                 </View>
               ))}
-              <View id='train_station' className='split-title'>
+              <View id='trains' className='split-title'>
                 火车站
               </View>
-              {train_stations.map((item, index) => (
+              {trains.map((item, index) => (
                 <View
                   className='train-item'
                   key={`train-item-${index}`}
@@ -341,7 +328,7 @@ class Location extends Component {
                 >
                   {index > 0 && <View className='split-line' />}
                   <Label className='train-icon' />
-                  <Label className='train-title'>{item.title}</Label>
+                  <Label className='train-title'>{item.name}</Label>
                 </View>
               ))}
             </ScrollView>

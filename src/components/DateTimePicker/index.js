@@ -64,10 +64,6 @@ class DateTimePicker extends Component {
     selectIndexList[1] = hourList.indexOf(hour)
     selectIndexList[2] = minuteList.indexOf(minute)
 
-    console.log(dayListValue)
-
-    console.log('selectedIndexList', selectIndexList)
-
     this.setState({
       selectIndexList,
       visible: true,
@@ -98,7 +94,8 @@ class DateTimePicker extends Component {
       current,
       visible: false
     })
-    this.props.onOk && this.props.onOk({ current })
+    this.props.onOk &&
+      this.props.onOk(showDayOnly ? dateTime.startOf('day') : dateTime)
   }
   // 切换
   changeHandel = e => {
@@ -145,7 +142,7 @@ class DateTimePicker extends Component {
       selectIndexList,
       dateTime
     } = this.state
-    const WeekArr = ["日","一","二","三","四","五","六"];
+    const WeekArr = ['日', '一', '二', '三', '四', '五', '六']
     const { placeholder = '请选择时间', showDayOnly = false } = this.props
     return (
       <View className='datetime-picker-wrap wrap-class'>

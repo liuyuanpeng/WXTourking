@@ -1,13 +1,14 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Image, Label, Swiper, SwiperItem } from '@tarojs/components'
-import NavBar from '../../components/NavBar'
+import NavBar from '@components/NavBar'
 import { connect } from '@tarojs/redux'
-import '../common/index.scss'
+import '../../asset/common/index.scss'
 import './index.scss'
 
-import daySchedulePng from '../../asset/images/bkg4.png'
+import daySchedulePng from '@images/bkg4.png'
 import { AtDivider } from 'taro-ui'
-import CommentItem from '../../components/CommentItem'
+import CommentItem from '@components/CommentItem'
+import SysNavBar from '@components/SysNavBar'
 
 
 class ProductDetail extends Component {
@@ -18,7 +19,6 @@ class ProductDetail extends Component {
   }
 
   componentWillMount() {
-    console.log('router: ', this.$router)
     this.setState({
       type: this.$router.params.type || 'scene'
     })
@@ -115,7 +115,7 @@ class ProductDetail extends Component {
 
     return (
       <View className='product-detail'>
-        <NavBar showBackOnly />
+        <SysNavBar transparent noBorder />
         <Image className='home-png' src={detail.banner} mode='widthFix' />
         <View className='product-container'>
           <View className='product-title'>

@@ -1,6 +1,36 @@
 import fetch from '../utils/request'
-import { GET_TRIP_PAGE, GET_ORDER_DETAIL } from '../constants/api'
+import { host, GET_TRIP_PAGE, GET_ORDER_DETAIL, GET_PRICE, CREATE_ORDER, CANCEL_ORDER } from '@constants/api'
 import qs from 'query-string'
+
+export function cancelOrder(id) {
+  return fetch({
+    url: `${CANCEL_ORDER}?order_id=${id}`,
+    method: 'POST'
+  })
+}
+
+export function payOrder(id) {
+  return fetch({
+    url: `${host}/travel/weixin/pay/fake_notify?order_id=${id}`,
+    method: 'POST'
+  })
+}
+
+export function createOrder(payload) {
+  return fetch({
+    url: CREATE_ORDER,
+    method: 'POST',
+    payload
+  }) 
+}
+
+export function fetchPrice(payload) {
+  return fetch({
+    url: GET_PRICE,
+    method: 'POST',
+    payload
+  }) 
+}
 
 export function fetchOrders(payload) {
   const {query, body} = payload

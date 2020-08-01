@@ -1,23 +1,23 @@
 import Taro, { PureComponent } from '@tarojs/taro'
 import { View, Image, ScrollView } from '@tarojs/components'
-import MineListItem from '../../components/MineListItem'
+import MineListItem from '@components/MineListItem'
 import { connect } from '@tarojs/redux'
 
-import '../common/index.scss'
+import '../../asset/common/index.scss'
 import './index.scss'
 
-import passengerPng from '../../asset/images/passenger.png'
+import passengerPng from '@images/passenger.png'
 
-import myBillPng from '../../asset/images/my_bill.png'
-import myFavorPng from '../../asset/images/my_favor.png'
-import myBalancePng from '../../asset/images/my_balance.png'
-import myCommentPng from '../../asset/images/my_comment.png'
-import myLikePng from '../../asset/images/my_like.png'
-import customerServicePng from '../../asset/images/customer_service.png'
-import locationPng from '../../asset/images/location.png'
-import inviteGiftPng from '../../asset/images/invite_gift.png'
-import myCouponPng from '../../asset/images/my_coupon.png'
-import profilePng from '../../asset/images/profile.png'
+import myBillPng from '@images/my_bill.png'
+import myFavorPng from '@images/my_favor.png'
+import myBalancePng from '@images/my_balance.png'
+import myCommentPng from '@images/my_comment.png'
+import myLikePng from '@images/my_like.png'
+import customerServicePng from '@images/customer_service.png'
+import locationPng from '@images/location.png'
+import inviteGiftPng from '@images/invite_gift.png'
+import myCouponPng from '@images/my_coupon.png'
+import profilePng from '@images/profile.png'
 import { AtIcon } from 'taro-ui'
 
 @connect(({ user }) => ({
@@ -49,7 +49,6 @@ class Home extends PureComponent {
   }
 
   showOrder = (index, e) => {
-    console.log('index')
     e.stopPropagation()
     Taro.navigateTo({
       url: `../allOrders/index?index=${index}`

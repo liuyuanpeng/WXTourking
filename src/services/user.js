@@ -1,5 +1,5 @@
 import fetch from '../utils/request'
-import { GET_USER, UPDATE_USER, GET_SESSION, GET_PHONE } from '../constants/api'
+import { GET_USER, UPDATE_USER, GET_SESSION, GET_PHONE } from '@constants/api'
 import qs from 'query-string'
 
 export function fetchPhone(payload) {
@@ -15,7 +15,8 @@ export function fetchSession(code) {
     url: GET_SESSION,
     method: 'POST',
     payload: {
-      code
+      code,
+      username: 'wtf'
     }
   })
 }

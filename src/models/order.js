@@ -1,14 +1,16 @@
 import modelExtend from 'dva-model-extend'
 import commonModel from './common'
-import { fetchOrders, fetchOrderDetail } from '../services/order'
+import { fetchOrders, fetchOrderDetail, fetchPrice, createOrder, cancelOrder, payOrder } from '../services/order'
 import Taro from '@tarojs/taro'
-import STORAGE from '../constants/storage'
+import STORAGE from '@constants/storage'
 
-const SIZE = 10
+const SIZE = 100
 
 export default modelExtend(commonModel, {
   namespace: 'order',
   state: {
+    userOrder: {},
+    order: {},
     allOrders: { page: 0, size: SIZE, data_list: [] },
     waitForPayOrders: { page: 0, size: SIZE, data_list: [] },
     waitForGoOrders: { page: 0, size: SIZE, data_list: [] },
@@ -21,6 +23,75 @@ export default modelExtend(commonModel, {
   },
   reducers: {},
   effects: {
+    *payOrder({payload, success, fail}, {call, select, put}) {
+      const res = yield call(payOrder, payload.id)
+      if (res.code === 'SUCCESS') {
+        const userOrder = yield select(state => state.order.userOrder)
+        yield put({
+          type: 'updateState',
+          payload: {
+            userOrder: {
+              ...userOrder,
+              order: {
+                ...userOrder.order,
+                order_status: "AUTO"
+              }
+            }
+          }
+        })
+        success && success()
+      } else {
+        fail && fail(res.message)
+      }
+    },
+    *setUserOrder({payload, success}, {put}) {
+      yield put({
+        type: 'updateState',
+        payload: {
+          userOrder: {
+            ...payload
+          }
+        }
+      })
+      success && success()
+    },
+    *cancelOrder({payload, success, fail}, {call, put, select}) {
+      const res = yield call(cancelOrder, payload.id)
+      if (res.code === 'SUCCESS') {
+        const userOrder = yield select(state => state.order.userOrder)
+        yield put({
+          type: 'updateState',
+          payload: {
+            userOrder: {
+              ...userOrder,
+              order: {
+                ...userOrder.order,
+                order_status: "CANCEL_USER"
+              }
+            }
+          }
+        })
+        success && success()
+      } else {
+        fail && fail(res.message)
+      }
+    },
+    *createOrder({payload, success, fail}, {call}) {
+      const res = yield call(createOrder, payload)
+      if (res.code === 'SUCCESS') {
+        success && success(res.data)
+      } else {
+        fail && fail(res.message)
+      }
+    },
+    *getPrice({ payload = {}, success, fail }, { call }) {
+      const res = yield call(fetchPrice, payload)
+      if (res.code === 'SUCCESS') {
+        success && success(res.data)
+      } else {
+        fail && fail(res.message)
+      }
+    },
     *getAllOrders({ query = {}, more, success, fail }, { call, put, select }) {
       const body = { page: 0, size: SIZE }
       const allOrders = yield select(state => state.order.allOrders)
@@ -36,7 +107,6 @@ export default modelExtend(commonModel, {
         body
       })
       if (res.code === 'SUCCESS') {
-        success && success()
         yield put({
           type: 'updateState',
           payload: {
@@ -49,6 +119,136 @@ export default modelExtend(commonModel, {
             }
           }
         })
+        success && success()
+      } else {
+        fail && fail(res.message)
+      }
+    },
+    *getWaitForPay({ more, success, fail }, { call, put, select }) {
+      const body = { page: 0, size: SIZE }
+      const waitForPayOrders = yield select(state => state.order.waitForPayOrders)
+      if (more) {
+        body.page = waitForPayOrders.page + 1
+      }
+
+      const res = yield call(fetchOrders, {
+        query: {
+          user_id: Taro.getStorageSync(STORAGE.USER_ID),
+          status: ['WAIT_APPROVAL_OR_PAY'].toString()
+        },
+        body
+      })
+      if (res.code === 'SUCCESS') {
+        yield put({
+          type: 'updateState',
+          payload: {
+            waitForPayOrders: {
+              page: res.data.page,
+              size: res.data.size,
+              data_list: more
+                ? waitForPayOrders.data.concat(res.data.data_list)
+                : res.data.data_list
+            }
+          }
+        })
+        success && success()
+      } else {
+        fail && fail(res.message)
+      }
+    },
+    *getWaitForGo({ more, success, fail }, { call, put, select }) {
+      const body = { page: 0, size: SIZE }
+      const waitForGoOrders = yield select(state => state.order.waitForGoOrders)
+      if (more) {
+        body.page = waitForGoOrders.page + 1
+      }
+
+      const res = yield call(fetchOrders, {
+        query: {
+          user_id: Taro.getStorageSync(STORAGE.USER_ID),
+          status: ['WAIT_ACCEPT', 'AUTO', 'ACCEPTED'].toString()
+        },
+        body
+      })
+      if (res.code === 'SUCCESS') {
+        yield put({
+          type: 'updateState',
+          payload: {
+            waitForGoOrders: {
+              page: res.data.page,
+              size: res.data.size,
+              data_list: more
+                ? waitForGoOrders.data.concat(res.data.data_list)
+                : res.data.data_list
+            }
+          }
+        })
+        success && success()
+      } else {
+        fail && fail(res.message)
+      }
+    },
+    *getFinish({ more, success, fail }, { call, put, select }) {
+      const body = { page: 0, size: SIZE }
+      const finishOrders = yield select(state => state.order.finishOrders)
+      if (more) {
+        body.page = finishOrders.page + 1
+      }
+
+      const res = yield call(fetchOrders, {
+        query: {
+          user_id: Taro.getStorageSync(STORAGE.USER_ID),
+          status: ['DONE'].toString()
+        },
+        body
+      })
+      if (res.code === 'SUCCESS') {
+        yield put({
+          type: 'updateState',
+          payload: {
+            finishOrders: {
+              page: res.data.page,
+              size: res.data.size,
+              data_list: more
+                ? finishOrders.data.concat(res.data.data_list)
+                : res.data.data_list
+            }
+          }
+        })
+        success && success()
+      } else {
+        fail && fail(res.message)
+      }
+    },
+    *getWaitForComment({ more, success, fail }, { call, put, select }) {
+      const body = { page: 0, size: SIZE }
+      const waitForCommentOrders = yield select(state => state.order.waitForCommentOrders)
+      if (more) {
+        body.page = waitForCommentOrders.page + 1
+      }
+
+      const res = yield call(fetchOrders, {
+        query: {
+          user_id: Taro.getStorageSync(STORAGE.USER_ID),
+          status: ['DONE'].toString(),
+          evaluate: false
+        },
+        body
+      })
+      if (res.code === 'SUCCESS') {
+        yield put({
+          type: 'updateState',
+          payload: {
+            waitForCommentOrders: {
+              page: res.data.page,
+              size: res.data.size,
+              data_list: more
+                ? waitForCommentOrders.data.concat(res.data.data_list)
+                : res.data.data_list
+            }
+          }
+        })
+        success && success()
       } else {
         fail && fail(res.message)
       }
@@ -63,12 +263,11 @@ export default modelExtend(commonModel, {
       const res = yield call(fetchOrders, {
         query: {
           user_id: Taro.getStorageSync(STORAGE.USER_ID),
-          scenes: ['DAY_PRIVATE', 'JINGDIAN_PRIVATE'].toString()
+          scene: ['DAY_PRIVATE', 'JINGDIAN_PRIVATE'].toString()
         },
         body
       })
       if (res.code === 'SUCCESS') {
-        success && success()
         yield put({
           type: 'updateState',
           payload: {
@@ -81,6 +280,7 @@ export default modelExtend(commonModel, {
             }
           }
         })
+        success && success()
       } else {
         fail && fail(res.message)
       }
@@ -95,12 +295,11 @@ export default modelExtend(commonModel, {
       const res = yield call(fetchOrders, {
         query: {
           user_id: Taro.getStorageSync(STORAGE.USER_ID),
-          scenes: ['JIEJI', 'SONGJI'].toString()
+          scene: ['JIEJI', 'SONGJI'].toString()
         },
         body
       })
       if (res.code === 'SUCCESS') {
-        success && success()
         yield put({
           type: 'updateState',
           payload: {
@@ -113,6 +312,7 @@ export default modelExtend(commonModel, {
             }
           }
         })
+        success && success()
       } else {
         fail && fail(res.message)
       }
@@ -127,12 +327,11 @@ export default modelExtend(commonModel, {
       const res = yield call(fetchOrders, {
         query: {
           user_id: Taro.getStorageSync(STORAGE.USER_ID),
-          scenes: ['ROAD_PRIVATE'].toString()
+          scene: ['ROAD_PRIVATE'].toString()
         },
         body
       })
       if (res.code === 'SUCCESS') {
-        success && success()
         yield put({
           type: 'updateState',
           payload: {
@@ -145,6 +344,7 @@ export default modelExtend(commonModel, {
             }
           }
         })
+        success && success()
       } else {
         fail && fail(res.message)
       }
@@ -152,11 +352,11 @@ export default modelExtend(commonModel, {
     *getOrderDetail({ payload, success, fail }, { call, put }) {
       const res = yield call(fetchOrderDetail, payload)
       if (res.code === 'SUCCESS') {
-        success && success()
         yield put({
           type: 'updateState',
           payload: { orderDetail: res.data }
         })
+        success && success()
       } else {
         fail && fail(res.message)
       }
