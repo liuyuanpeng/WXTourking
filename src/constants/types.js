@@ -4,7 +4,7 @@ const ORDER_TYPE = {
   ORDER_SCENE: '立即用车',
   DAY_PRIVATE: '按天包车',
   ROAD_PRIVATE: '线路包车',
-  JINGDIAN_PRIVATE: '景点包车',
+  JINGDIAN_PRIVATE: '景点',
   MEISHI_PRIVATE: '美食',
   BANSHOU_PRIVATE: '伴手礼'
 }

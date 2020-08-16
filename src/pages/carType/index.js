@@ -68,6 +68,7 @@ class CarType extends Component {
     const {city_id} = consume
     const { price, price_strategy_id, chexing, zuowei } = carLevel
     const {
+      private_consume = {},
       start_place,
       target_place,
       start_time,
@@ -115,7 +116,24 @@ class CarType extends Component {
           })
         }
       })
-    } else {
+    } else if (scene==='JINGDIAN_PRIVATE' || scene === 'MEISHI_PRIVATE') {
+      Taro.navigateTo({
+        url: '../payProduct/index',
+        success: res => {
+          res.eventChannel.emit('orderData', {
+            scene,
+            city_id,
+            target_place,
+            private_consume,
+            price_strategy_id,
+            consume,
+            chexing,
+            zuowei,
+          })
+        }
+      })
+    }
+    else {
       Taro.navigateTo({
         url: '../createOrder/index',
         success: res => {

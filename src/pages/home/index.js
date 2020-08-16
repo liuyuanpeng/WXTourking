@@ -137,7 +137,12 @@ class Home extends Component {
     console.log('onSeeProduct: ', detail)
     e.stopPropagation()
     Taro.navigateTo({
-      url: `../product/index?type=${detail.type}`
+      url: `../product/index`,
+      success: res => {
+        res.eventChannel.emit('acceptProductData', {
+          ...detail
+        })
+      }
     })
   }
   onSeeMore = e => {
@@ -316,7 +321,7 @@ class Home extends Component {
                         pointDesc={`${item.private_consume.evaluate_score || 0}分 非常棒`}
                         pointTail={`${item.private_consume.evaluate_count || 0}条点评`}
                         subtitle={currentCity.name+'市'}
-                        endTitle={item.private_consume.description || '未设置描述'}
+                        endTitle={item.private_consume.tag || ''}
                       />
                     ))}
                     <View className='more-btn' onClick={this.onMoreScene}>

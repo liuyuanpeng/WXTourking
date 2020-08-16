@@ -131,6 +131,8 @@ class PayProduct extends Component {
     const isChartered =
       scene === 'JIEJI' || scene === 'SONGJI' || scene === 'DAY_PRIVATE'
 
+    console.log(isChartered)
+
     const scrollStyle = {
       top: 88 + Taro.$statusBarHeight + 'rpx',
       height: Taro.$windowHeight - 88 - Taro.$statusBarHeight + 'rpx'
@@ -147,9 +149,16 @@ class PayProduct extends Component {
           <SysNavBar title='确认订单' />
           {!isChartered && (
             <View className='pay-product-header'>
-              <View className='pay-product-tip'>
-                您的订单尚未完成支付，请重新支付
-              </View>
+              {(orderStatusDesc === '待付款' ||
+                orderStatusDesc === '待出行') && (
+                <View className='pay-product-tip'>
+                  {orderStatusDesc === '待付款'
+                    ? '您的订单尚未完成支付，请重新支付'
+                    : `我们会在${dayjs(start_time).format(
+                        'MM月DD日 HH:mm'
+                      )}前确认车辆信息`}
+                </View>
+              )}
               <Image
                 className='header-image'
                 src={daySchedulePng}
@@ -202,23 +211,13 @@ class PayProduct extends Component {
           )}
           {!isChartered && (
             <View className='pay-product-info'>
-              {(orderStatusDesc === '待付款' ||
-                orderStatusDesc === '待出行') && (
-                <View className='pay-product-tip'>
-                  {orderStatusDesc === '待付款'
-                    ? '您的订单尚未完成支付，请重新支付'
-                    : `我们会在${dayjs(start_time).format(
-                        'MM月DD日 HH:mm'
-                      )}前确认车辆信息`}
-                </View>
-              )}
               <View className='pay-product-info-label'>
                 {`车型:  ${chexing.name || ''}${zuowei.name || ''}`}
                 <Label className='pay-product-info-luggage'>
                   {chexing.baggages}
                 </Label>
               </View>
-              <View className='pay-product-info-label'>{`用车时间:  ${start_time.format(
+              <View className='pay-product-info-label'>{`用车时间:  ${dayjs(start_time).format(
                 'YYYY年MM月DD日 HH:mm'
               )}`}</View>
               <View className='pay-product-info-label'>{`上车地点:  ${start_place}`}</View>

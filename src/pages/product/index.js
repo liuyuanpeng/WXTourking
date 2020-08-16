@@ -5,22 +5,29 @@ import { connect } from '@tarojs/redux'
 import '../../common/index.scss'
 import './index.scss'
 
-const daySchedulePng = IMAGE_HOST + '/images/bkg4.png'
 import { AtDivider } from 'taro-ui'
 import CommentItem from '@components/CommentItem'
 import SysNavBar from '@components/SysNavBar'
+import PRODUCT_TYPES from '@constants/types'
 
+const daySchedulePng = IMAGE_HOST + '/images/day_schedule.png'
 
+@connect(({ city }) => ({
+  currentCity: city.current
+}))
 class ProductDetail extends Component {
   config = {}
 
   state = {
-    type: 'scene' // scene, food, gift
+    detail: {}
   }
 
-  componentWillMount() {
-    this.setState({
-      type: this.$router.params.type || 'scene'
+  componentDidMount() {
+    const eventChannel = this.$scope.getOpenerEventChannel()
+    eventChannel.on('acceptProductData', detail => {
+      this.setState({
+        detail
+      })
     })
   }
 
@@ -31,29 +38,66 @@ class ProductDetail extends Component {
 
   onSubmit = e => {
     e.stopPropagation()
-    console.log('onSubmit')
-    const {type} = this.state
-    if (type === 'gift') {
+    const { currentCity, dispatch } = this.props
+    const { detail } = this.state
+    const { private_consume = {} } = detail
+    if (private_consume.scene === 'BANSHOU_PRIVATE') {
       Taro.navigateTo({
-        url: `../payGift/index`
+        url: '../payProduct/index'
       })
-    } else {
-      Taro.navigateTo({
-        url: `../payProduct/index`
-      })
+      return
     }
+    dispatch({
+      type: 'consume/getConsumeList',
+      payload: {
+        params: {
+          scene: private_consume.scene,
+          city_id: currentCity.id
+        }
+      },
+      success: () => {
+        Taro.navigateTo({
+          url: '../carType/index',
+          success: res => {
+            res.eventChannel.emit('acceptData', {
+              scene: private_consume.scene,
+              private_consume,
+              target_place: {
+                title: private_consume.target_place,
+                latitude: private_consume.target_latitude,
+                longitude: private_consume.target_longitude
+              }
+            })
+          }
+        })
+      },
+      fail: () => {
+        Taro.showToast({
+          title: '获取用车服务失败',
+          icon: 'none'
+        })
+      }
+    })
   }
 
   render() {
-    const { type } = this.state
-    const detail = {
-      banner: daySchedulePng,
-      title: '厦门胡里山炮台',
-      subtitle: '八闽门户，天南锁钥',
-      location: '福建省厦门市思明区',
+    const { detail } = this.state
+    const { private_consume = {} } = detail
+    let banner = ''
+    let banners = []
+    try {
+      banners = private_consume.images.split(',')
+      banner = banners[0]
+    } catch (error) {
+      return null
+    }
+    const pDetail = {
+      banner,
+      title: private_consume.name,
+      subtitle: private_consume.tag,
+      location: private_consume.target_place,
       price: 24,
-      reason:
-        '推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由推荐理由',
+      reason: private_consume.reason,
       comments: [
         {
           user: 'test',
@@ -106,34 +150,35 @@ class ProductDetail extends Component {
             '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
         }
       ],
-      detail:
-        '景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍景点介绍',
-      detailBanners: [daySchedulePng, daySchedulePng, daySchedulePng]
+      description: private_consume.description,
+
+      detailBanners: banners
     }
 
-    const comment = detail.comments[0]
+    const comment = pDetail.comments[0]
+    const type = PRODUCT_TYPES[private_consume.scene]
 
     return (
       <View className='product-detail'>
         <SysNavBar transparent noBorder />
-        <Image className='home-png' src={detail.banner} mode='widthFix' />
+        <Image className='home-png' src={pDetail.banner} mode='widthFix' />
         <View className='product-container'>
           <View className='product-title'>
-            {detail.title}
-            {type === 'gift' && (
-              <View className='price'>{`￥${detail.price}`}</View>
+            {pDetail.title}
+            {type === '伴手礼' && (
+              <View className='price'>{`￥${pDetail.price}`}</View>
             )}
           </View>
 
-          <View className='subtitle'>{detail.subtitle}</View>
+          <View className='subtitle'>{pDetail.subtitle}</View>
           <AtDivider lineColor='#F3F3F3' />
           <View className='location-icon' />
-            <Label className='location-text'>{detail.location}</Label>
+          <Label className='location-text'>{pDetail.location}</Label>
           <AtDivider lineColor='#F3F3F3' />
           <View className='reason-title'>推荐理由</View>
-          <View className='reason'>{detail.reason}</View>
+          <View className='reason'>{pDetail.reason}</View>
           <View className='comments-title'>
-            {`达人点评（${detail.comments.length}）`}
+            {`达人点评（${pDetail.comments.length}）`}
             <Label className='see-more' onClick={this.seeAll}>
               查看全部
             </Label>
@@ -150,13 +195,13 @@ class ProductDetail extends Component {
             />
           </View>
           <View className='detail-title'>
-            {type === 'scene' ? '景点' : type === 'food' ? '美食' : '伴手礼'}
+            {type}
             介绍
           </View>
           <View className='detail-container'>
-            {detail.detailBanners && detail.detailBanners.length && (
+            {pDetail.detailBanners && pDetail.detailBanners.length && (
               <Swiper autoplay className='detail-swiper'>
-                {detail.detailBanners.map((item, index) => (
+                {pDetail.detailBanners.map((item, index) => (
                   <SwiperItem key={`detail-banner-${index}`}>
                     <Image
                       className='detail-banner'
@@ -167,10 +212,10 @@ class ProductDetail extends Component {
                 ))}
               </Swiper>
             )}
-            <View className='detail-desc'>{detail.detail}</View>
+            <View className='detail-desc'>{pDetail.description}</View>
           </View>
           <View className='i-want-it' onClick={this.onSubmit}>
-            我想{type === 'gift' ? '要' : '去'}
+            我想{type === '伴手礼' ? '要' : '去'}
           </View>
         </View>
       </View>
