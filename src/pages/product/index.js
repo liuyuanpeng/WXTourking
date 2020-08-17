@@ -43,7 +43,10 @@ class ProductDetail extends Component {
     const { private_consume = {} } = detail
     if (private_consume.scene === 'BANSHOU_PRIVATE') {
       Taro.navigateTo({
-        url: '../payProduct/index'
+        url: '../payGift/index',
+        success: res => {
+          res.eventChannel.emit('giftData', {...private_consume})
+        }
       })
       return
     }
@@ -158,6 +161,8 @@ class ProductDetail extends Component {
     const comment = pDetail.comments[0]
     const type = PRODUCT_TYPES[private_consume.scene]
 
+    console.log(type)
+
     return (
       <View className='product-detail'>
         <SysNavBar transparent noBorder />
@@ -171,9 +176,13 @@ class ProductDetail extends Component {
           </View>
 
           <View className='subtitle'>{pDetail.subtitle}</View>
-          <AtDivider lineColor='#F3F3F3' />
-          <View className='location-icon' />
-          <Label className='location-text'>{pDetail.location}</Label>
+          {pDetail.location && (
+            <View>
+              <AtDivider lineColor='#F3F3F3' />
+              <View className='location-icon' />
+              <Label className='location-text'>{pDetail.location}</Label>
+            </View>
+          )}
           <AtDivider lineColor='#F3F3F3' />
           <View className='reason-title'>推荐理由</View>
           <View className='reason'>{pDetail.reason}</View>
@@ -212,7 +221,7 @@ class ProductDetail extends Component {
                 ))}
               </Swiper>
             )}
-            <View className='detail-desc'>{pDetail.description}</View>
+            <View className='detail-desc'>{pDetail.description || ''}</View>
           </View>
           <View className='i-want-it' onClick={this.onSubmit}>
             我想{type === '伴手礼' ? '要' : '去'}

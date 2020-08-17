@@ -11,16 +11,27 @@ import SysNavBar from '@components/SysNavBar'
 import {returnFloat} from '@utils/tool'
 
 
+@connect(({ city }) => ({
+  currentCity: city.current
+}))
 class PayGift extends Component {
   config = {
     navigationBarTitleText: '订单支付'
   }
 
   state = {
-    count: 1
+    count: 1,
+    data: {}
   }
 
-  componentWillMount() {}
+  componentDidMount() {
+    const eventChannel = this.$scope.getOpenerEventChannel()
+    eventChannel.on('giftData', data => {
+      this.setState({
+        data
+      })
+    })
+  }
 
   onMoreAddress = e => {
     e.stopPropagation()

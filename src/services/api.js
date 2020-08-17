@@ -7,7 +7,10 @@ import {
   GET_LOCATION_LIST,
   GET_CHARTERED_PAGE,
   GET_CHARTERED_DETAIL,
-  GET_CHARTERED_LIST
+  GET_CHARTERED_LIST,
+  GET_USER_ADDRESS,
+  SAVE_USER_ADDRESS,
+  DELETE_USER_ADDRESS
 } from '@constants/api'
 import qs from 'query-string'
 
@@ -87,5 +90,28 @@ export function fetchConsumeList(params) {
     url: `${GET_CONSUME_LIST}?${qs.stringify(params)}`,
     method: 'POST',
     payload: []
+  })
+}
+
+export function fetchUserAddress(payload) {
+  return fetch({
+    url:GET_USER_ADDRESS,
+    method: 'POST',
+    payload
+  })
+}
+
+export function saveUserAddress(payload) {
+  return fetch({
+    url: SAVE_USER_ADDRESS,
+    method: 'POST',
+    payload
+  })
+}
+
+export function deleteUserAddress(params) {
+  return fetch({
+    url: DELETE_USER_ADDRESS.replace('ADDRESS_ID', params.id),
+    method: 'POST'
   })
 }

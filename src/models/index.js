@@ -8,5 +8,6 @@ import consume from './consume'
 import sit from './sit'
 import location from './location'
 import product from './product'
+import address from './address'
 
-export default [home, login, user, order, city, carTypes, consume, sit, location, product]
+export default [home, login, user, order, city, carTypes, consume, sit, location, product, address]

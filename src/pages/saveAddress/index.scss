@@ -1,12 +1,13 @@
 .save-address-page {
   position: relative;
   background-color: white;
-  margin: 0 24px;
   .form-item {
     border-bottom: solid 1px #f3f3f3;
     height: 120px;
     line-height: 120px;
     font-weight: 400;
+
+    margin: 0 24px;
     .label-name {
       color: #bdbdbd;
       font-size: 32px;
@@ -35,9 +36,8 @@
     }
   }
   .save-address {
-    margin-top: 50px;
+    margin: 50px 24px;
     height: 100px;
-    width: 100%;
     background: linear-gradient(
       90deg,
       rgba(254, 213, 0, 1) 0%,
@@ -52,12 +52,11 @@
   }
   .delete-address {
     margin: 32px auto;
-    color: #FD7D59;
+    color: #fd7d59;
     height: 40px;
     line-height: 40px;
     font-size: 28px;
     font-weight: 400;
     text-align: center;
-
   }
 }

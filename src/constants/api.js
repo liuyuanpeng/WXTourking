@@ -81,3 +81,12 @@ export const GET_CHARTERED_LIST = `${host}/travel/private_consume/list`
 
 // 获取包车详情
 export const GET_CHARTERED_DETAIL = `${host}/travel/private_consume/get`
+
+// 获取用户地址
+export const GET_USER_ADDRESS = `${host}/travel/user_dizhi/list`
+
+// 新增/编辑用户地址
+export const SAVE_USER_ADDRESS = `${host}/travel/user_dizhi/save`
+
+// 删除用户地址
+export const DELETE_USER_ADDRESS = `${host}/travel/user_dizhi/ADDRESS_ID/delete`

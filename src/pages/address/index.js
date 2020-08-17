@@ -10,19 +10,37 @@ import CommentItem from '@components/CommentItem'
 import SysNavBar from '@components/SysNavBar'
 import { returnFloat } from '@utils/tool'
 
-@connect(({  }) => ({
+@connect(({ address }) => ({
+  data: address.list,
+  defaultAddress: address.defaultAddress
 }))
 class Address extends Component {
-  config = {}
+  config = {
+    backgroundColor:'#F7F7F7'
+  }
 
   state = {}
 
-  componentWillMount() {}
+  componentWillMount() {
+    this.getData()
+  }
+
+  getData() {
+    const {dispatch} = this.props
+    dispatch({
+      type: 'address/getUserAddress'
+    })
+  }
 
   handleEdit = (item, e) => {
     e.stopPropagation()
     Taro.navigateTo({
-      url: '../saveAddress/index'
+      url: '../saveAddress/index',
+      success: res=>{
+        res.eventChannel.emit('addressData', {
+          ...item
+        })
+      }
     })
   }
 
@@ -34,66 +52,15 @@ class Address extends Component {
   }
 
   render() {
-    const addresses = [
-      {
-        name: '张三',
-        phone: '15605085028',
-        address: '福建省厦门市湖里区江头街道冠鸿花园312号'
-      },
-      {
-        name: '张三',
-        phone: '15605085028',
-        address: '福建省厦门市湖里区江头街道冠鸿花园312号'
-      },
-      {
-        name: '张三',
-        phone: '15605085028',
-        address: '福建省厦门市湖里区江头街道冠鸿花园312号'
-      },
-      {
-        name: '张三',
-        phone: '15605085028',
-        address: '福建省厦门市湖里区江头街道冠鸿花园312号'
-      },
-      {
-        name: '张三',
-        phone: '15605085028',
-        address: '福建省厦门市湖里区江头街道冠鸿花园312号'
-      },
-      {
-        name: '张三',
-        phone: '15605085028',
-        address: '福建省厦门市湖里区江头街道冠鸿花园312号'
-      },
-      {
-        name: '张三',
-        phone: '15605085028',
-        address: '福建省厦门市湖里区江头街道冠鸿花园312号'
-      },
-      {
-        name: '张三',
-        phone: '15605085028',
-        address: '福建省厦门市湖里区江头街道冠鸿花园312号'
-      },
-      {
-        name: '张三',
-        phone: '15605085028',
-        address: '福建省厦门市湖里区江头街道冠鸿花园312号'
-      },
-      {
-        name: '张三',
-        phone: '15605085028',
-        address: '福建省厦门市湖里区江头街道冠鸿花园312号福建省厦门市湖里区江头街道冠鸿花园312号福建省厦门市湖里区江头街道冠鸿花园312号福建省厦门市湖里区江头街道冠鸿花园312号'
-      }
-    ]
+    const {data} = this.props
     return (
       <View className='address-page' style={{top: 88 + Taro.$statusBarHeight + 'rpx'}}>
         <SysNavBar title='我的地址' />
-        {addresses.map((item, index) => (
+        {data.map((item, index) => (
           <View className='address-item' key={`address-item-${index}`}>
             <View className='address-left'>
               <Label className='address-name'>{item.name}</Label>
-              <Label className='address-phone'>{item.phone}</Label>
+              <Label className='address-phone'>{item.mobile}</Label>
               <View className='address-address'>{item.address}</View>
             </View>
             <View

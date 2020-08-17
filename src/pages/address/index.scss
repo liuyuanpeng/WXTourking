@@ -1,17 +1,15 @@
 .address-page {
-  background-color: #f7f7f7;
   width: 100%;
   position: relative;
-  padding: 24px;
   font-weight: 400;
   box-sizing: border-box;
+  background-color: #f7f7f7;
   .address-item {
-    margin-bottom: 24px;
-    border-radius: 20px;
     background-color: white;
+    margin: 24px auto;
+    border-radius: 20px;
     padding: 24px;
     width: 702px;
-
     box-sizing: border-box;
     .address-left {
       width: 540px;
@@ -50,7 +48,7 @@
     }
   }
   .address-new {
-    margin-top: 26px;
+    margin: 26px auto;
     width: 702px;
     height: 100px;
     background: linear-gradient(
