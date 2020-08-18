@@ -1,21 +1,15 @@
 import Taro, { Component } from '@tarojs/taro'
 import {
   View,
-  Image,
-  Label,
-  Swiper,
-  SwiperItem,
+  Button,
   ScrollView
 } from '@tarojs/components'
-import NavBar from '@components/NavBar'
 import { connect } from '@tarojs/redux'
 // import '../../common/index.scss'
 import './index.scss'
 
-import { AtDivider, AtNavBar, AtInputNumber, AtTabs, AtTabsPane } from 'taro-ui'
-import CommentItem from '@components/CommentItem'
+import { AtModal, AtModalHeader, AtModalContent, AtModalAction, AtTabs, AtTabsPane } from 'taro-ui'
 import SysNavBar from '@components/SysNavBar'
-import { returnFloat } from '@utils/tool'
 import OrderItem from '@components/OrderItem'
 
 @connect(({ order }) => ({
@@ -31,7 +25,23 @@ class AllOrders extends Component {
   }
 
   state = {
-    current: 0
+    current: 0,
+    showModal: false,
+    modalMsg: ''
+  }
+
+  showModalMsg = (modalMsg) => {
+    this.setState({
+      showModal: true,
+      modalMsg
+    })
+  }
+
+  closeModal = () => {
+    this.setState({
+      showModal: false,
+      modalMsg: ''
+    })
   }
 
   handleClick = (value, e) => {
@@ -115,6 +125,7 @@ class AllOrders extends Component {
       height: `${Taro.$windowHeight - 85 - 88 - Taro.$statusBarHeight}rpx`
     }
 
+    const {current, showModal, modalMsg} = this.state
     return (
       <View
         className='all-order-page'
@@ -123,47 +134,54 @@ class AllOrders extends Component {
         <SysNavBar title='全部订单' />
         <View className='all-order-tabs'>
           <AtTabs
-            current={this.state.current}
+            current={current}
             tabList={tabList}
             onClick={this.handleClick}
           >
-            <AtTabsPane current={this.state.current} index={0}>
+            <AtTabsPane current={current} index={0}>
               <ScrollView scrollY style={scrollStyle}>
                 {allOrders.data_list.map(item => (
-                  <OrderItem key={`order-item-${item.order.id}`} data={item} />
+                  <OrderItem showModalMsg={this.showModalMsg} key={`order-item-${item.order.id}`} data={item} />
                 ))}
               </ScrollView>
             </AtTabsPane>
-            <AtTabsPane current={this.state.current} index={1}>
+            <AtTabsPane current={current} index={1}>
               <ScrollView scrollY style={scrollStyle}>
                 {waitForPayOrders.data_list.map(item => (
-                  <OrderItem key={`order-item-${item.order.id}`} data={item} />
+                  <OrderItem showModalMsg={this.showModalMsg} key={`order-item-${item.order.id}`} data={item} />
                 ))}
               </ScrollView>
             </AtTabsPane>
-            <AtTabsPane current={this.state.current} index={2}>
+            <AtTabsPane current={current} index={2}>
               <ScrollView scrollY style={scrollStyle}>
                 {waitForGoOrders.data_list.map(item => (
-                  <OrderItem key={`order-item-${item.order.id}`} data={item} />
+                  <OrderItem showModalMsg={this.showModalMsg} key={`order-item-${item.order.id}`} data={item} />
                 ))}
               </ScrollView>
             </AtTabsPane>
-            <AtTabsPane current={this.state.current} index={3}>
+            <AtTabsPane current={current} index={3}>
               <ScrollView scrollY style={scrollStyle}>
                 {finishOrders.data_list.map(item => (
-                  <OrderItem key={`order-item-${item.order.id}`} data={item} />
+                  <OrderItem showModalMsg={this.showModalMsg} key={`order-item-${item.order.id}`} data={item} />
                 ))}
               </ScrollView>
             </AtTabsPane>
-            <AtTabsPane current={this.state.current} index={4}>
+            <AtTabsPane current={current} index={4}>
               <ScrollView scrollY style={scrollStyle}>
                 {waitForCommentOrders.data_list.map(item => (
-                  <OrderItem key={`order-item-${item.order.id}`} data={item} />
+                  <OrderItem showModalMsg={this.showModalMsg} key={`order-item-${item.order.id}`} data={item} />
                 ))}
               </ScrollView>
             </AtTabsPane>
           </AtTabs>
         </View>
+        <AtModal isOpened={showModal}>
+          <AtModalHeader>物流编号</AtModalHeader>
+          <AtModalContent>{modalMsg}</AtModalContent>
+          <AtModalAction>
+            <Button onClick={this.closeModal}>确定</Button>
+          </AtModalAction>
+        </AtModal>
       </View>
     )
   }

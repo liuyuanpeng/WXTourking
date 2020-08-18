@@ -117,6 +117,7 @@
       vertical-align: top;
       margin-left: 24px;
       font-weight: 400;
+      width: 410px;
       .order-template-title {
         color: #333333;
         font-size: 32px;
@@ -124,11 +125,17 @@
         line-height: 44px;
         font-weight: bold;
         margin: 14px 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
       .order-template-text {
         height: 34px;
         line-height: 34px;
         margin-top: 2px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
     }
   }

@@ -8,11 +8,13 @@ import './index.scss'
 import { AtDivider, AtNavBar, AtInputNumber } from 'taro-ui'
 import CommentItem from '@components/CommentItem'
 import SysNavBar from '@components/SysNavBar'
-import {returnFloat} from '@utils/tool'
+import { returnFloat } from '@utils/tool'
+import STORAGE from '@constants/storage'
 
-
-@connect(({ city }) => ({
-  currentCity: city.current
+@connect(({ city, address }) => ({
+  currentCity: city.current,
+  defaultAddress: address.defaultAddress,
+  addresses: address.list
 }))
 class PayGift extends Component {
   config = {
@@ -21,8 +23,39 @@ class PayGift extends Component {
 
   state = {
     count: 1,
+    address: this.props.defaultAddress,
     data: {}
   }
+
+  componentWillReceiveProps(nextProps) {
+    const addresses = nextProps.addresses
+    if (!this.state.address) return
+    const addressId = this.state.address.id
+    const newAddress = addresses.find(address=>address.id === addressId)
+    this.setState(
+      {
+        address: newAddress || nextProps.defaultAddress
+      }
+    )
+  }
+  
+
+  componentWillMount() {
+    
+    const { dispatch } = this.props
+    dispatch({
+      type: 'address/getUserAddress',
+      success: data => {
+        if (data) {
+          const address = data.find(item => item.set_default)
+          this.setState({
+            address
+          })
+        }
+      }
+    })
+  }
+  
 
   componentDidMount() {
     const eventChannel = this.$scope.getOpenerEventChannel()
@@ -37,8 +70,12 @@ class PayGift extends Component {
     e.stopPropagation()
     console.log('onMoreAddress')
     Taro.navigateTo({
-      url: `../address/index`
+      url: `../address/index?mode=select`
     })
+  }
+
+  selectAddress = address => {
+    this.setState({ address })
   }
 
   handleChange = value => {
@@ -49,34 +86,85 @@ class PayGift extends Component {
 
   handlePay = e => {
     e.stopPropagation()
-    console.log('handlePay')
+    const {dispatch, currentCity} = this.props
+    const {data, count, address} = this.state
+    const payload = {
+      user_id: Taro.getStorageSync(STORAGE.USER_ID),
+      user_mobile: Taro.getStorageSync(STORAGE.USER_PHONE),
+      open_id: Taro.getStorageSync(STORAGE.OPEN_ID),
+      scene: 'BANSHOU_PRIVATE',
+      common_scene: 'ORDER',
+      city_id: currentCity.id,
+      count,
+      price: data.price*count,
+      receive_mobile: address.mobile,
+      private_consume_id: data.id,
+      order_source: 'USER',
+      receive_name: address.name,
+      receive_address: address.address,
+      mobile: address.mobile,
+      username: address.name
+    }
+    dispatch({
+      type: 'order/createOrder',
+      payload,
+      success: result => {
+        dispatch({
+          type: 'order/setUserOrder',
+          payload: {
+            order: {...result},
+            private_consume: data
+          },
+          success: ()=>{
+            Taro.navigateTo({
+              url: '../orderStatus/index'
+            })
+          }
+        })
+      }
+    })
   }
 
   render() {
-    const { count } = this.state
-    const { price = 1 } = this.props
+    const { count, address, data} = this.state
+    let giftImg
+    try {
+      const images = data.images.split(',')
+      if (images && images.length) {
+        giftImg = images[0]
+      }
+    } catch (error) {
+      
+    }
     return (
-      <View className='pay-gift' style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}>
+      <View
+        className='pay-gift'
+        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+      >
         <SysNavBar title='订单支付' />
-        <View className='address'>
-          <View className='address-icon' />
-          <View className='address-details'>
-            <Label className='name'>张三</Label>
-            <Label className='phone'>18343323433</Label>
-            <View className='address-text'>
-              福建省厦门市湖里区江头街道冠鸿花园312号福建省厦门市湖里区江头街道冠鸿花园312号
+        {address && address.id ? (
+          <View className='address'>
+            <View className='address-icon' />
+            <View className='address-details'>
+              <Label className='name'>{address.name}</Label>
+              <Label className='phone'>{address.mobile}</Label>
+              <View className='address-text'>{address.address}</View>
             </View>
+            <View className='more-address' onClick={this.onMoreAddress} />
           </View>
-          <View className='more-address' onClick={this.onMoreAddress} />
-        </View>
+        ) : (
+          <View className='address-btn' onClick={this.onMoreAddress}>
+            去新增收货地址
+          </View>
+        )}
         <View className='gift-container'>
-          <Image className='gift-image' mode='aspectFill' />
+          <Image className='gift-image' mode='aspectFill' src={giftImg} />
           <View className='gift-detail'>
-            <View className='gift-name'>苏小糖牛轧糖</View>
-            <View className='gift-subtitle'>地道的厦门风味小吃</View>
+        <View className='gift-name'>{data.name}</View>
+            <View className='gift-subtitle'>{data.tag}</View>
             <View className='gift-transport'>付款后三天内发货</View>
             <View className='gift-price'>
-              ￥24 <View className='gift-count-minus'>{`×${count}`}</View>
+              ￥{data.price} <View className='gift-count-minus'>{`×${count}`}</View>
             </View>
           </View>
           <View className='gift-count'>
@@ -92,14 +180,16 @@ class PayGift extends Component {
           <View className='summary'>
             <Label className='sum'>{`共${count}件`}</Label>
             小计:
-            <Label className='total'>{`￥${returnFloat(price * count)}`}</Label>
+            <Label className='total'>{`￥${returnFloat(data.price * count)}`}</Label>
           </View>
         </View>
         <View className='pay-gift-footer'>
           <Label className='pay-it' onClick={this.handlePay}>
             立即支付
           </Label>
-          <Label className='total-footer'>{`￥${returnFloat(price * count)}`}</Label>
+          <Label className='total-footer'>{`￥${returnFloat(
+            data.price * count
+          )}`}</Label>
           <Label className='sum-text'>合计：</Label>
           <Label className='sum-footer'>{`共${count}件，`}</Label>
         </View>

@@ -133,18 +133,31 @@ class Home extends Component {
     })
   }
 
-  onSeeProduct = (detail, e) => {
-    console.log('onSeeProduct: ', detail)
+  onSeeProduct = (detail, e)=> {
     e.stopPropagation()
-    Taro.navigateTo({
-      url: `../product/index`,
-      success: res => {
-        res.eventChannel.emit('acceptProductData', {
-          ...detail
-        })
-      }
-    })
+    const {private_consume} = detail
+    const {scene} = private_consume
+    if (scene === 'ROAD_PRIVATE') {
+      Taro.navigateTo({
+        url: '../routeDetail/index',
+        success: res => {
+          res.eventChannel.emit('roadData', {
+            ...detail
+          })
+        }
+      })
+    } else {
+      Taro.navigateTo({
+        url: `../product/index`,
+        success: res => {
+          res.eventChannel.emit('acceptProductData', {
+            ...detail
+          })
+        }
+      })
+    }
   }
+
   onSeeMore = e => {
     e.stopPropagation()
     console.log('onSeeMore')
@@ -155,7 +168,6 @@ class Home extends Component {
 
   onMoreScene = e => {
     e.stopPropagation()
-    console.log('onMoreScene')
     Taro.navigateTo({
       url: `../moreProduct/index?type=scene`
     })
@@ -257,7 +269,7 @@ class Home extends Component {
               </Label>
               <View className='guess-you-like-container'>
                 {hot && hot[0] && (
-                  <View className='like-1'>
+                  <View className='like-1' onClick={this.onSeeProduct.bind(this, hot[0])}>
                     <Image
                       className='like-image'
                       src={hot[0].private_consume.images.split(',')[0]}
@@ -272,7 +284,7 @@ class Home extends Component {
                 )}
                 <View className='like-2-3'>
                   {hot && hot[1] && (
-                    <View className='like-item'>
+                    <View className='like-item' onClick={this.onSeeProduct.bind(this, hot[1])}>
                       <Image
                         className='like-image'
                         src={hot[1].private_consume.images.split(',')[1]}
@@ -287,7 +299,7 @@ class Home extends Component {
                     </View>
                   )}
                   {hot && hot[2] && (
-                    <View className='like-item'>
+                    <View className='like-item' onClick={this.onSeeProduct.bind(this, hot[2])}>
                       <Image
                         className='like-image'
                         src={hot[2].private_consume.images.split(',')[2]}

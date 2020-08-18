@@ -16,12 +16,14 @@ import { returnFloat } from '@utils/tool'
 }))
 class Address extends Component {
   config = {
-    backgroundColor:'#F7F7F7'
   }
 
   state = {}
 
   componentWillMount() {
+    if (this.$router.params.mode === 'select') {
+      this.selectMode = true
+    }
     this.getData()
   }
 
@@ -30,6 +32,18 @@ class Address extends Component {
     dispatch({
       type: 'address/getUserAddress'
     })
+  }
+
+  onSelect = (data, e) => {
+    e.stopPropagation()
+    if (this.selectMode) {
+      const pages = Taro.getCurrentPages()
+      const prePage = pages[pages.length - 2]
+      prePage.setData({
+        address: data
+      })
+      Taro.navigateBack()
+    }
   }
 
   handleEdit = (item, e) => {
@@ -57,7 +71,7 @@ class Address extends Component {
       <View className='address-page' style={{top: 88 + Taro.$statusBarHeight + 'rpx'}}>
         <SysNavBar title='我的地址' />
         {data.map((item, index) => (
-          <View className='address-item' key={`address-item-${index}`}>
+          <View className='address-item' key={`address-item-${index}`} onClick={this.onSelect.bind(this, item)}>
             <View className='address-left'>
               <Label className='address-name'>{item.name}</Label>
               <Label className='address-phone'>{item.mobile}</Label>

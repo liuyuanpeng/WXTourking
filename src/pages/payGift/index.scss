@@ -45,6 +45,9 @@
         height: 36px;
         line-height: 36px;
         width: 506px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
 
@@ -58,6 +61,22 @@
       background-size: 100% 100%;
       vertical-align: top;
     }
+  }
+  .address-btn {
+    margin: 24px auto;
+    margin: 26px auto;
+    width: 702px;
+    height: 100px;
+    background: linear-gradient(
+      90deg,
+      rgba(254, 213, 0, 1) 0%,
+      rgba(254, 200, 2, 1) 100%
+    );
+    border-radius: 8px;
+    color: #333333;
+    font-size: 32px;
+    line-height: 100px;
+    text-align: center;
   }
   .gift-container {
     margin: 0 24px;
@@ -86,6 +105,9 @@
         font-size: 32px;
         line-height: 32px;
         color: #333333;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       .gift-subtitle {
         margin-top: 8px;
@@ -94,6 +116,9 @@
         line-height: 34px;
         font-weight: 400;
         color: #bdbdbd;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       .gift-transport {
         margin-top: 8px;

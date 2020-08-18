@@ -1,13 +1,10 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Image, Label, ScrollView, Button } from '@tarojs/components'
-import NavBar from '@components/NavBar'
+import { View, Image, Label, ScrollView } from '@tarojs/components'
 import '../../common/index.scss'
 import './index.scss'
 
-const daySchedulePng = IMAGE_HOST + '/images/bkg4.png'
-import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui'
+import { AtModal } from 'taro-ui'
 import { connect } from '@tarojs/redux'
-import CommentItem from '@components/CommentItem'
 import SysNavBar from '@components/SysNavBar'
 import { returnFloat } from '@utils/tool'
 import dayjs from 'dayjs'
@@ -90,9 +87,17 @@ class PayProduct extends Component {
 
   render() {
     const { data } = this.props
-    const { order, consume, private_consume, chexing, zuowei } = data
+    const { order, private_consume, chexing, zuowei } = data
     const { showModal } = this.state
     if (!order) return null
+    let productImg
+    try {
+      productImg = private_consume.images
+        ? private_consume.images.split(',')[0]
+        : ''
+    } catch (error) {
+      console.log('error image config')
+    }
     const {
       scene,
       order_status,
@@ -104,10 +109,18 @@ class PayProduct extends Component {
       start_time,
       start_place,
       target_place,
-      air_no
+      air_no,
+      receive_name,
+      receive_mobile,
+      count
     } = order
 
     const orderStatusDesc = ORDER_STATUS[order_status]
+
+    const isChartered =
+      scene === 'JIEJI' || scene === 'SONGJI' || scene === 'DAY_PRIVATE'
+
+    const isGift = scene === 'BANSHOU_PRIVATE'
 
     const orderInfos = [
       {
@@ -115,23 +128,18 @@ class PayProduct extends Component {
         value: id
       },
       {
-        label: '乘车人',
-        value: username
+        label: isGift ? '收货人' : '乘车人',
+        value: isGift ? receive_name : username
       },
       {
         label: '手机号',
-        value: mobile
+        value: isGift ? receive_mobile : mobile
       },
       {
         label: '服务商',
         value: '旅王出行'
       }
     ]
-
-    const isChartered =
-      scene === 'JIEJI' || scene === 'SONGJI' || scene === 'DAY_PRIVATE'
-
-    console.log(isChartered)
 
     const scrollStyle = {
       top: 88 + Taro.$statusBarHeight + 'rpx',
@@ -149,25 +157,30 @@ class PayProduct extends Component {
           <SysNavBar title='确认订单' />
           {!isChartered && (
             <View className='pay-product-header'>
-              {(orderStatusDesc === '待付款' ||
-                orderStatusDesc === '待出行') && (
-                <View className='pay-product-tip'>
-                  {orderStatusDesc === '待付款'
-                    ? '您的订单尚未完成支付，请重新支付'
-                    : `我们会在${dayjs(start_time).format(
-                        'MM月DD日 HH:mm'
-                      )}前确认车辆信息`}
-                </View>
-              )}
+              {!isGift &&
+                (orderStatusDesc === '待付款' ||
+                  orderStatusDesc === '待出行') && (
+                  <View className='pay-product-tip'>
+                    {orderStatusDesc === '待付款'
+                      ? '您的订单尚未完成支付，请重新支付'
+                      : `我们会在${dayjs(start_time).format(
+                          'MM月DD日 HH:mm'
+                        )}前确认车辆信息`}
+                  </View>
+                )}
               <Image
                 className='header-image'
-                src={daySchedulePng}
+                src={productImg}
                 mode='aspectFill'
               />
               <View className='header-right'>
-                <View className='header-title'>厦门胡里山炮台</View>
-                <View className='header-subtitle'>八闽门户，天南锁钥</View>
-                <View className='header-declare'>付款后司机会主动联系您</View>
+                <View className='header-title'>{private_consume.name}</View>
+                <View className='header-subtitle'>{private_consume.tag}</View>
+                {isGift ? (
+                  <View className='header-price'>数量: x{count || 1}</View>
+                ) : (
+                  <View className='header-declare'>付款后司机会主动联系您</View>
+                )}
                 <View className='header-price'>￥{returnFloat(price)}</View>
               </View>
             </View>
@@ -209,7 +222,7 @@ class PayProduct extends Component {
               继续支付
             </View>
           )}
-          {!isChartered && (
+          {!isChartered && !isGift && (
             <View className='pay-product-info'>
               <View className='pay-product-info-label'>
                 {`车型:  ${chexing.name || ''}${zuowei.name || ''}`}
@@ -217,9 +230,9 @@ class PayProduct extends Component {
                   {chexing.baggages}
                 </Label>
               </View>
-              <View className='pay-product-info-label'>{`用车时间:  ${dayjs(start_time).format(
-                'YYYY年MM月DD日 HH:mm'
-              )}`}</View>
+              <View className='pay-product-info-label'>{`用车时间:  ${dayjs(
+                start_time
+              ).format('YYYY年MM月DD日 HH:mm')}`}</View>
               <View className='pay-product-info-label'>{`上车地点:  ${start_place}`}</View>
             </View>
           )}
@@ -292,7 +305,10 @@ class PayProduct extends Component {
             </View>
           )}
           {(orderStatusDesc === '待出行' || orderStatusDesc === '待付款') && (
-            <View className='pay-product-cancel-btn' onClick={this.handleCancel}>
+            <View
+              className='pay-product-cancel-btn'
+              onClick={this.handleCancel}
+            >
               取消订单
             </View>
           )}

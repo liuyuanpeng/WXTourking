@@ -10,7 +10,7 @@ export default modelExtend(commonModel, {
   namespace: 'product',
   state: {
     detail: {},
-    list: [],
+    ROAD: [],
     hot: [],
     hotJINGDIAN: [],
     hotMEISHI: [],
@@ -23,14 +23,12 @@ export default modelExtend(commonModel, {
   reducers: {},
   effects: {
     *getProductList(
-      { target = 'JINGDIAN', success, fail },
+      { target = 'ROAD', success, fail },
       { call, put, select }
     ) {
       const currentCity = yield select(state => state.city.current)
       const params = { city_id: currentCity.id }
-      if (target !== 'list') {
-        params.scene = [`${target}_PRIVATE`].toString()
-      }
+      params.scene = [`${target}_PRIVATE`].toString()
       const res = yield call(fetchProductList, params)
       if (res.code === 'SUCCESS') {
         const newState = {}
@@ -47,12 +45,8 @@ export default modelExtend(commonModel, {
     *getHotProduct({ target = 'hot', success, fail }, { call, put, select }) {
       const currentCity = yield select(state => state.city.current)
       let scene
-      if (target === 'hot') {
-        scene = [
-          'JINGDIAN_PRIVATE',
-          'MEISHI_PRIVATE',
-          'BANSHOU_PRIVATE'
-        ].toString()
+      if (target === 'hot' || target === 'recommend') {
+        scene = ['ROAD_PRIVATE'].toString()
       } else if (target.indexOf('JINGDIAN') >= 0) {
         scene = ['JINGDIAN_PRIVATE'].toString()
       } else if (target.indexOf('MEISHI') >= 0) {

@@ -51,12 +51,16 @@
         margin-top: 48px;
         margin-bottom: 24px;
         margin-right: 24px;
+        width: 340px;
         .header-title {
           height: 32px;
           font-size: 32px;
           line-height: 32px;
           font-weight: bold;
           color: #333333;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
         }
         .header-subtitle {
           margin-top: 8px;
@@ -64,6 +68,9 @@
           line-height: 34px;
           font-size: 24px;
           color: #bdbdbd;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
         }
         .header-declare {
           margin-top: 2px;
@@ -71,6 +78,9 @@
           line-height: 34px;
           color: #f6ba31;
           font-size: 24px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
         }
         .header-price {
           margin-top: 12px;

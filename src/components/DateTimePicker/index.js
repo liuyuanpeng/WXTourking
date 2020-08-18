@@ -160,7 +160,7 @@ class DateTimePicker extends Component {
                     {dateTime.format('MM-DD日')}
                   </View>
                   <View className='selected-item-week selected-item-week-extern'>
-                    {`周${WeekArr[dateTime.day()]}${dateTime.format('hh:mm')}`}
+                    {`周${WeekArr[dateTime.day()]}${dateTime.format('HH:mm')}`}
                   </View>
                 </View>
               )

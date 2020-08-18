@@ -11,7 +11,7 @@ import ProductItem from '@components/ProductItem'
 import DecorateTitle from '@components/DecorateTitle'
 
 @connect(({ product, city }) => ({
-  list: product.list,
+  list: product.ROAD,
   recommend: product.recommend,
   currentCity: city.current
 }))
@@ -32,7 +32,7 @@ class More extends Component {
     const { dispatch } = this.props
     dispatch({
       type: 'product/getProductList',
-      target: 'list'
+      target: 'ROAD'
     })
     dispatch({
       type: 'product/getHotProduct',
@@ -53,11 +53,29 @@ class More extends Component {
     console.log('onSeeMore')
   }
 
-  handleProduct = e => {
+  handleProduct = (detail, e)=> {
     e.stopPropagation()
-    Taro.navigateTo({
-      url: '../routeDetail/index'
-    })
+    const {private_consume} = detail
+    const {scene} = private_consume
+    if (scene === 'ROAD_PRIVATE') {
+      Taro.navigateTo({
+        url: '../routeDetail/index',
+        success: res => {
+          res.eventChannel.emit('roadData', {
+            ...detail
+          })
+        }
+      })
+    } else {
+      Taro.navigateTo({
+        url: `../product/index`,
+        success: res => {
+          res.eventChannel.emit('acceptProductData', {
+            ...detail
+          })
+        }
+      })
+    }
   }
 
   render() {
@@ -91,7 +109,7 @@ class More extends Component {
                 let topText = '000000' + (index + 1)
                 topText = topText.substring(topText.length - 2)
                 return (
-                  <View className='choice-item' key={`choice-item-${index}`}>
+                  <View className='choice-item' key={`choice-item-${index}`} onClick={this.handleProduct.bind(this, item)}>
                     <Image
                       src={item.private_consume.images.split(',')[0]}
                       className='choice-image'
@@ -128,7 +146,7 @@ class More extends Component {
             </View>*/}
             {list.map(item => (
               <ProductItem
-                onClick={this.handleProduct}
+                onClick={this.handleProduct.bind(this, item)}
                 key={`scene-item-${item.private_consume.id}`}
                 type={
                   item.private_consume.scene === 'BANSHOU_PRIVATE'

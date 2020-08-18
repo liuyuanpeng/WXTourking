@@ -1,6 +1,5 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Label, Text, ScrollView, Image } from '@tarojs/components'
-import NavBar from '@components/NavBar'
 import { connect } from '@tarojs/redux'
 // import '../../common/index.scss'
 import './index.scss'
@@ -14,6 +13,8 @@ import PopView from '@components/PopView'
 import dayjs from 'dayjs'
 import { AtInput } from 'taro-ui'
 import STORAGE from '@constants/storage'
+import LocationInput from '@components/LocationInput'
+import DateTimePicker from '@components/DateTimePicker'
 
 @connect(({ city }) => ({
   currentCity: city.current
@@ -29,7 +30,9 @@ class CarType extends Component {
     name: '',
     phoneNum: '',
     phoneNumBackup: '',
-    order: {}
+    order: {},
+    startPlace: { title: '' },
+    startTime: dayjs().add(1, 'day')
   }
 
   componentDidMount() {
@@ -42,7 +45,8 @@ class CarType extends Component {
 
     const name = Taro.getStorageSync(STORAGE.ORDER_USER_NAME) || ''
     const phoneNum = Taro.getStorageSync(STORAGE.ORDER_USER_MOBILE) || ''
-    const phoneNumBackup = Taro.getStorageSync(STORAGE.ORDER_USER_MOBILE_BACKUP) || ''
+    const phoneNumBackup =
+      Taro.getStorageSync(STORAGE.ORDER_USER_MOBILE_BACKUP) || ''
     this.setState({
       name,
       phoneNum,
@@ -101,14 +105,54 @@ class CarType extends Component {
 
   handlePay = e => {
     e.stopPropagation()
-    const { name, phoneNum, phoneNumBackup, order } = this.state
+    const {
+      name,
+      phoneNum,
+      phoneNumBackup,
+      order,
+      startPlace,
+      startTime
+    } = this.state
+
+    const {currentCity} = this.props
+
+    const {
+      scene,
+      city_id = currentCity.id,
+      air_no = '',
+      kilo = 0,
+      time = 0,
+      start_place = {},
+      target_place = {},
+      start_time,
+      chexing = {},
+      zuowei = {},
+      consume = {},
+      price,
+      days = 1,
+      private_consume = {}
+    } = order
     let msg = ''
     const regex = /^(13|14|15|16|17|18|19)\d{9}$/
     if (!name) {
       msg = '请输入您的姓名'
     } else if (!phoneNum || !regex.test(phoneNum)) {
       msg = '请输入正确的手机号'
-    } else if (!regex.test(phoneNumBackup)) {
+    } else if (scene === 'ROAD_PRIVATE') {
+      if (
+        !startPlace ||
+        !startPlace.title ||
+        !startPlace.latitude ||
+        !startPlace.longitude
+      ) {
+        msg = '请选择上车地点'
+      } else if (startTime.isBefore(dayjs())) {
+        msg = '上车时间已过期'
+      }
+    } else if (
+      scene !== 'ROAD_PRIVATE' &&
+      (!phoneNumBackup || !regex.test(phoneNumBackup))
+    ) {
       msg = '请输入正确的备用手机号'
     }
     if (msg) {
@@ -119,22 +163,6 @@ class CarType extends Component {
       return
     }
 
-    const {
-      scene,
-      city_id,
-      air_no = '',
-      kilo = 0,
-      time = 0,
-      start_place,
-      target_place,
-      start_time,
-      chexing,
-      zuowei,
-      consume,
-      price,
-      days = 1,
-      private_consume
-    } = order
     // 创建订单
     const payload = {
       user_id: Taro.getStorageSync(STORAGE.USER_ID),
@@ -143,25 +171,32 @@ class CarType extends Component {
       scene,
       common_scene: 'ORDER',
       city_id,
-      chexing_id: chexing.id,
-      zuowei_id: zuowei.id,
+      chexing_id: chexing.id || '',
+      zuowei_id: zuowei.id || '',
       price,
-      start_time: start_time.valueOf(),
+      start_time: start_time ? start_time.valueOf() : '',
       kilo,
       time,
       air_no,
       days,
-      start_place: start_place.title,
-      start_latitude: start_place.latitude,
-      start_longitude: start_place.longitude,
-      target_place: target_place.title,
-      target_latitude: target_place.latitude,
-      target_longitude: target_place.longitude,
+      start_place: start_place.title || '',
+      start_latitude: start_place.latitude || '',
+      start_longitude: start_place.longitude || '',
+      target_place: target_place.title || '',
+      target_latitude: target_place.latitude || '',
+      target_longitude: target_place.longitude || '',
       contact_mobile: phoneNumBackup || '',
-      mobile: phoneNum,
+      mobile: phoneNum || '',
       order_source: 'USER',
-      consume_id: consume.id,
-      username: name
+      consume_id: consume.id || '',
+      username: name || '',
+      private_consume_id: private_consume.id || ''
+    }
+    if (scene === 'ROAD_PRIVATE') {
+      payload.start_time = startTime.valueOf()
+      payload.start_place = startPlace.title
+      payload.start_latitude = startPlace.latitude
+      payload.start_longitude = startPlace.longitude
     }
     this.props.dispatch({
       type: 'order/createOrder',
@@ -176,13 +211,13 @@ class CarType extends Component {
         this.props.dispatch({
           type: 'order/setUserOrder',
           payload: {
-            order: {...result},
+            order: { ...result },
             chexing,
             zuowei,
             consume,
             private_consume
           },
-          success: ()=>{
+          success: () => {
             Taro.navigateTo({
               url: '../orderStatus/index'
             })
@@ -195,6 +230,18 @@ class CarType extends Component {
           icon: 'none'
         })
       }
+    })
+  }
+
+  handleLocationChange = location => {
+    this.setState({
+      startPlace: location
+    })
+  }
+
+  handleChangeTime = value => {
+    this.setState({
+      startTime: value
     })
   }
 
@@ -246,7 +293,9 @@ class CarType extends Component {
       name,
       phoneNum,
       phoneNumBackup,
-      order
+      order,
+      startPlace,
+      startTime
     } = this.state
 
     const {
@@ -254,8 +303,19 @@ class CarType extends Component {
       days = 1,
       chexing = {},
       zuowei = {},
-      price = 0
+      price = 0,
+      private_consume = {},
+      scene
     } = order
+
+    let productImg
+    try {
+      productImg = private_consume.images
+        ? private_consume.images.split(',')[0]
+        : ''
+    } catch (error) {
+      return <View></View>
+    }
     const { currentCity, coupons = 0 } = this.props
 
     const assurance = ['专车司机', '行前联系', '免费等待30分钟']
@@ -361,36 +421,59 @@ class CarType extends Component {
       <View className='car-page'>
         <SysNavBar transparent title='填写订单' />
         <View className='car-page-bkg' />
-        <View className='car-header'>
-          <View>
-            <Label className='car-header-title'>包车{days}天</Label>
-            <Label className='car-header-start'>{currentCity.name}出发</Label>
-          </View>
-          <View className='car-header-time'>
-            {start_time ? start_time.format('当地时间MM月DD日 HH:mm用车') : ''}
-          </View>
-          <View className='car-header-car-type'>
-            {`${chexing.name + zuowei.name} | ${chexing.passengers} | ${
-              chexing.baggages
-            }`}
-          </View>
-          <View
-            className='car-header-detail'
-            onClick={this.showScheduleDetail.bind(this, true)}
-          >
-            行程详情
-          </View>
-          <View className='car-header-assurance'>
-            {assurance.map((item, index) => (
-              <View
-                className='car-header-assurance-item'
-                key={`car-header-assurance-item-${index}`}
-              >
-                {item}
+        {scene === 'ROAD_PRIVATE' ? (
+          <View className='car-header'>
+            <Image
+              mode='aspectFill'
+              className='car-header-image'
+              src={productImg}
+            />
+            <View className='car-header-right'>
+              <View className='car-header-right-title'>
+                {private_consume.name}
               </View>
-            ))}
+              <View className='car-header-right-subtitle'>
+                {private_consume.tag}
+              </View>
+              <View className='car-header-right-subtitle'>
+                ￥{returnFloat(private_consume.price)}
+              </View>
+            </View>
           </View>
-        </View>
+        ) : (
+          <View className='car-header'>
+            <View>
+              <Label className='car-header-title'>包车{days}天</Label>
+              <Label className='car-header-start'>{currentCity.name}出发</Label>
+            </View>
+            <View className='car-header-time'>
+              {start_time
+                ? start_time.format('当地时间MM月DD日 HH:mm用车')
+                : ''}
+            </View>
+            <View className='car-header-car-type'>
+              {`${chexing.name + zuowei.name} | ${chexing.passengers} | ${
+                chexing.baggages
+              }`}
+            </View>
+            <View
+              className='car-header-detail'
+              onClick={this.showScheduleDetail.bind(this, true)}
+            >
+              行程详情
+            </View>
+            <View className='car-header-assurance'>
+              {assurance.map((item, index) => (
+                <View
+                  className='car-header-assurance-item'
+                  key={`car-header-assurance-item-${index}`}
+                >
+                  {item}
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
         <ScrollView className='content-scroll' scrollY style={scrollStyle}>
           <View className='phones'>
             <View className='phones-header'>
@@ -408,6 +491,31 @@ class CarType extends Component {
                 onChange={this.onChangeName}
               />
             </View>
+            {scene === 'ROAD_PRIVATE' && (
+              <View>
+                <View className='phones-split-line' />
+                <View className='phones-item'>
+                  <View className='phones-item-label'>选择上车地点</View>
+                  <LocationInput
+                    wrap-class='phones-item-input'
+                    title={startPlace.title}
+                    placeholder='请选择上车地点'
+                    onChange={this.handleLocationChange}
+                  />
+                </View>
+                <View className='phones-split-line' />
+                <View className='phones-item'>
+                  <View className='phones-item-label'>用车时间</View>
+                  <DateTimePicker
+                    wrap-class='phones-item-input'
+                    onOk={this.handleChangeTime}
+                    hidePassed
+                    initValue={startTime}
+                    placeholder='请选择日期'
+                  />
+                </View>
+              </View>
+            )}
             <View className='phones-split-line' />
             <View className='phones-item'>
               <View className='phones-item-label'>手机号</View>
@@ -419,17 +527,21 @@ class CarType extends Component {
                 onChange={this.onChangePhone}
               />
             </View>
-            <View className='phones-split-line' />
-            <View className='phones-item'>
-              <View className='phones-item-label'>备用手机号</View>
-              <AtInput
-                type='phone'
-                className='phones-item-input'
-                placeholder='您的同行人手机号'
-                value={phoneNumBackup}
-                onChange={this.onChangePhoneBackup}
-              />
-            </View>
+            {scene !== 'ROAD_PRIVATE' && (
+              <View>
+                <View className='phones-split-line' />
+                <View className='phones-item'>
+                  <View className='phones-item-label'>备用手机号</View>
+                  <AtInput
+                    type='phone'
+                    className='phones-item-input'
+                    placeholder='您的同行人手机号'
+                    value={phoneNumBackup}
+                    onChange={this.onChangePhoneBackup}
+                  />
+                </View>
+              </View>
+            )}
           </View>
           <View className='coupon-container'>
             <View className='title-label'>优惠券</View>

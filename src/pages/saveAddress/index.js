@@ -142,7 +142,8 @@ class SaveAddress extends Component {
       {
         name: '电话',
         value: mobile,
-        placeholder: '请输入您的联系电话'
+        placeholder: '请输入您的联系电话',
+        maxLength: 11
       },
       {
         name: '地址',
@@ -165,6 +166,7 @@ class SaveAddress extends Component {
               className='form-input'
               value={item.value}
               placeholder={item.placeholder}
+              maxLength={item.maxLength || 100}
               onChange={this.handleInput.bind(this, item)}
             />
           </View>

@@ -5,7 +5,6 @@ import { connect } from '@tarojs/redux'
 import '../../common/index.scss'
 import './index.scss'
 
-const daySchedulePng = IMAGE_HOST + '/images/bkg4.png'
 import { AtDivider, AtNavBar, AtInputNumber, AtInput } from 'taro-ui'
 import CommentItem from '@components/CommentItem'
 import SysNavBar from '@components/SysNavBar'
@@ -277,6 +276,12 @@ class PayProduct extends Component {
       order
     } = this.state
     const { private_consume = {} } = order
+    let productImg
+    try {
+      productImg = private_consume.images ? private_consume.images.split(',')[0] : ''
+    } catch (error) {
+      
+    }
     return (
       <View
         className='pay-product'
@@ -286,7 +291,7 @@ class PayProduct extends Component {
         <View className='pay-product-header'>
           <Image
             className='header-image'
-            src={daySchedulePng}
+            src={productImg}
             mode='aspectFill'
           />
           <View className='header-right'>

@@ -1,5 +1,5 @@
 import Taro from '@tarojs/taro'
-import { View, Image, Label, Button } from '@tarojs/components'
+import { View, Image, Label } from '@tarojs/components'
 import dayjs from 'dayjs'
 import ORDER_STATUS from '@constants/status'
 import ORDER_TYPE from '@constants/types'
@@ -8,7 +8,6 @@ import './index.scss'
 
 const carPng = IMAGE_HOST + '/images/car.png'
 const giftPng = IMAGE_HOST + '/images/gift.png'
-import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui'
 
 import { connect } from '@tarojs/redux'
 
@@ -16,20 +15,13 @@ import { connect } from '@tarojs/redux'
 class OrderItem extends Taro.Component {
   static defaultProps = {
     data: {},
-    showModal: false
+    showModalMsg: null
   }
 
-  showTransferNumber = e => {
+  showTransferNumber = (express_number, e) => {
     e.stopPropagation()
-    this.setState({
-      showModal: true
-    })
-  }
-  closeModal = e => {
-    e.stopPropagation()
-    this.setState({
-      showModal: false
-    })
+    const {showModalMsg} = this.props
+    showModalMsg && showModalMsg(express_number)
   }
 
   goToDetail = e => {
@@ -47,14 +39,22 @@ class OrderItem extends Taro.Component {
   }
   render() {
     const { data } = this.props
-    const { showModal } = this.state
     const {
       order = { scene: 'JIEJI' },
-      private_consume,
+      private_consume = {},
       zuowei,
       chexing
     } = data
     const type = ORDER_TYPE[order.scene] || ''
+    let productImg
+    try {
+      productImg =
+        private_consume && private_consume.images
+          ? private_consume.images.split(',')[0]
+          : ''
+    } catch (error) {
+      console.log(error)
+    }
     return (
       <View className='order-item'>
         <Image
@@ -106,7 +106,7 @@ class OrderItem extends Taro.Component {
           <View className='order-template'>
             <Image
               className='order-template-image'
-              src={private_consume ? private_consume.images[0] : ''}
+              src={productImg}
               mode='aspectFill'
             />
             <View className='order-template-detail'>
@@ -123,7 +123,7 @@ class OrderItem extends Taro.Component {
                 {type === '伴手礼' ? '下单' : '用车'}
                 {`时间: ${dayjs(order.start_time).format('YYYY-MM-DD')}`}
               </View>
-              {type !== '伴手礼' && (
+              {type !== '线路包车' && type !== '伴手礼' && (
                 <View className='order-template-text'>{`车型: ${chexing.name ||
                   ''}${zuowei.name || ''}`}</View>
               )}
@@ -140,8 +140,8 @@ class OrderItem extends Taro.Component {
                   取消订单
                 </View>
               )}
-              {ORDER_STATUS[order.order_status] === '已完成' && (
-                <View className='order-btn' onClick={this.showTransferNumber}>
+              {order.scene === 'BANSHOU_PRIVATE' && ORDER_STATUS[order.order_status] === '已完成' && (
+                <View className='order-btn' onClick={this.showTransferNumber.bind(this, order.express_number)}>
                   查看物流编号
                 </View>
               )}
@@ -153,13 +153,6 @@ class OrderItem extends Taro.Component {
             </View>
           </View>
         )}
-        <AtModal isOpened={showModal}>
-          <AtModalHeader>物流编号</AtModalHeader>
-          <AtModalContent>{order.id}</AtModalContent>
-          <AtModalAction>
-            <Button onClick={this.closeModal}>确定</Button>
-          </AtModalAction>
-        </AtModal>
       </View>
     )
   }

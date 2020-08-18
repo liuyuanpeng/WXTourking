@@ -64,10 +64,15 @@ class MoreProduct extends Component {
     })
   }
 
-  onSeeProduct = (item, e) => {
+  onSeeProduct = (detail, e)=> {
     e.stopPropagation()
     Taro.navigateTo({
-      url: `../product/index?type=${item.type}`
+      url: `../product/index`,
+      success: res => {
+        res.eventChannel.emit('acceptProductData', {
+          ...detail
+        })
+      }
     })
   }
 
