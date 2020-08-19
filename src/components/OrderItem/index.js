@@ -121,7 +121,7 @@ class OrderItem extends Taro.Component {
               )}
               <View className='order-template-text'>
                 {type === '伴手礼' ? '下单' : '用车'}
-                {`时间: ${dayjs(order.start_time).format('YYYY-MM-DD')}`}
+                {`时间: ${dayjs(type==='伴手礼' ? order.create_time : order.start_time).format('YYYY-MM-DD')}`}
               </View>
               {type !== '线路包车' && type !== '伴手礼' && (
                 <View className='order-template-text'>{`车型: ${chexing.name ||
@@ -140,7 +140,7 @@ class OrderItem extends Taro.Component {
                   取消订单
                 </View>
               )}
-              {order.scene === 'BANSHOU_PRIVATE' && ORDER_STATUS[order.order_status] === '已完成' && (
+              {order.scene === 'BANSHOU_PRIVATE' && (ORDER_STATUS[order.order_status] === '已完成' || ORDER_STATUS[order.order_status] === '进行中') && (
                 <View className='order-btn' onClick={this.showTransferNumber.bind(this, order.express_number)}>
                   查看物流编号
                 </View>
