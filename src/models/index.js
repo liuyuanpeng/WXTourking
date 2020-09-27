@@ -9,5 +9,6 @@ import sit from './sit'
 import location from './location'
 import product from './product'
 import address from './address'
+import search from './search'
 
-export default [home, login, user, order, city, carTypes, consume, sit, location, product, address]
+export default [search, home, login, user, order, city, carTypes, consume, sit, location, product, address]

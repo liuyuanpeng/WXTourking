@@ -1,6 +1,7 @@
 import fetch from '../utils/request'
 import {
   GET_CITY,
+  GET_HOT_SEARCH,
   GET_CAR_TYPES,
   GET_CONSUME_LIST,
   GET_SIT_LIST,
@@ -41,6 +42,16 @@ export function fetchProductList(params) {
         property: 'weight'
       }
     ]
+  })
+}
+
+export function fetchHotSearchList(city_id) {
+  return fetch({
+    url: `${GET_HOT_SEARCH}`,
+    method: 'POST',
+    payload: {
+      city_id
+    }
   })
 }
 

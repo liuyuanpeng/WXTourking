@@ -19,7 +19,7 @@
   .search-split {
     width: 100%;
     height: 24px;
-    background-color: #F7F7F7;
+    background-color: #f7f7f7;
   }
   .current-city {
     margin-bottom: 20px;
@@ -28,5 +28,13 @@
     line-height: 40px;
     font-size: 28px;
     margin-left: 24px;
+  }
+  .search-result {
+    position: absolute;
+    overflow-y: auto;
+    box-sizing: border-box;
+    background: white;
+    padding: 0 20px;
+    width: 100%;
   }
 }

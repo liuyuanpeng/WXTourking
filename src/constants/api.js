@@ -4,6 +4,9 @@ export const host = HOST + '/v5'
 // 获取用户信息
 export const GET_USER = `${host}/user/get`
 
+// 热门搜搜
+export const GET_HOT_SEARCH = `${host}/travel/hot_search/list`
+
 // 获取城市列表
 export const GET_CITY = `${host}/travel/city/list`
 
