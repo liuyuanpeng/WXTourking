@@ -11,7 +11,9 @@ const STORAGE = {
   ORDER_USER_MOBILE_BACKUP: 'order-user-mobile-backup',
   SOURCE_SHOP_ID: 'source-shop-id',
   SOURCE_DRIVER_ID: 'source-driver-id',
-  HISTORY: 'search-history'
+  HISTORY: 'search-history',
+  USER_FANLI: 'user-fanli',
+  OLD_USER: 'old-user'
 }
 
 export default STORAGE

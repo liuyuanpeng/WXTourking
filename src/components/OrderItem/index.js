@@ -37,6 +37,19 @@ class OrderItem extends Taro.Component {
       }
     })
   }
+
+  goToEvaluate = e => {
+    e.stopPropagation();
+    const {data} = this.props
+    Taro.navigateTo({
+      url: '../../pages/evaluate/index',
+      success: res => {
+        res.eventChannel.emit('acceptEvaluate', {
+          data
+        })
+      }
+    })
+  }
   render() {
     const { data } = this.props
     const {
@@ -94,7 +107,7 @@ class OrderItem extends Taro.Component {
                 </View>
               )}
               {ORDER_STATUS[order.order_status] === '已完成' &&
-                !order.evaluate && <View className='order-btn-red'>评价</View>}
+                !order.evaluate && <View className='order-btn-red' onClick={this.goToEvaluate}>评价</View>}
               {ORDER_STATUS[order.order_status] === '待付款' && (
                 <View className='order-btn-red' onClick={this.goToDetail}>
                   去付款
@@ -134,6 +147,8 @@ class OrderItem extends Taro.Component {
               <Label className='order-price-total'>{`￥ ${order.price}`}</Label>
             </View>
             <View className='order-buttons'>
+            {ORDER_STATUS[order.order_status] === '已完成' &&
+                !order.evaluate && <View className='order-btn-red' onClick={this.goToEvaluate}>评价</View>}
               {(ORDER_STATUS[order.order_status] === '待出行' ||
                 ORDER_STATUS[order.order_status] === '待付款') && (
                 <View className='order-btn' onClick={this.goToDetail}>

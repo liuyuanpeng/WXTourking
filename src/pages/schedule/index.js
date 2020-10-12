@@ -23,18 +23,6 @@ class Home extends PureComponent {
     modalMsg: ''
   }
 
-  componentDidMount() {
-    this.props.dispatch({
-      type: 'order/getBAOCHE',
-      fail: msg => {
-        Taro.showToast({
-          title: msg || '获取行程失败',
-          icon: 'none'
-        })
-      }
-    })
-  }
-
   componentDidShow() {
     if (
       Taro.getEnv() === Taro.ENV_TYPE.WEAPP &&
@@ -42,9 +30,34 @@ class Home extends PureComponent {
       this.$scope.getTabBar()
     ) {
       this.$scope.getTabBar().$component.setState({
-        selected: 2
+        selected: 1
       })
     }
+
+    const {current} = this.state
+    let scene
+    switch (current) {
+      case 0:
+        scene = 'BAOCHE'
+        break
+      case 1:
+        scene = 'JIEJI'
+        break
+      case 2:
+        scene = 'XIANLU'
+        break
+      default:
+        break
+    }
+    this.props.dispatch({
+      type: `order/get${scene}`,
+      fail: msg => {
+        Taro.showToast({
+          title: msg || '获取行程失败',
+          icon: 'none'
+        })
+      }
+    })
   }
 
   showModalMsg = (modalMsg) => {

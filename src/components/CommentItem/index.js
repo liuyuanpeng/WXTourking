@@ -2,7 +2,7 @@ import Taro from '@tarojs/taro'
 import { View, Image } from '@tarojs/components'
 
 import './index.scss'
-import { AtRate } from 'taro-ui'
+import { AtRate, AtIcon } from 'taro-ui'
 import dayjs from 'dayjs'
 
 class CommentItem extends Taro.Component {
@@ -16,17 +16,18 @@ class CommentItem extends Taro.Component {
   }
 
   render() {
-    const { avatar, name, stars, time, comment, images } = this.props
+    const { name, stars, time, comment, images } = this.props
     return (
       <View className='comment-item'>
         <View className='time'>{dayjs(time).format('YYYY-MM-DD')}</View>
-        <Image className='avatar' src={avatar} mode='aspectFill' />
+        <View className='avatar'>
+          <AtIcon size={34} value='user' />
+        </View>
         <View className='comment-header'>
           <View className='name'>{name}</View>
           <AtRate size={11} className='stars' value={stars} />
-          
         </View>
-        
+
         <View className='comment'>{comment}</View>
         <View className='images'>
           {images &&

@@ -97,6 +97,7 @@ class PayGift extends Component {
       city_id: currentCity.id,
       count,
       price: data.price*count,
+      total_price: data.price*count,
       receive_mobile: address.mobile,
       private_consume_id: data.id,
       order_source: 'USER',

@@ -1,0 +1,148 @@
+.evaluate-page {
+  position: relative;
+  background-color: #ffffff;
+  .evaluate-header {
+    height: 196px;
+    width: 100%;
+    padding: 0 24px;
+    box-sizing: border-box;
+    position: relative;
+    &-image {
+      width: 240px;
+      height: 196px;
+    }
+    &-normal {
+      margin-top: 20px;
+    }
+    &-right {
+      display: inline-block;
+      position: absolute;
+      left: 295px;
+      width: 350px;
+      height: 100%;
+    }
+    &-title {
+      width: 350px;
+      height: 44px;
+      font-size: 32px;
+      font-weight: bold;
+      color: #333333;
+      line-height: 44px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      margin-bottom: 14px;
+    }
+    &-subtitle {
+      width: 350px;
+      font-size: 24px;
+      font-weight: 400;
+      color: #666666;
+      line-height: 34px;
+      height: 34px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+    &-ex {
+      font-weight: bold;
+      &-title {
+        font-size: 36px;
+        line-height: 50px;
+        height: 50px;
+        margin-top: 32px;
+        margin-left: 24px;
+      }
+      &-subtitle {
+        height: 36px;
+        line-height: 36px;
+        font-size: 26px;
+        margin-left: 24px;
+      }
+      &-place {
+        margin-top: 59px;
+        position: relative;
+        padding-left: 40px;
+        box-sizing: border-box;
+        font-size: 30px;
+        line-height: 42px;
+        height: 62px;
+        margin-left: 24px;
+        border-left: 2px solid #333333;
+      }
+      &-place-start {
+        height: 42px;
+        position: relative;
+        top: -21px;
+        &::before {
+          content: '';
+          position: absolute;
+          width: 16px;
+          height: 16px;
+          border-radius: 8px;
+          left: -48px;
+          top: 50%;
+          margin-top: -8px;
+          background-color: #333333;
+        }
+      }
+      &-place-target {
+        height: 42px;
+        margin-top: -1px;
+        position: relative;
+        &::before {
+          content: '';
+          position: absolute;
+          width: 16px;
+          height: 16px;
+          border-radius: 8px;
+          left: -48px;
+          top: 50%;
+          margin-top: -8px;
+          background-color: #333333;
+        }
+      }
+      &-price {
+        margin-top: 28px;
+        position: absolute;
+        right: 48px;
+        height: 50px;
+        color: #fd7d59;
+        font-size: 36px;
+        line-height: 36px;
+      }
+    }
+  }
+  .evaluate-rate {
+    margin-top: 34px;
+    display: flex;
+    &-label {
+      height: 44px;
+      font-size: 32px;
+      font-weight: bold;
+      color: #333333;
+      line-height: 44px;
+      margin-right: 20px;
+      margin-left: 24px;
+    }
+  }
+  .evaluate-content {
+    margin: 28px 24px;
+  }
+
+  .evaluate-footer {
+    margin: 0 24px 52px 24px;
+    width: 702px;
+    height: 100px;
+    background: linear-gradient(90deg, #fed500 0%, #fec802 100%);
+    border-radius: 8px;
+    text-align: center;
+    font-size: 32px;
+    font-weight: bold;
+    color: #333333;
+    line-height: 100px;
+    position: absolute;
+    bottom: 0;
+  }
+}

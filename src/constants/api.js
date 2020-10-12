@@ -93,3 +93,24 @@ export const SAVE_USER_ADDRESS = `${host}/travel/user_dizhi/save`
 
 // 删除用户地址
 export const DELETE_USER_ADDRESS = `${host}/travel/user_dizhi/ADDRESS_ID/delete`
+
+// 评价司机
+export const EVALUATE_DRIVER = `${host}/travel/driver/evaluate`
+
+// 评价模板
+export const EVALUATE_ORDER = `${host}/travel/private_consume/evaluate`
+
+// 获取模板评价
+export const EVALUATE_PAGE = `${host}/travel/private_consume/evaluate_page`
+
+// 获取优惠券池
+export const COUPON_POOL = `${host}/travel/coupon_pool/list`
+
+// 优惠券
+export const COUPON_PAGE = `${host}/travel/coupon/page`
+
+// 领取优惠券
+export const COUPON_OBTAIN = `${host}/travel/coupon/obtain`
+
+// 获取账单可用优惠券
+export const COUPON_USABLE = `${host}/travel/coupon/usable_list`

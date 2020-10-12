@@ -17,15 +17,23 @@ import SysNavBar from '@components/SysNavBar'
 import { returnFloat } from '@utils/tool'
 import CouponItem from '@components/CouponItem'
 import dayjs from 'dayjs'
+import STORAGE from '@constants/storage'
 
-
+@connect(({ coupon }) => ({
+  list: coupon.list,
+  usedList: coupon.usedList,
+  overdueList: coupon.overdueList,
+  usableList: coupon.usableList
+}))
 class Coupon extends Component {
   config = {
     navigationBarTitleText: '我的优惠券'
   }
 
   state = {
-    current: 0
+    current: 0,
+    canEdit: false,
+    price: 0
   }
 
   handleClick = (value, e) => {
@@ -35,67 +43,131 @@ class Coupon extends Component {
     })
   }
 
-  
-
-  componentDidMount() {
+  obtainCoupon = e => {
+    e.stopPropagation()
+    // 获取满减优惠券池
+    this.props.dispatch({
+      type: 'coupon/getPool',
+      payload: {
+        coupon_category: 'MANJIAN'
+      },
+      success: pool => {
+        if (pool && pool.id) {
+          this.props.dispatch({
+            type: 'coupon/obtainCoupon',
+            payload: {
+              mobile: Taro.getStorageSync(STORAGE.USER_PHONE),
+              coupon_pool_id: pool.id
+            },
+            success: () => {
+              this.fetchData()
+              Taro.showToast({
+                title: '获取优惠券成功',
+                icon: 'none'
+              })
+            },
+            fail: msg => {
+              Taro.showToast({
+                title: msg || '没有更多优惠券了',
+                icon: 'none'
+              })
+            }
+          })
+        } else {
+          Taro.showToast({
+            title: '没有更多优惠券了',
+            icon: 'none'
+          })
+        }
+      },
+      fail: msg => {
+        Taro.showToast({
+          title: msg || '获取优惠券池失败',
+          icon: 'none'
+        })
+      }
+    })
   }
 
-  coupons = [
-    {
-      id: '1',
-      value: 15,
-      overflow: 50,
-      start_time: dayjs('2020-04-10').valueOf(),
-      end_time: dayjs('2020-04-17').valueOf() - 1,
-      title: '旅王出行优惠券'
-    },
-    {
-      id: '2',
-      value: 15,
-      overflow: 50,
-      start_time: dayjs('2020-04-10').valueOf(),
-      end_time: dayjs('2020-04-17').valueOf() - 1,
-      title: '旅王出行优惠券'
-    },
-    {
-      id: '3',
-      value: 15,
-      overflow: 50,
-      start_time: dayjs('2020-04-10').valueOf(),
-      end_time: dayjs('2020-04-17').valueOf() - 1,
-      title: '旅王出行优惠券'
-    },
-    {
-      id: '4',
-      value: 15,
-      overflow: 50,
-      start_time: dayjs('2020-04-10').valueOf(),
-      end_time: dayjs('2020-04-17').valueOf() - 1,
-      title: '旅王出行优惠券'
-    },
-    {
-      id: '5',
-      value: 15,
-      overflow: 50,
-      start_time: dayjs('2020-04-10').valueOf(),
-      end_time: dayjs('2020-04-17').valueOf() - 1,
-      title: '旅王出行优惠券'
+  componentDidMount() {
+    const { dispatch } = this.props
+    const user_id = Taro.getStorageSync(STORAGE.USER_ID)
+    if (!user_id) return
+    dispatch({
+      type: 'coupon/getCouponList',
+      payload: {
+        status: 2,
+        user_id
+      }
+    })
+    dispatch({
+      type: 'coupon/getCouponList',
+      payload: {
+        status: 3,
+        user_id
+      }
+    })
+    if (this.$router.params.canEdit && this.$router.params.price) {
+      this.setState({
+        canEdit: true,
+        price: parseFloat(this.$router.params.price)
+      })
     }
-  ]
+  }
+
+  fetchData = () => {
+    const { dispatch } = this.props
+    const user_id = Taro.getStorageSync(STORAGE.USER_ID)
+    if (!user_id) return
+    const {canEdit, price} = this.state
+    if (canEdit && price) {
+      dispatch({
+        type: 'coupon/getUsableCoupon',
+        payload: {
+          price,
+          user_id
+        }
+      })
+    } else {
+      dispatch({
+        type: 'coupon/getCouponList',
+        payload: {
+          status: 1,
+          user_id
+        }
+      })
+    }
+  }
+
+  onSelect(coupon) {
+    const pages = Taro.getCurrentPages()
+    const prePage = pages[pages.length - 2]
+    prePage.setData({
+      coupon
+    })
+    Taro.navigateBack()
+  }
 
   render() {
+    const { canEdit } = this.state
+
     const tabList = [
-      { title: '未使用' },
+      { title: canEdit ? '可使用' : '未使用' },
       { title: '已使用' },
       { title: '已过期' }
     ]
 
+    const { list, usedList, overdueList, usableList } = this.props
+
     const scrollStyle = {
-      height: `${Taro.$windowHeight - Taro.$statusBarHeight-276}rpx`
+      height: `${Taro.$windowHeight - Taro.$statusBarHeight - 376}rpx`
     }
 
     return (
-      <View className='all-coupon-page' style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}>
+      <View
+        className='all-coupon-page'
+        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+      >
         <SysNavBar title='我的优惠券' />
         <View className='all-coupon-tabs'>
           <AtTabs
@@ -105,18 +177,19 @@ class Coupon extends Component {
           >
             <AtTabsPane current={this.state.current} index={0}>
               <ScrollView scrollY style={scrollStyle}>
-                {this.coupons.map((item, index) => (
+                {(canEdit ? usableList : list).map((item, index) => (
                   <CouponItem
+                    onSelect={canEdit ? this.onSelect.bind(this, item) : null}
                     type='effective'
                     key={`coupon-item-${index}`}
                     {...item}
                   />
                 ))}
               </ScrollView>
-</AtTabsPane>
+            </AtTabsPane>
             <AtTabsPane current={this.state.current} index={1}>
               <ScrollView scrollY style={scrollStyle}>
-                {this.coupons.map((item, index) => (
+                {usedList.map((item, index) => (
                   <CouponItem
                     type='used'
                     key={`coupon-item-${index}`}
@@ -124,10 +197,10 @@ class Coupon extends Component {
                   />
                 ))}
               </ScrollView>
- </AtTabsPane>
+            </AtTabsPane>
             <AtTabsPane current={this.state.current} index={2}>
               <ScrollView scrollY style={scrollStyle}>
-                {this.coupons.map((item, index) => (
+                {overdueList.map((item, index) => (
                   <CouponItem
                     type='overdue'
                     key={`coupon-item-${index}`}
@@ -135,12 +208,15 @@ class Coupon extends Component {
                   />
                 ))}
               </ScrollView>
-
-           </AtTabsPane>
+            </AtTabsPane>
           </AtTabs>
         </View>
-        <View className='coupon-bottom'>特别提示：每个用户1天最多使用2张优惠券</View>
-            
+        <View className='coupon-bottom'>
+          特别提示：每个用户1天最多使用2张优惠券
+        </View>
+        <View className='coupon-button' onClick={this.obtainCoupon}>
+          领取更多优惠券
+        </View>
       </View>
     )
   }

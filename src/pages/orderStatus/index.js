@@ -112,7 +112,8 @@ class PayProduct extends Component {
       air_no,
       receive_name,
       receive_mobile,
-      count
+      count,
+      coupon_price
     } = order
 
     const orderStatusDesc = ORDER_STATUS[order_status]
@@ -274,7 +275,7 @@ class PayProduct extends Component {
         {orderStatusDesc === '待付款' && (
           <View className='pay-product-coupon'>
             <View className='pay-product-coupon-title'>优惠券</View>
-            <View className='pay-product-coupon-right'>已优惠15元</View>
+        <View className='pay-product-coupon-right'>已优惠{coupon_price || 0}元</View>
           </View>
         )}
         {/* 发票 */}

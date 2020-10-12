@@ -10,5 +10,7 @@ import location from './location'
 import product from './product'
 import address from './address'
 import search from './search'
+import evaluate from './evaluate'
+import coupon from './coupon'
 
-export default [search, home, login, user, order, city, carTypes, consume, sit, location, product, address]
+export default [coupon, evaluate, search, home, login, user, order, city, carTypes, consume, sit, location, product, address]

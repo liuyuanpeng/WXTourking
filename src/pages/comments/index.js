@@ -16,7 +16,10 @@ import { AtDivider, AtNavBar, AtInputNumber, AtTabs, AtTabsPane } from 'taro-ui'
 import CommentItem from '@components/CommentItem'
 import SysNavBar from '@components/SysNavBar'
 
-
+@connect(({ city, evaluate }) => ({
+  currentCity: city.current,
+  comments: evaluate.list
+}))
 class Comments extends Component {
   config = {
     navigationBarTitleText: '全部评论'
@@ -38,101 +41,48 @@ class Comments extends Component {
   componentDidMount() {}
 
   render() {
-    const tagList = [
-      {
-        name: '服务热情',
-        count: 31
-      },
-      {
-        name: '车内干净',
-        count: 31
-      },
-      {
-        name: '服务周到',
-        count: 31
-      }
-    ]
-
-    const comments = [
-      {
-        user: 'test',
-        avatar: safe_png,
-        time: new Date().getTime(),
-        images: [safe_png, safe_png, safe_png],
-        comment:
-          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
-      },
-      {
-        user: 'test',
-        avatar: safe_png,
-        time: new Date().getTime(),
-        comment:
-          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
-      },
-      {
-        user: 'test',
-        avatar: safe_png,
-        time: new Date().getTime(),
-        comment:
-          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
-      },
-      {
-        user: 'test',
-        avatar: safe_png,
-        time: new Date().getTime(),
-        comment:
-          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
-      },
-      {
-        user: 'test',
-        avatar: safe_png,
-        time: new Date().getTime(),
-        comment:
-          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
-      },
-      {
-        user: 'test',
-        avatar: safe_png,
-        time: new Date().getTime(),
-        comment:
-          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
-      },
-      {
-        user: 'test',
-        avatar: safe_png,
-        time: new Date().getTime(),
-        comment:
-          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
-      }
-    ]
-
+    // const tagList = [
+    //   {
+    //     name: '服务热情',
+    //     count: 31
+    //   },
+    //   {
+    //     name: '车内干净',
+    //     count: 31
+    //   },
+    //   {
+    //     name: '服务周到',
+    //     count: 31
+    //   }
+    // ]
+    
+    const {comments=[]} = this.props
     
     const scrollStyle = {
-      height: `${Taro.$windowHeight - Taro.$statusBarHeight - 200}rpx`
+      height: `${Taro.$windowHeight - Taro.$statusBarHeight - 88}rpx`
     }
 
     return (
       <View className='comments-page' style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}>
         <SysNavBar title='全部评论' />
-        <View className='tags-container'>
+        {/* <View className='tags-container'>
           {tagList.map((item, index)=>(
             <View className='tag-item' key={`tag-item-${index}`}>
               {`${item.name}(${item.count})`}
             </View>
           ))}
-        </View>
+        </View> */}
         <ScrollView scrollY scrollWithAnimation style={scrollStyle}>
           <View className='comments-container'>
           {comments.map((comment, index) => (
             <View key={`comment-item-${index}`}>
               {index > 0 && <View className='split-line' />}
               <CommentItem
-                avatar={comment.avatar}
-                name={comment.user}
-                stars={4.5}
-                time={comment.time}
-                comment={comment.comment}
-                images={comment.images}
+                name={comment.user_id}
+                stars={comment.evaluate/2}
+                time={comment.create_time}
+                comment={comment.content}
+                images={comment.image ? comment.image.split(',') : []}
               />
             </View>
           ))}

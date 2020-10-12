@@ -92,7 +92,7 @@ class AllOrders extends Component {
 
   componentWillMount() {}
 
-  componentDidMount() {
+  componentDidShow() {
     const current = this.$router.params.index || 0
     this.setState({
       current: parseInt(current)

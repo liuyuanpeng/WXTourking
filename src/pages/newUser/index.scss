@@ -12,53 +12,34 @@
     font-weight: bold;
     position: relative;
   }
-
-  &-content {
-    position: relative;
-    margin: 0 auto;
-    text-align: center;
-    top: 795px;
-  }
   .new-coupon {
-    display: inline-block;
-    margin-right: 24px;
     background: url('../../asset/images/coupon.png') no-repeat;
     background-size: 100% 100%;
     width: 321px;
     height: 269px;
+    position: relative;
+    top: 795px;
     margin: 0 auto;
     text-align: center;
     padding: 20px;
     box-sizing: border-box;
     &-title {
-      color: #fe374e;
+      color: #FE374E;
       font-size: 30px;
       font-weight: normal;
     }
     &-price {
-      color: #fe374e;
+      color: #FE374E;
       font-weight: bold;
       font-size: 90px;
-      margin-top: -15px;
       &-before {
-        color: #fe374e;
+        color: #FE374E;
         font-size: 32px;
       }
     }
-
-    &-tip {
-      background-color: #fe374e;
-      height: 30px;
-      border-radius: 15px;
-      width: 120px;
-      font-size: 20px;
-      margin: 0 auto;
-      margin-top: -5px;
-      color: white;
-    }
-
+    
     &-desc {
-      color: #808080;
+      color:#808080;
       font-size: 24px;
       font-weight: normal;
     }

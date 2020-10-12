@@ -14,12 +14,12 @@ class TabBar extends Taro.Component {
         iconPath: '../asset/images/home.png',
         selectedIconPath: '../asset/images/home_focus.png'
       },
-      {
-        pagePath: '../discovery/index',
-        text: '发现',
-        iconPath: '../asset/images/discovery.png',
-        selectedIconPath: '../asset/images/discovery_focus.png'
-      },
+      // {
+      //   pagePath: '../discovery/index',
+      //   text: '发现',
+      //   iconPath: '../asset/images/discovery.png',
+      //   selectedIconPath: '../asset/images/discovery_focus.png'
+      // },
       {
         pagePath: '../schedule/index',
         text: '行程',

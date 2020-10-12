@@ -122,7 +122,7 @@ class Search extends Component {
                 image={item.private_consume.images.split(',')[0]}
                 title={item.private_consume.name}
                 pointDesc={`${item.private_consume.evaluate_score ||
-                  0}分 非常棒`}
+                  0}分 ${item.private_consume.evaluate_score>=7?'非常棒': ''}`}
                 pointTail={`${item.private_consume.evaluate_count || 0}条点评`}
                 subtitle={
                   (item.private_consume.recommend_count || 0) + '买过的推荐'

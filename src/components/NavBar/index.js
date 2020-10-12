@@ -31,7 +31,8 @@ class Navbar extends Taro.Component {
     showBackOnly: false,
     navigate: false,
     onFocus: null,
-    onSearch: null
+    onSearch: null,
+    titleStyle: {}
   }
 
   state = {
@@ -111,7 +112,8 @@ class Navbar extends Taro.Component {
       showBackOnly,
       navigate,
       cityList,
-      currentCity
+      currentCity,
+      titleStyle
     } = this.props
 
     if (showBackOnly) {
@@ -136,7 +138,7 @@ class Navbar extends Taro.Component {
         )}
         <View
           className='title'
-          style={{ marginTop: Taro.$statusBarHeight + 38 + 'rpx' }}
+          style={{ marginTop: Taro.$statusBarHeight + 38 + 'rpx', ...titleStyle  }}
         >
           {title}
         </View>

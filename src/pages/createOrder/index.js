@@ -16,8 +16,9 @@ import STORAGE from '@constants/storage'
 import LocationInput from '@components/LocationInput'
 import DateTimePicker from '@components/DateTimePicker'
 
-@connect(({ city }) => ({
-  currentCity: city.current
+@connect(({ city, coupon }) => ({
+  currentCity: city.current,
+  usableList: coupon.usableList
 }))
 class CarType extends Component {
   config = {
@@ -32,7 +33,8 @@ class CarType extends Component {
     phoneNumBackup: '',
     order: {},
     startPlace: { title: '' },
-    startTime: dayjs().add(1, 'day')
+    startTime: dayjs().add(1, 'day'),
+    coupon: ''
   }
 
   componentDidMount() {
@@ -41,6 +43,18 @@ class CarType extends Component {
       this.setState({
         order: data
       })
+
+      const {price} = data
+      if (price) {
+        // 获取可用优惠券
+        this.props.dispatch({
+          type: 'coupon/getUsableCoupon',
+          payload: {
+            price,
+            user_id: Taro.getStorageSync(STORAGE.USER_ID)
+          }
+        })
+      }
     })
 
     const name = Taro.getStorageSync(STORAGE.ORDER_USER_NAME) || ''
@@ -85,7 +99,7 @@ class CarType extends Component {
   goToCoupon = e => {
     e.stopPropagation()
     Taro.navigateTo({
-      url: '../coupon/index'
+      url: '../coupon/index?canEdit=true'
     })
   }
 
@@ -111,7 +125,8 @@ class CarType extends Component {
       phoneNumBackup,
       order,
       startPlace,
-      startTime
+      startTime,
+      coupon
     } = this.state
 
     const {currentCity} = this.props
@@ -174,6 +189,7 @@ class CarType extends Component {
       chexing_id: chexing.id || '',
       zuowei_id: zuowei.id || '',
       price,
+      total_price: price,
       start_time: start_time ? start_time.valueOf() : '',
       kilo,
       time,
@@ -198,6 +214,13 @@ class CarType extends Component {
       payload.start_latitude = startPlace.latitude
       payload.start_longitude = startPlace.longitude
     }
+
+    // 使用优惠券信息
+    if (coupon && coupon.id) {
+      payload.coupon_id = coupon.id
+      payload.coupon_price = coupon.price
+    }
+
     this.props.dispatch({
       type: 'order/createOrder',
       payload,
@@ -295,7 +318,8 @@ class CarType extends Component {
       phoneNumBackup,
       order,
       startPlace,
-      startTime
+      startTime,
+      coupon
     } = this.state
 
     const {
@@ -316,7 +340,7 @@ class CarType extends Component {
     } catch (error) {
       return <View></View>
     }
-    const { currentCity, coupons = 0 } = this.props
+    const { currentCity, usableList } = this.props
 
     const assurance = ['专车司机', '行前联系', '免费等待30分钟']
 
@@ -547,10 +571,10 @@ class CarType extends Component {
             <View className='title-label'>优惠券</View>
             <View className='subtitle-label'>增值税发票不享受优惠</View>
             <View
-              className={`coupon-right ${coupons ? '' : 'coupon-right-gray'}`}
+              className={`coupon-right ${usableList && usableList.length ? '' : 'coupon-right-gray'}`}
               onClick={this.goToCoupon}
             >
-              {coupons ? `${coupons}张优惠券` : '无可用优惠券'}
+              {coupon ? `-${coupon.price}￥` : (usableList && usableList.length ? `${usableList.length}张优惠券` : '无可用优惠券')}
             </View>
           </View>
           <View className='contact'>
@@ -586,7 +610,7 @@ class CarType extends Component {
           )}前可免费取消`}
         </View>
         <View className='footer'>
-          <View className='price'>￥{price}</View>
+          <View className='price'>￥{coupon ? price-coupon.price : price}</View>
           <View className='detail' onClick={this.showDetail}>
             明细
           </View>

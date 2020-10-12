@@ -18,6 +18,7 @@ const inviteGiftPng = IMAGE_HOST + '/images/invite_gift.png'
 const myCouponPng = IMAGE_HOST + '/images/my_coupon.png'
 const profilePng = IMAGE_HOST + '/images/profile.png'
 import { AtIcon } from 'taro-ui'
+import STORAGE from '@constants/storage'
 
 @connect(({ user }) => ({
   userInfo: user
@@ -34,7 +35,7 @@ class Home extends PureComponent {
       this.$scope.getTabBar()
     ) {
       this.$scope.getTabBar().$component.setState({
-        selected: 3
+        selected: 2
       })
     }
   }
@@ -87,8 +88,20 @@ class Home extends PureComponent {
         title: '我的评论',
         icon: myCommentPng,
         action: () => {
-          Taro.navigateTo({
-            url: '../comments/index'
+          this.props.dispatch({
+            type: 'evaluate/getEvaluateList',
+            payload: {page: 0, size: 100},
+            success: () => {
+              Taro.navigateTo({
+                url: '../comments/index'
+              })
+            },
+            fail: msg => {
+              Taro.showToast({
+                title: msg || '获取评论失败',
+                icon: 'none'
+              })
+            }
           })
         }
       },
@@ -130,8 +143,23 @@ class Home extends PureComponent {
         title: '我的优惠券',
         icon: myCouponPng,
         action: () => {
-          Taro.navigateTo({
-            url: '../coupon/index'
+          this.props.dispatch({
+            type: 'coupon/getCouponList',
+            payload: {
+              status: 1,
+              user_id: Taro.getStorageSync(STORAGE.USER_ID)
+            },
+            success: () => {
+              Taro.navigateTo({
+                url: '../coupon/index'
+              })
+            },
+            fail: msg => {
+              Taro.showToast({
+                title: msg || '获取优惠券失败',
+                icon: 'none'
+              })
+            }
           })
         }
       },

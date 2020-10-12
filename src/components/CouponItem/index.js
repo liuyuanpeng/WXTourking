@@ -11,15 +11,20 @@ class CouponItem extends Taro.Component {
     value: '',
     overflow: '',
     start_time: '',
-    end_time: ''
+    end_time: '',
+    onSelect: null
   }
 
+  handleClick = e => {
+    e.stopPropagation();
+    this.props.onSelect && this.props.onSelect()
+  }
   render() {
     const { type, title, value, overflow, start_time, end_time } = this.props
     const isEffective = type === 'effective'
     const isOverdue = type === 'overdue'
     return (
-      <View className='coupon-item'>
+      <View className='coupon-item' onClick={this.handleClick}>
         <View
           className={isEffective ? 'coupon-item-left' : 'coupon-item-left gray-left'}
         >

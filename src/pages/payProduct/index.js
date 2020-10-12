@@ -133,6 +133,7 @@ class PayProduct extends Component {
       chexing_id: chexing.id,
       zuowei_id: zuowei.id,
       price,
+      total_price: price,
       start_time: start_time.valueOf(),
       kilo: this.kilo,
       time: this.time,

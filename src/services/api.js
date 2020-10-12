@@ -11,7 +11,14 @@ import {
   GET_CHARTERED_LIST,
   GET_USER_ADDRESS,
   SAVE_USER_ADDRESS,
-  DELETE_USER_ADDRESS
+  DELETE_USER_ADDRESS,
+  EVALUATE_DRIVER,
+  EVALUATE_ORDER,
+  EVALUATE_PAGE,
+  COUPON_PAGE,
+  COUPON_OBTAIN,
+  COUPON_USABLE,
+  COUPON_POOL
 } from '@constants/api'
 import qs from 'query-string'
 
@@ -124,5 +131,76 @@ export function deleteUserAddress(params) {
   return fetch({
     url: DELETE_USER_ADDRESS.replace('ADDRESS_ID', params.id),
     method: 'POST'
+  })
+}
+
+export function evaluateDriver(payload) {
+  return fetch({
+    url: EVALUATE_DRIVER,
+    method: 'POST',
+    payload
+  })
+}
+
+export function evaluateOrder(payload) {
+  return fetch({
+    url: EVALUATE_ORDER,
+    method: 'POST',
+    payload
+  })
+}
+
+export function fetchEvaluatePage(payload) {
+  const {page, size, ...params} = payload
+  return fetch({
+    url: EVALUATE_PAGE+`?status=1&${qs.stringify(params)}`,
+    method: 'POST',
+    payload: {
+      page,
+      size
+    }
+  })
+}
+
+export function fetchCouponPage(params) {
+  return fetch({
+    url: COUPON_PAGE,
+    method: 'POST',
+    payload: {page_request_data:{
+      page: 0,
+      size: 100,
+      sort_data_list: [
+        {
+          direction: 'DESC',
+          property: 'createTime'
+        }
+      ]
+    },
+    ...params}
+  })
+}
+
+export function obtainCoupon(params) {
+  return fetch({
+    url: COUPON_OBTAIN+`?${qs.stringify(params)}`,
+    method: 'GET'
+  })
+}
+
+export function fetchUsableCoupon(payload) {
+  return fetch({
+    url: COUPON_USABLE,
+    method: 'POST',
+    payload: {
+      ...payload
+    }
+  })
+}
+
+export function fetchCouponList(payload) {
+  return fetch({
+    url: COUPON_POOL,
+    method: 'POST',
+    payload
   })
 }

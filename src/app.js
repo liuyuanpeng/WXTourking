@@ -68,7 +68,7 @@ class App extends Component {
       // 'pages/login/index',
       // 'pages/manualLogin/index',
       // 'pages/captcha/index',
-      'pages/discovery/index',
+      // 'pages/discovery/index',
       'pages/schedule/index',
       'pages/mine/index',
       'pages/more/index',
@@ -95,7 +95,9 @@ class App extends Component {
       'pages/comments/index',
       'pages/orderStatus/index',
       'pages/airport/index',
-      'pages/routeDetail/index'
+      'pages/routeDetail/index',
+      'pages/evaluate/index',
+      'pages/newUser/index'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -121,12 +123,12 @@ class App extends Component {
           iconPath: './asset/images/home.png',
           selectedIconPath: './asset/images/home_focus.png'
         },
-        {
-          pagePath: 'pages/discovery/index',
-          text: '发现',
-          iconPath: './asset/images/discovery.png',
-          selectedIconPath: './asset/images/discovery_focus.png'
-        },
+        // {
+        //   pagePath: 'pages/discovery/index',
+        //   text: '发现',
+        //   iconPath: './asset/images/discovery.png',
+        //   selectedIconPath: './asset/images/discovery_focus.png'
+        // },
         {
           pagePath: 'pages/schedule/index',
           text: '行程',

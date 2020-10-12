@@ -10,10 +10,9 @@ import CommentItem from '@components/CommentItem'
 import SysNavBar from '@components/SysNavBar'
 import PRODUCT_TYPES from '@constants/types'
 
-const daySchedulePng = IMAGE_HOST + '/images/day_schedule.png'
-
-@connect(({ city }) => ({
-  currentCity: city.current
+@connect(({ city, evaluate }) => ({
+  currentCity: city.current,
+  data: evaluate.list
 }))
 class ProductDetail extends Component {
   config = {}
@@ -28,12 +27,35 @@ class ProductDetail extends Component {
       this.setState({
         detail
       })
+
+    // 获取评论
+      const { private_consume = {} } = detail
+      if (private_consume.id) {
+        this.props.dispatch({
+          type: 'evaluate/getEvaluateList',
+          payload: {
+            page: 0,
+            size: 100,
+            private_consume_id: private_consume.id
+          },
+          fail: msg => {
+            Taro.showToast({
+              title: msg || '获取热门评论失败',
+              icon: 'none'
+            })
+          }
+
+        })
+      }
     })
+    
   }
 
   seeAll = e => {
     e.stopPropagation()
-    console.log('see all')
+    Taro.navigateTo({
+      url: '../comments/index'
+    })
   }
 
   onSubmit = e => {
@@ -84,6 +106,7 @@ class ProductDetail extends Component {
   }
 
   render() {
+    const {data=[]} = this.props
     const { detail } = this.state
     const { private_consume = {} } = detail
     let banner = ''
@@ -101,58 +124,7 @@ class ProductDetail extends Component {
       location: private_consume.target_place,
       price: 24,
       reason: private_consume.reason,
-      comments: [
-        {
-          user: 'test',
-          avatar: daySchedulePng,
-          time: new Date().getTime(),
-          images: [daySchedulePng, daySchedulePng, daySchedulePng],
-          comment:
-            '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
-        },
-        {
-          user: 'test',
-          avatar: daySchedulePng,
-          time: new Date().getTime(),
-          comment:
-            '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
-        },
-        {
-          user: 'test',
-          avatar: daySchedulePng,
-          time: new Date().getTime(),
-          comment:
-            '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
-        },
-        {
-          user: 'test',
-          avatar: daySchedulePng,
-          time: new Date().getTime(),
-          comment:
-            '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
-        },
-        {
-          user: 'test',
-          avatar: daySchedulePng,
-          time: new Date().getTime(),
-          comment:
-            '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
-        },
-        {
-          user: 'test',
-          avatar: daySchedulePng,
-          time: new Date().getTime(),
-          comment:
-            '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
-        },
-        {
-          user: 'test',
-          avatar: daySchedulePng,
-          time: new Date().getTime(),
-          comment:
-            '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
-        }
-      ],
+      comments: data,
       description: private_consume.description,
 
       detailBanners: banners
@@ -160,8 +132,6 @@ class ProductDetail extends Component {
 
     const comment = pDetail.comments[0]
     const type = PRODUCT_TYPES[private_consume.scene]
-
-    console.log(type)
 
     return (
       <View className='product-detail'>
@@ -193,16 +163,15 @@ class ProductDetail extends Component {
             </Label>
           </View>
 
-          <View className='comments-container'>
+          {comment && <View className='comments-container'>
             <CommentItem
-              avatar={comment.avatar}
-              name={comment.user}
-              stars={4.5}
-              time={comment.time}
-              comment={comment.comment}
-              images={comment.images}
+              name={comment.user_id}
+              stars={comment.evaluate/2}
+              time={comment.create_time}
+              comment={comment.content}
+              images={comment.image ? comment.image.split(',') : []}
             />
-          </View>
+          </View>}
           <View className='detail-title'>
             {type}
             介绍

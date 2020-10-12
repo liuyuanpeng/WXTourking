@@ -62,6 +62,59 @@ class Home extends Component {
         type: 'product/getHotProduct',
         target: 'hotBANSHOU'
       })
+
+      // 被邀请用户优惠券
+      if (Taro.getStorageSync(STORAGE.USER_FANLI))
+      {
+        // 获取池
+        dispatch({
+          type: 'coupon/getPool',
+          payload: {
+            coupon_category: 'FANLI'
+          },
+          success: (pool) => {
+            if (pool && pool.id) {
+              dispatch({
+                type: 'coupon/obtainCoupon',
+                payload: {
+                  mobile: Taro.getStorageSync(STORAGE.USER_PHONE),
+                  user_id: Taro.getStorageSync(STORAGE.USER_FANLI),
+                  coupon_pool_id: pool.id
+                },
+                success: () => {
+                  Taro.setStorageSync(STORAGE.USER_FANLI, 1)
+                }
+              })
+            }
+          }
+        })
+      
+      }
+
+      // 获取新用户优惠券
+      if (!Taro.getStorageSync(STORAGE.OLD_USER)) {
+        // 获取池
+        dispatch({
+          type: 'coupon/getPool',
+          payload: {
+            coupon_category: 'XINYONGHU'
+          },
+          success: (pool) => {
+            if (pool && pool.id) {
+              dispatch({
+                type: 'coupon/obtainCoupon',
+                payload: {
+                  mobile: Taro.getStorageSync(STORAGE.USER_PHONE),
+                  coupon_pool_id: pool.id
+                },
+                success: () => {
+                  Taro.setStorageSync(STORAGE.OLD_USER, 1)
+                }
+              })
+            }
+          }
+        })
+      }
     }
   }
 
