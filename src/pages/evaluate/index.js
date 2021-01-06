@@ -47,7 +47,6 @@ class Evaluate extends Component {
       this.setState({
         data
       })
-      console.log('data: ', data)
     })
   }
 
@@ -133,21 +132,19 @@ class Evaluate extends Component {
         }
       })
       Taro.uploadFile({
-        url: HOST + '/v5/file/local/qiniu_upload',
+        url: HOST + '/v5/file/local/qiniu_wechat_upload?file_key=file',
         filePath: images[0].file.path,
         name: 'file',
         header: {
           token: Taro.getStorageSync(STORAGE.TOKEN)
         },
         success: res => {
-          console.log('res: ', res)
           this.setState({
             showToast: false,
             toast: {text: '', icon: '', duration: 3000, hasMask: false}
           })
           const DATA = JSON.parse(res.data)
           if (DATA.code === 'SUCCESS') {
-            console.log(DATA)
             this.progressEvaluate(DATA.data.path)
           }
         },

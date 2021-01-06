@@ -7,7 +7,6 @@ import dayjs from 'dayjs'
 
 class CommentItem extends Taro.Component {
   static defaultProps = {
-    avatar: '',
     name: '',
     stars: 0,
     time: 0,
@@ -25,7 +24,7 @@ class CommentItem extends Taro.Component {
         </View>
         <View className='comment-header'>
           <View className='name'>{name}</View>
-          <AtRate size={11} className='stars' value={stars} />
+          {stars && <AtRate size={11} className='stars' value={stars} />}
         </View>
 
         <View className='comment'>{comment}</View>

@@ -1,6 +1,6 @@
 import Taro, { PureComponent } from '@tarojs/taro'
 import { connect } from '@tarojs/redux'
-import { View, ScrollView } from '@tarojs/components'
+import { View, ScrollView, Button } from '@tarojs/components'
 import { AtTabs, AtTabsPane, AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui'
 import SysNavBar from '@components/SysNavBar'
 import OrderItem from '@components/OrderItem'
@@ -30,7 +30,7 @@ class Home extends PureComponent {
       this.$scope.getTabBar()
     ) {
       this.$scope.getTabBar().$component.setState({
-        selected: 1
+        selected: 2
       })
     }
 

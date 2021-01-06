@@ -52,7 +52,6 @@ class PayProduct extends Component {
 
   onMoreAddress = e => {
     e.stopPropagation()
-    console.log('onMoreAddress')
   }
 
   getDistance = params => {
@@ -187,7 +186,6 @@ class PayProduct extends Component {
 
   timeAction = e => {
     e.stopPropagation()
-    console.log('timeAction')
   }
 
   getPrice = options => {

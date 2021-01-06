@@ -38,6 +38,37 @@ class ProductDetail extends Component {
   }
 
   componentDidMount() {
+    const id = this.$router.params.id
+    if (id) {
+      this.props.dispatch({
+        type: 'product/getProduct',
+        id,
+        success: detail => {
+          this.setState({
+            detail
+          })
+          // 获取评论
+          const { private_consume = {} } = detail
+          if (private_consume.id) {
+            this.props.dispatch({
+              type: 'evaluate/getEvaluateList',
+              payload: {
+                page: 0,
+                size: 100,
+                private_consume_id: private_consume.id
+              },
+              fail: msg => {
+                Taro.showToast({
+                  title: msg || '获取热门评论失败',
+                  icon: 'none'
+                })
+              }
+            })
+          }
+        }
+      })
+      return
+    }
     const eventChannel = this.$scope.getOpenerEventChannel()
     eventChannel.on('roadData', detail => {
       this.setState({
@@ -64,6 +95,35 @@ class ProductDetail extends Component {
     })
   }
 
+  onShareAppMessage = () => {
+    const {detail} = this.state
+    const {private_consume} = detail
+    if (!private_consume || !private_consume.id)
+    var shareObj = {
+      title: '旅王出行', // 默认是小程序的名称(可以写slogan等)
+      path: '/pages/routeDetail/index?id='+private_consume.id, // 默认是当前页面，必须是以‘/’开头的完整路径
+      imageUrl: '',
+      success: res => {
+        // 转发成功之后的回调
+        if (res.errMsg == 'shareAppMessage:ok') {
+          Taro.showToast({
+            title: '发送成功',
+            icon: 'success'
+          })
+        }
+      },
+      fail: res => {
+        // 转发失败之后的回调
+        if (res.errMsg == 'shareAppMessage:fail cancel') {
+          // 用户取消转发
+        } else if (res.errMsg == 'shareAppMessage:fail') {
+          // 转发失败，其中 detail message 为详细失败信息
+        }
+      }
+    } // 返回shareObj
+    return shareObj
+  }
+
   seeAll = e => {
     e.stopPropagation()
     Taro.navigateTo({
@@ -73,7 +133,6 @@ class ProductDetail extends Component {
 
   onSubmit = e => {
     e.stopPropagation()
-    console.log('onSubmit')
     const { type } = this.state
     if (type === 'gift') {
       Taro.navigateTo({
@@ -104,6 +163,20 @@ class ProductDetail extends Component {
         })
       }
     })
+  }
+
+  renderComment = comment => {
+    return comment ? (
+      <View className='comments-container'>
+        <CommentItem
+          name={comment.username || comment.user_id}
+          stars={comment.evaluate / 2}
+          time={comment.create_time}
+          comment={comment.content}
+          images={comment.image ? comment.image.split(',') : []}
+        />
+      </View>
+    ) : null
   }
 
   render() {
@@ -175,7 +248,7 @@ class ProductDetail extends Component {
       }
     ]
 
-    const comment = pDetail.comments[0]
+    const comment = comments[0]
 
     return (
       <View className='product-detail'>
@@ -195,17 +268,7 @@ class ProductDetail extends Component {
             </Label>
           </View>
 
-          {comment && (
-            <View className='comments-container'>
-              <CommentItem
-                name={comment.user_id}
-                stars={comment.evaluate / 2}
-                time={comment.create_time}
-                comment={comment.content}
-                images={comment.image ? comment.image.split(',') : []}
-              />
-            </View>
-          )}
+          {this.renderComment(comment)}
         </View>
 
         <View className='route-detail-container'>

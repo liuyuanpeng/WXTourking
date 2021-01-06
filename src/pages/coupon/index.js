@@ -27,7 +27,7 @@ import STORAGE from '@constants/storage'
 }))
 class Coupon extends Component {
   config = {
-    navigationBarTitleText: '我的优惠券'
+    navigationBarTitleText: '我的福利'
   }
 
   state = {
@@ -140,11 +140,8 @@ class Coupon extends Component {
   }
 
   onSelect(coupon) {
-    const pages = Taro.getCurrentPages()
-    const prePage = pages[pages.length - 2]
-    prePage.setData({
-      coupon
-    })
+    const eventChannel = this.$scope.getOpenerEventChannel()
+    eventChannel.emit('acceptCoupon', { ...coupon })
     Taro.navigateBack()
   }
 
@@ -168,7 +165,7 @@ class Coupon extends Component {
         className='all-coupon-page'
         style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
       >
-        <SysNavBar title='我的优惠券' />
+        <SysNavBar title='我的福利' />
         <View className='all-coupon-tabs'>
           <AtTabs
             current={this.state.current}

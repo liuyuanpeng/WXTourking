@@ -1,0 +1,70 @@
+@import '../../common/index.scss';
+.my-balance-page {
+  background-color: white;
+  position: relative;
+  .my-balance-icon {
+    margin: 78px auto 0 auto;
+    width: 130px;
+    height: 130px;
+    @include image('balance');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+  }
+  .my-balance-label {
+    margin: 50px auto 0 auto;
+    color: black;
+    width: 150px;
+    height: 44px;
+    line-height: 44px;
+    text-align: center;
+    font-size: 32px;
+  }
+  .my-balance-value {
+    margin: 10px auto 0 auto;
+    width: 300px;
+    text-align: center;
+    .my-balance-sign {
+      font-size: 40px;
+      height: 56px;
+      line-height: 56px;
+      display: inline-block;
+      vertical-align: bottom;
+      color: black;
+      text-align: right;
+      font-weight: 400;
+    }
+    .my-balance-number {
+      display: inline-block;
+      font-size: 70px;
+      height: 98px;
+      line-height: 98px;
+      font-weight: bold;
+      color: black;
+    }
+  }
+  .my-balance-tip {
+    font-size: 24px;
+    height: 34px;
+    line-height: 34px;
+    color: #bdbdbd;
+    text-align: center;
+    margin: 0 auto;
+    width: 250px;
+  }
+  .my-balance-button {
+    width: 702px;
+    height: 100px;
+    margin: 74px auto;
+    text-align: center;
+    background: linear-gradient(
+      90deg,
+      rgba(254, 213, 0, 1) 0%,
+      rgba(254, 200, 2, 1) 100%
+    );
+    border-radius: 8px;
+    line-height: 100px;
+    color: #333333;
+    font-size: 32px;
+    font-weight: bold;
+  }
+}

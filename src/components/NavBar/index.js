@@ -32,23 +32,29 @@ class Navbar extends Taro.Component {
     navigate: false,
     onFocus: null,
     onSearch: null,
-    titleStyle: {}
+    titleStyle: {},
+    text: ''
   }
 
   state = {
     searchText: ''
   }
 
-  componentDidShow() {
-    this.setState({
-      searchText: ''
-    })
+  componentDidMount() {}
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.text !== this.props.text) {
+      this.setState({
+        searchText: nextProps.text || ''
+      })
+    }
   }
 
   handleChangeText = value => {
     this.setState({
-      searchText: value.trim()
+      searchText: value
     })
+    return value
   }
   onLocate = e => {
     const { navigate } = this.props
@@ -61,39 +67,38 @@ class Navbar extends Taro.Component {
 
   onActionClick = e => {
     const { navigate } = this.props
-    const {searchText} = this.state
-    if (!searchText) return
+    const { searchText } = this.state
     e.stopPropagation()
 
     if (navigate) {
       Taro.navigateTo({
-        url: '../search/index?value=abc'+searchText
+        url: '../search/index?value=' + searchText
       })
-      this.props.dispatch({
-        type: 'search/getSearchResult',
-        value: searchText,
-          success: (result)=>{
-            if (!result || result.length === 0) {
-              Taro.showToast({
-                title: '找不到关联项目',
-                icon: 'none'
-              })
-            }
-          },
-          fail: (msg)=>{
-            Taro.showToast({
-              title: msg || '搜索错误',
-              icon: 'error'
-            })
-          }
-      })
-    } else {
-      const history = Taro.getStorageSync(STORAGE.HISTORY)
-      const histories = history && history.length ? history.split(',') : []
-      if (searchText && histories.indexOf(searchText) === -1) {
-        histories.unshift(searchText)
-        Taro.setStorageSync(STORAGE.HISTORY, histories.toString())
+    }
+    if (!searchText.trim()) return
+    this.props.dispatch({
+      type: 'search/getSearchResult',
+      value: searchText,
+      success: result => {
+        if (!result || result.length === 0) {
+          Taro.showToast({
+            title: '找不到关联项目',
+            icon: 'none'
+          })
+        }
+      },
+      fail: msg => {
+        Taro.showToast({
+          title: msg || '搜索错误',
+          icon: 'error'
+        })
       }
+    })
+    const history = Taro.getStorageSync(STORAGE.HISTORY)
+    const histories = history && history.length ? history.split(',') : []
+    if (searchText && histories.indexOf(searchText) === -1) {
+      histories.unshift(searchText)
+      Taro.setStorageSync(STORAGE.HISTORY, histories.toString())
     }
   }
 
@@ -138,7 +143,10 @@ class Navbar extends Taro.Component {
         )}
         <View
           className='title'
-          style={{ marginTop: Taro.$statusBarHeight + 38 + 'rpx', ...titleStyle  }}
+          style={{
+            marginTop: Taro.$statusBarHeight + 38 + 'rpx',
+            ...titleStyle
+          }}
         >
           {title}
         </View>

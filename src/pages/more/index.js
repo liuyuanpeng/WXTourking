@@ -21,11 +21,15 @@ class More extends Component {
   }
 
   state = {
-    opacity: 0
+    opacity: 0,
+    searchText: ''
   }
 
   componentDidMount() {
     this.fetchData()
+    this.setState({
+      searchText: this.$router.params.value || ''
+    })
   }
 
   fetchData() {
@@ -82,13 +86,13 @@ class More extends Component {
     const scrollStyle = {
       height: `${Taro.$windowHeight}rpx`
     }
-    const { opacity } = this.state
+    const { opacity, searchText } = this.state
 
     const { list, recommend, currentCity } = this.props
 
     return (
       <View className='page'>
-        <NavBar opacity={opacity} showBack />
+        <NavBar opacity={opacity} showBack navigate text={searchText} />
         <View className='bkg' />
         <ScrollView
           style={scrollStyle}
@@ -119,7 +123,7 @@ class More extends Component {
                       {item.private_consume.name}
                     </View>
                     <View className='choice-point'>{`${item.private_consume
-                      .evaluate_score || 0}分 非常棒`}</View>
+                      .evaluate_score || 0}分 ${item.private_consume.evaluate_score>=7?'非常棒': ''}`}</View>
                     {item.private_consume.price && (
                       <View>
                         <Label className='choice-price'>
@@ -158,9 +162,9 @@ class More extends Component {
                 pointDesc={`${item.private_consume.evaluate_score ||
                   0}分 ${item.private_consume.evaluate_score>=7?'非常棒': ''}`}
                 pointTail={`${item.private_consume.evaluate_count || 0}条点评`}
-                subtitle={
-                  (item.private_consume.recommend_count || 0) + '买过的推荐'
-                }
+                // subtitle={
+                //   (item.private_consume.recommend_count || 0) + '买过的推荐'
+                // }
                 endTitle={item.private_consume.description || '未设置描述'}
                 price={item.private_consume.price || '未定价'}
               />

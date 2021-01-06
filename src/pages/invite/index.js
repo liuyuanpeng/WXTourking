@@ -55,9 +55,6 @@ class Home extends Component {
         } else if (res.errMsg == 'shareAppMessage:fail') {
           // 转发失败，其中 detail message 为详细失败信息
         }
-      },
-      complete: res=>{
-        console.log('wtf')
       }
     } // 返回shareObj
     return shareObj

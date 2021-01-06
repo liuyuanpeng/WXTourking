@@ -75,7 +75,7 @@ class Profile extends Component {
     const wxGender = wxInfo.gender
 
     const { userInfo } = this.props
-    const { name, gender, location } = userInfo
+    const { name, gender, location, remark } = userInfo
 
     const genderText =
       gender === 'UNKNOWN'
@@ -121,16 +121,16 @@ class Profile extends Component {
         subtitle: location || '',
         action: () => {
           Taro.navigateTo({
-            url: `../profileModify/index?key=place`
+            url: `../profileModify/index?key=location`
           })
         }
       },
       {
         title: '个性签名',
-        subtitle: '个性签名个性签名个性签名',
+        subtitle: remark || '',
         action: () => {
           Taro.navigateTo({
-            url: `../profileModify/index?key=signature`
+            url: `../profileModify/index?key=remark`
           })
         }
       }

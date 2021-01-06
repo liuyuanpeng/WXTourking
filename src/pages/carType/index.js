@@ -78,7 +78,6 @@ class CarType extends Component {
       time,
       days = 1
     } = this.state.preData
-    console.log('price: ', price, 'days:', days)
     if (scene === 'JIEJI' || scene === 'SONGJI') {
       //接送机使用原有价格策略
       this.getPrice({
@@ -162,7 +161,7 @@ class CarType extends Component {
   }
   render() {
     const { current, visible, scrollTop, preData={} } = this.state
-    const { days = 1, start_time = dayjs(), scene={} } = preData
+    const { days = 1, start_time = dayjs(), scene='' } = preData
     const { lowPrice, consumes, currentCity } = this.props
 
     if (!Object.keys(lowPrice).length || !Object.keys(consumes).length) {
@@ -197,9 +196,7 @@ class CarType extends Component {
         <View className='car-header'>
           <View>
             <Label className='car-header-title'>
-              {scene === 'JIEJI' || scene === 'SONGJI'
-                ? '接送机/站'
-                : `包车${days}天`}
+              {scene === 'DAY_PRIVATE' ? `包车${days}天` : ''}
             </Label>
             <Label className='car-header-start'>{currentCity.name}出发</Label>
           </View>

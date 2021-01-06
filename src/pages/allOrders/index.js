@@ -53,7 +53,6 @@ class AllOrders extends Component {
   }
 
   getData(INDEX, force=false) {
-    console.log('force:', force)
     const {current} = this.state
     if (INDEX === current && !force) return
     let dispatchType = ''

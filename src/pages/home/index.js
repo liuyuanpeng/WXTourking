@@ -13,6 +13,9 @@ const routeSchedulePng = IMAGE_HOST + '/images/route_schedule.png'
 import ProductItem from '@components/ProductItem'
 import DecorateTitle from '@components/DecorateTitle'
 import STORAGE from '@constants/storage'
+import QQMapWX from '../utilPages/location/qqmap'
+
+let qqMapSDK = null
 
 @connect(({ product, city }) => ({
   hot: product.hot,
@@ -136,6 +139,67 @@ class Home extends Component {
   }
 
   componentWillMount() {
+    // 获取城市
+    qqMapSDK = new QQMapWX({
+      key: 'JTKBZ-LCG6U-GYOVE-BJMJ5-E3DA5-HTFAJ' // 必填
+    })
+    Taro.getLocation({
+      type: 'gcj02',
+      success: loc => {
+        qqMapSDK.reverseGeocoder({ //逆地址解析（经纬度 ==> 坐标位置）
+          location: loc,
+          success: result => {
+            let curCity = result.result.ad_info.city
+            curCity = curCity.substr(0, curCity.length - 1)
+            this.props.dispatch({
+              type: 'city/setCurrent',
+              name: curCity
+            })
+            Taro.checkSession({
+              success: () => {
+                // 尝试获取/更新微信信息
+                Taro.getUserInfo({
+                  lang: 'zh_CN',
+                  success: res => {
+                    const app = Taro.getApp()
+                    app.globalData.wxInfo = { ...res.userInfo }
+                  }
+                })
+                // 判断是否登录旅王系统
+                if (Taro.getStorageSync(STORAGE.TOKEN)) {
+                  // 获取用户信息
+                  this.props.dispatch({
+                    type: 'user/getUserInfo'
+                  })
+        
+                  this.props.dispatch({
+                    type: 'carTypes/getCarTypes'
+                  })
+        
+                  this.props.dispatch({
+                    type: 'sit/getSitList'
+                  })
+        
+                  this.props.dispatch({
+                    type: 'city/getCityList',
+                    success: () => {
+                      this.fetchData()
+                    }
+                  })
+                } else {
+                  this.gotoLogin()
+                }
+              },
+              fail: () => {
+                this.gotoLogin()
+              }
+            })        
+          }
+        })
+    
+      },
+    })
+
     // 判断是否登录小程序
     Taro.checkSession({
       success: () => {
@@ -213,7 +277,6 @@ class Home extends Component {
 
   onSeeMore = e => {
     e.stopPropagation()
-    console.log('onSeeMore')
     Taro.navigateTo({
       url: '../more/index'
     })
@@ -228,7 +291,6 @@ class Home extends Component {
 
   onMoreFood = e => {
     e.stopPropagation()
-    console.log('onMoreFood')
     Taro.navigateTo({
       url: `../moreProduct/index?type=food`
     })
@@ -236,7 +298,6 @@ class Home extends Component {
 
   onMoreGift = e => {
     e.stopPropagation()
-    console.log('onMoreGift')
 
     Taro.navigateTo({
       url: `../moreProduct/index?type=gift`
@@ -383,7 +444,7 @@ class Home extends Component {
                         type='scene'
                         image={item.private_consume.images.split(',')[0]}
                         title={item.private_consume.name}
-                        pointDesc={`${item.private_consume.evaluate_score || 0}分 非常棒`}
+                        pointDesc={`${item.private_consume.evaluate_score || 0}分 ${item.private_consume.evaluate_score>=7?'非常棒': ''}`}
                         pointTail={`${item.private_consume.evaluate_count || 0}条点评`}
                         subtitle={currentCity.name+'市'}
                         endTitle={item.private_consume.tag || ''}
@@ -403,7 +464,7 @@ class Home extends Component {
                         type='food'
                         image={item.private_consume.images.split(',')[0]}
                         title={item.private_consume.name}
-                        pointDesc={`${item.private_consume.evaluate_score || 0}分 非常棒`}
+                        pointDesc={`${item.private_consume.evaluate_score || 0}分 ${item.private_consume.evaluate_score>=7?'非常棒': ''}`}
                         pointTail={`${item.private_consume.evaluate_count || 0}条点评`}
                         subtitle={currentCity.name+'市'}
                         endTitle={item.private_consume.description || '未设置描述'}
@@ -423,9 +484,9 @@ class Home extends Component {
                         type='gift'
                         image={item.private_consume.images.split(',')[0]}
                         title={item.private_consume.name}
-                        pointDesc={`${item.private_consume.evaluate_score || 0}分 非常棒`}
+                        pointDesc={`${item.private_consume.evaluate_score || 0}分 ${item.private_consume.evaluate_score>=7?'非常棒': ''}`}
                         pointTail={`${item.private_consume.evaluate_count || 0}条点评`}
-                        subtitle={(item.private_consume.recommend_count || 0)+'买过的推荐'}
+                        // subtitle={(item.private_consume.recommend_count || 0)+'买过的推荐'}
                         price={item.private_consume.price || '未定价'}
                       />
                     ))}

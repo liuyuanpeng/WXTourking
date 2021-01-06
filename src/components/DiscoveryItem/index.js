@@ -1,0 +1,97 @@
+import Taro from '@tarojs/taro'
+import { View, Image, Label } from '@tarojs/components'
+import dayjs from 'dayjs'
+import ORDER_STATUS from '@constants/status'
+import ORDER_TYPE from '@constants/types'
+
+import './index.scss'
+
+import { connect } from '@tarojs/redux'
+import { AtIcon, AtToast } from 'taro-ui'
+
+@connect(({}) => ({}))
+class DiscoveryItem extends Taro.Component {
+  static defaultProps = {
+    data: {},
+    showModalMsg: null
+  }
+
+  showTransferNumber = (express_number, e) => {
+    e.stopPropagation()
+    const { showModalMsg } = this.props
+    showModalMsg && showModalMsg(express_number)
+  }
+
+  goToEvaluate = e => {
+    e.stopPropagation()
+    const { data } = this.props
+    Taro.navigateTo({
+      url: '../../pages/evaluate/index',
+      success: res => {
+        res.eventChannel.emit('acceptEvaluate', {
+          data
+        })
+      }
+    })
+  }
+
+  gotoDetail = e => {
+    e.stopPropagation()
+    const { data } = this.props
+    Taro.navigateTo({
+      url: '../../pages/discoveryDetail/index',
+      success: res => {
+        res.eventChannel.emit('discoveryData', data)
+      }
+    })
+  }
+
+  render() {
+    const { data } = this.props
+    const {
+      zan_count = 0,
+      collect_count = 0,
+      name = '',
+      images = '',
+      faxian_category = 'JINGDIAN',
+      user
+    } = data
+
+    let discoveryImage
+    try {
+      discoveryImage = images
+        ? faxian_category === 'SHIPIN'
+          ? images.split(',')[1]
+          : images.split(',')[0]
+        : ''
+    } catch (error) {
+      console.log(error)
+    }
+    return (
+      <View className='discovery-item' onClick={this.gotoDetail}>
+        <Image
+          className='discovery-item-image'
+          src={discoveryImage}
+          mode='widthFix'
+        />
+        <View className='discovery-item-name'>{name}</View>
+        {faxian_category === 'SHIPIN' && discoveryImage && (
+          <View className='discovery-item-play' />
+        )}
+        <View className='discovery-item-footer'>
+          <View className='discovery-item-footer-item'>
+            <View className='discovery-item-footer-item-icon-avatar'>
+              <AtIcon size={30} value='user' />
+            </View>
+            <View className='discovery-item-footer-item-text'>{user.name}</View>
+          </View>
+          <View className='discovery-item-footer-item'>
+            <View className='discovery-item-footer-item-icon-like' />
+            <View className='discovery-item-footer-item-text'>{zan_count}</View>
+          </View>
+        </View>
+      </View>
+    )
+  }
+}
+export default DiscoveryItem

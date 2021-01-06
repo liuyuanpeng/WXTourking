@@ -32,9 +32,9 @@ class Profile extends Component {
       title = '个人昵称'
     } else if (key === 'name') {
       title = '真实姓名'
-    } else if (key === 'place') {
+    } else if (key === 'location') {
       title = '常住地'
-    } else if (key === 'signature') {
+    } else if (key === 'remark') {
       title = '个性签名'
     }
 
@@ -53,10 +53,10 @@ class Profile extends Component {
     if (key === 'name') {
       payload.name = value
       
-    } else if (key === 'place') {
-      payload.place = value
-    } else if (key === 'signature') {
-      payload.signature = value
+    } else if (key === 'location') {
+      payload.location = value
+    } else if (key === 'remark') {
+      payload.remark = value
     } 
 
     this.props.dispatch({

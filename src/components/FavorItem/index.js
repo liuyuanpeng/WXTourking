@@ -5,31 +5,41 @@ import dayjs from 'dayjs'
 import './index.scss'
 
 class FavorItem extends Taro.Component {
-  static defaultProps = {
-    image: null,
-    title: '',
-    likes: 0,
-    comments: 0
+  gotoDetail = e => {
+    e.stopPropagation()
+    Taro.navigateTo({
+      url: '../../pages/discoveryDetail/index',
+      success: res => {
+        res.eventChannel.emit('discoveryData', {...this.props})
+      }
+    })
   }
 
   render() {
-    const { image, title, likes, comments } = this.props
+    console.log('props: ', this.props)
+    const { images, name, zan_count, evaluate_count, collect_count, faxian_category, find_zan_id, find_collect_id } = this.props
+    let image
+    if (faxian_category !== 'SHIPIN') {
+      image = images ? images.split(',')[0] : ''
+    } else {
+      image = images ? images.split(',')[1] : ''
+    }
     return (
-      <View className='favor-item'>
+      <View className='favor-item' onClick={this.gotoDetail}>
         <Image className='favor-item-image' src={image} mode='aspectFill' />
         <View className='favor-detail'>
-          <View className='favor-item-title'>{title}</View>
+          <View className='favor-item-title'>{name}</View>
           <View className='favor-item-texts'>
             <View className='favor-icon-text'>
               <View className='favor-icon-favor' />
             </View>
             <View className='favor-icon-text'>
               <View className='favor-icon-comment' />
-              {comments}
+              {evaluate_count}
             </View>
             <View className='favor-icon-text'>
               <View className='favor-icon-like' />
-              {likes}
+              {zan_count}
             </View>
           </View>
         </View>

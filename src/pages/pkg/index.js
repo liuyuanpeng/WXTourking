@@ -28,7 +28,8 @@ class Pkg extends Component {
 
   state = {
     current: 0,
-    charterData: {}
+    charterData: {},
+    prices: {}
   }
 
   handleClick = (value, e) => {
@@ -51,6 +52,33 @@ class Pkg extends Component {
       this.setState({
         charterData: data || {}
       })
+    })
+
+    const { dispatch, currentCity } = this.props
+    dispatch({
+      type: 'consume/getConsumeList',
+      payload: {
+        params: {
+          scene: 'DAY_PRIVATE',
+          city_id: currentCity.id
+        }
+      },
+      success: res => {
+        const prices = {}
+        res &&
+          res.forEach(item => {
+            prices[item.consume.taocan] = item.consume.show_price
+          })
+          this.setState({
+            prices
+          })
+      },
+      fail: () => {
+        Taro.showToast({
+          title: '获取用车服务失败',
+          icon: 'none'
+        })
+      }
     })
   }
 
@@ -92,7 +120,7 @@ class Pkg extends Component {
   }
 
   render() {
-    const { current, charterData = {} } = this.state
+    const { current, charterData = {}, prices } = this.state
     const tabList = [{ title: '8小时100公里' }, { title: '8小时200公里' }]
     const { start_place, target_place, start_time, days } = charterData
     if (!start_place) return null
@@ -117,7 +145,7 @@ class Pkg extends Component {
 
     const detail = {
       title: tabList[current].title,
-      price: current === 0 ? 699 : 1299,
+      price: current === 0 ? prices.meal_1 || 0 : prices.meal_2 || 0,
       details: [
         {
           title: '套餐说明',

@@ -47,12 +47,15 @@ export default modelExtend(commonModel, {
       }
     },
     *getUserInfo({ success, fail }, { call, put }) {
+      console.log('wtf')
       const res = yield call(fetchUserInfo, {
         user_id: Taro.getStorageSync(STORAGE.USER_ID)
       })
       if (res.code === 'SUCCESS') {
         const app = Taro.getApp()
         app.globalData.userInfo = res.data.user
+        // USER_ID消失 暂时这里保存 原因待查
+        Taro.setStorageSync(STORAGE.USER_ID, res.data.user.id)
         yield put({
           type: 'updateState',
           payload: { ...res.data.user }

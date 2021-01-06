@@ -1,11 +1,10 @@
 import Taro, { PureComponent } from '@tarojs/taro'
-import { View, Image, ScrollView } from '@tarojs/components'
+import { View, Image, ScrollView, Button } from '@tarojs/components'
 import MineListItem from '@components/MineListItem'
 import { connect } from '@tarojs/redux'
 
 import '../../common/index.scss'
 import './index.scss'
-
 
 const myBillPng = IMAGE_HOST + '/images/my_bill.png'
 const myFavorPng = IMAGE_HOST + '/images/my_favor.png'
@@ -17,7 +16,7 @@ const locationPng = IMAGE_HOST + '/images/location.png'
 const inviteGiftPng = IMAGE_HOST + '/images/invite_gift.png'
 const myCouponPng = IMAGE_HOST + '/images/my_coupon.png'
 const profilePng = IMAGE_HOST + '/images/profile.png'
-import { AtIcon } from 'taro-ui'
+import { AtButton, AtIcon } from 'taro-ui'
 import STORAGE from '@constants/storage'
 
 @connect(({ user }) => ({
@@ -35,14 +34,17 @@ class Home extends PureComponent {
       this.$scope.getTabBar()
     ) {
       this.$scope.getTabBar().$component.setState({
-        selected: 2
+        selected: 3
       })
     }
+
+    this.props.dispatch({
+      type: 'user/getUserInfo'
+    })
   }
 
   showAllOrders = e => {
     e.stopPropagation()
-    console.log('showAllOrders')
     Taro.navigateTo({
       url: `../allOrders/index`
     })
@@ -55,7 +57,15 @@ class Home extends PureComponent {
     })
   }
 
+  onGetUserInfo = e => {
+    e.stopPropagation()
+    const app = Taro.getApp()
+    app.globalData.wxInfo = { ...e.detail.userInfo }
+    this.forceUpdate()
+  }
+
   render() {
+    const { userInfo } = this.props
     const mineList = [
       {
         title: '我的发票',
@@ -90,7 +100,7 @@ class Home extends PureComponent {
         action: () => {
           this.props.dispatch({
             type: 'evaluate/getEvaluateList',
-            payload: {page: 0, size: 100},
+            payload: { page: 0, size: 100 },
             success: () => {
               Taro.navigateTo({
                 url: '../comments/index'
@@ -108,16 +118,18 @@ class Home extends PureComponent {
       {
         title: '我的点赞',
         icon: myLikePng,
-        action: () => {}
+        action: () => {
+          Taro.navigateTo({
+            url: `../allLikes/index`
+          })
+        }
       },
       {
-        title: '客服中心',
+        title: '我的客服',
         icon: customerServicePng,
-        subtitle: '0592-5550907',
-        hideRight: true,
         action: () => {
-          Taro.makePhoneCall({
-            phoneNumber: '0592-5550907'
+          Taro.navigateTo({
+            url: `../customerService/index`
           })
         }
       },
@@ -140,7 +152,7 @@ class Home extends PureComponent {
         }
       },
       {
-        title: '我的优惠券',
+        title: '我的福利',
         icon: myCouponPng,
         action: () => {
           this.props.dispatch({
@@ -205,12 +217,16 @@ class Home extends PureComponent {
             <AtIcon className='mine-avatar' size={64} value='user' />
           )}
           <View className='mine-info'>
-            <View className='mine-nickname'>用户昵称</View>
+            <View className='mine-nickname'>{userInfo.name || '昵称未设置'}</View>
             <View className='mine-signature'>
-              用户签名用户签名用户签名用户签名用户签名用户签名
+              {userInfo.remark || '签名未设置'}
             </View>
           </View>
-        </View>{' '}
+
+          <Button style={{margin: '30rpx'}} open-type='getUserInfo' onGetUserInfo={this.onGetUserInfo}>
+            测试版获取微信用户信息
+          </Button>
+        </View>
         <View
           className='mine-order-container'
           style={{ top: Taro.$statusBarHeight + 302 + 'rpx' }}

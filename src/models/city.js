@@ -1,19 +1,27 @@
 import modelExtend from 'dva-model-extend'
 import commonModel from './common'
-import {fetchCityList} from '../services/api.js'
+import { fetchCityList } from '../services/api.js'
 
 export default modelExtend(commonModel, {
   namespace: 'city',
   state: {
     list: [],
-    current: {name: ''}
+    current: { name: '' }
   },
   reducers: {},
   effects: {
-    *updateCity({payload, success, fail}, {put, select}) {
-      const cityList = yield select(state=>state.city.list)
-      const current = cityList.find(item=>item.id === payload.id)
-      
+    *setCurrent({ name }, { put }) {
+      yield put({
+        type: 'updateState',
+        payload: {
+          current: { name }
+        }
+      })
+    },
+    *updateCity({ payload, success, fail }, { put, select }) {
+      const cityList = yield select(state => state.city.list)
+      const current = cityList.find(item => item.id === payload.id)
+
       if (current) {
         yield put({
           type: 'updateState',
@@ -26,22 +34,22 @@ export default modelExtend(commonModel, {
         fail && fail()
       }
     },
-    *getCityList({success, fail}, {call, put, select}) {
+    *getCityList({ success, fail }, { call, put, select }) {
       const res = yield call(fetchCityList)
       if (res.code === 'SUCCESS') {
         yield put({
           type: 'updateState',
-          payload: {list: res.data}
+          payload: { list: res.data }
         })
 
-        const current = yield select(state=>state.city.current)
+        const current = yield select(state => state.city.current)
         if (!current.id) {
-          const xm = res.data.find(item=>item.name.indexOf('厦门')>=0)
-          if (xm) {
+          const cur = res.data.find(item => item.name.indexOf(current.name) >= 0)
+          if (cur) {
             yield put({
               type: 'updateState',
               payload: {
-                current: xm
+                current: cur
               }
             })
           } else {

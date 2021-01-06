@@ -1,6 +1,7 @@
 .new-page {
   width: 100%;
-  background: url('../../asset/images/bg.png') no-repeat;
+  background-image: url('../../asset/images/bg.png');
+  background-repeat: no-repeat;
   background-size: 100% 100%;
   position: relative;
   &-title {
@@ -22,7 +23,8 @@
   .new-coupon {
     display: inline-block;
     margin-right: 24px;
-    background: url('../../asset/images/coupon.png') no-repeat;
+    background-image: url('../../asset/images/coupon.png');
+    background-repeat: no-repeat;
     background-size: 100% 100%;
     width: 321px;
     height: 269px;

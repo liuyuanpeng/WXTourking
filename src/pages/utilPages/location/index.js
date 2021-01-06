@@ -115,9 +115,6 @@ class Location extends Component {
       },
       fail: error => {
         console.log(error)
-      },
-      complete: res => {
-        console.log('complete:', res)
       }
     })
   }
@@ -273,18 +270,8 @@ class Location extends Component {
               tabList={tabList}
               onClick={this.handleClick}
             />
-            <ScrollView
-              id='scrollView'
-              className='location-scroll-view'
-              scrollY
-              scrollTop={scrollTop}
-              onScroll={this.onScroll}
-              style={scrollStyle}
-              scrollIntoView={toScrollView}
-            >
-              <View id='nearby' className='split-title'>
-                周边
-              </View>
+            <AtTabsPane current={this.state.current} index={0}>
+              <ScrollView scrollY style={scrollStyle}>
               {nearby.map((item, index) => (
                 <View
                   className='suggestion-item'
@@ -299,9 +286,10 @@ class Location extends Component {
                   <View className='location-address'>{item.address}</View>
                 </View>
               ))}
-              <View id='airports' className='split-title'>
-                机场
-              </View>
+              </ScrollView>
+            </AtTabsPane>
+            <AtTabsPane current={this.state.current} index={1}>
+              <ScrollView scrollY style={scrollStyle}>
               {airports.map((item, index) => (
                 <View
                   className='airport-item'
@@ -315,9 +303,10 @@ class Location extends Component {
                   <Label className='airport-title'>{item.name}</Label>
                 </View>
               ))}
-              <View id='trains' className='split-title'>
-                火车站
-              </View>
+              </ScrollView>
+            </AtTabsPane>
+            <AtTabsPane current={this.state.current} index={2}>
+              <ScrollView scrollY style={scrollStyle}>
               {trains.map((item, index) => (
                 <View
                   className='train-item'
@@ -331,8 +320,9 @@ class Location extends Component {
                   <Label className='train-title'>{item.name}</Label>
                 </View>
               ))}
-            </ScrollView>
-          </View>
+              </ScrollView>
+            </AtTabsPane>
+           </View>
         )}
       </View>
     )

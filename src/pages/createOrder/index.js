@@ -1,5 +1,5 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Label, Text, ScrollView, Image } from '@tarojs/components'
+import { View, Label, Text, ScrollView, Image, Button } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 // import '../../common/index.scss'
 import './index.scss'
@@ -99,7 +99,14 @@ class CarType extends Component {
   goToCoupon = e => {
     e.stopPropagation()
     Taro.navigateTo({
-      url: '../coupon/index?canEdit=true'
+      url: '../coupon/index?canEdit=true&price='+this.state.order.price,
+      events: {
+        acceptCoupon: coupon => {
+          this.setState({
+            coupon
+          })
+        }
+      }
     })
   }
 
@@ -109,6 +116,9 @@ class CarType extends Component {
 
   handlePhone = e => {
     e.stopPropagation()
+    Taro.makePhoneCall({
+      phoneNumber: '0592-5550907'
+    })
   }
 
   showDetail = (detailVisible = true) => {
@@ -164,11 +174,6 @@ class CarType extends Component {
       } else if (startTime.isBefore(dayjs())) {
         msg = '上车时间已过期'
       }
-    } else if (
-      scene !== 'ROAD_PRIVATE' &&
-      (!phoneNumBackup || !regex.test(phoneNumBackup))
-    ) {
-      msg = '请输入正确的备用手机号'
     }
     if (msg) {
       Taro.showToast({
@@ -467,7 +472,7 @@ class CarType extends Component {
         ) : (
           <View className='car-header'>
             <View>
-              <Label className='car-header-title'>包车{days}天</Label>
+              {scene === 'DAY_PRIVATE' && <Label className='car-header-title'>包车{days}天</Label>}
               <Label className='car-header-start'>{currentCity.name}出发</Label>
             </View>
             <View className='car-header-time'>
@@ -581,7 +586,7 @@ class CarType extends Component {
             <View className='contact-title'>旅王出行</View>
             <View className='contact-subtitle'>官方客服</View>
             <View className='contact-right'>
-              <View className='contact-right-chat' onClick={this.handleChat} />
+              <Button className='contact-right-chat' open-type='contact' />
               <View
                 className='contact-right-phone'
                 onClick={this.handlePhone}

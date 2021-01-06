@@ -66,7 +66,6 @@ export default modelExtend(commonModel, {
       })
       if (res.code === 'SUCCESS') {
         const newState = {}
-        console.log(target, res)
         newState[target] = res.data.data_list
         yield put({
           type: 'updateState',

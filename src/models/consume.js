@@ -46,7 +46,7 @@ export default modelExtend(commonModel, {
             }
           })
 
-        success && success()
+        success && success(res.data)
         } else {
           fail && fail()
         }

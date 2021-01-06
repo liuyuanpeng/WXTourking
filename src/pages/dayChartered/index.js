@@ -54,7 +54,6 @@ class DayChartered extends PureComponent {
   handleChartered = e => {
     e.stopPropagation()
     const {start_place, start_time, days} = this.state
-    console.log(start_place)
     let msg = ''
     if (start_place && start_place.title && start_place.latitude && start_place.longitude) {
       if (start_time && start_time.isBefore(dayjs())) {
@@ -225,7 +224,7 @@ class DayChartered extends PureComponent {
                 ))}
               </View>
             </View>
-            <View className='day-chartered-recommend'>
+            {/* <View className='day-chartered-recommend'>
               <DecorateTitle title='大家都在看' />
               <Label onClick={this.onSeeMore} className='see-more'>
                 查看更多
@@ -268,6 +267,7 @@ class DayChartered extends PureComponent {
                 </View>
               ))}
             </View>
+           */}
           </View>
         </ScrollView>
       </View>

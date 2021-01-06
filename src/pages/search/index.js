@@ -124,9 +124,9 @@ class Search extends Component {
                 pointDesc={`${item.private_consume.evaluate_score ||
                   0}分 ${item.private_consume.evaluate_score>=7?'非常棒': ''}`}
                 pointTail={`${item.private_consume.evaluate_count || 0}条点评`}
-                subtitle={
-                  (item.private_consume.recommend_count || 0) + '买过的推荐'
-                }
+                // subtitle={
+                //   (item.private_consume.recommend_count || 0) + '买过的推荐'
+                // }
                 endTitle={item.private_consume.description || '未设置描述'}
                 price={item.private_consume.price || '未定价'}
               />

@@ -7,42 +7,46 @@ import dayjs from 'dayjs'
 class CouponItem extends Taro.Component {
   static defaultProps = {
     type: 'effective', //overdue, used
-    title: '',
-    value: '',
-    overflow: '',
+    name: '',
+    price: '',
+    limit_price: '',
     start_time: '',
     end_time: '',
     onSelect: null
   }
 
   handleClick = e => {
-    e.stopPropagation();
+    e.stopPropagation()
     this.props.onSelect && this.props.onSelect()
   }
   render() {
-    const { type, title, value, overflow, start_time, end_time } = this.props
+    const { type, name, price, limit_price, start_time, end_time } = this.props
     const isEffective = type === 'effective'
     const isOverdue = type === 'overdue'
     return (
       <View className='coupon-item' onClick={this.handleClick}>
         <View
-          className={isEffective ? 'coupon-item-left' : 'coupon-item-left gray-left'}
+          className={
+            isEffective ? 'coupon-item-left' : 'coupon-item-left gray-left'
+          }
         >
           <View className='coupon-value'>
             <Label className='coupon-value-sign'>￥</Label>
-            {value}
+            {price}
           </View>
-          <View className='coupon-overflow'>{`满${overflow}可用`}</View>
+          <View className='coupon-overflow'>{`满${limit_price}可用`}</View>
         </View>
         <View
           className={
             isEffective ? 'coupon-item-right' : 'coupon-item-right gray-right'
           }
         >
-          <View className='coupon-title'>{title}</View>
-          <View className='coupon-tip'>{`${dayjs(start_time).format(
-            'MM月DD日'
-          )}-${dayjs(end_time).format('MM月DD日')}有效`}</View>
+          <View className='coupon-title'>{name}</View>
+          {(start_time && end_time) && (
+            <View className='coupon-tip'>{`${dayjs(start_time).format(
+              'MM月DD日'
+            )}-${dayjs(end_time).format('MM月DD日')}有效`}</View>
+          )}
           <View
             className={`coupon-status ${isEffective ? 'yellow' : ''}`}
             onClick={isEffective ? this.handleUse : null}

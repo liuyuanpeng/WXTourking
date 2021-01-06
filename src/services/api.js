@@ -18,7 +18,17 @@ import {
   COUPON_PAGE,
   COUPON_OBTAIN,
   COUPON_USABLE,
-  COUPON_POOL
+  COUPON_POOL,
+  DISCOVERY_COMMENT,
+  DISCOVERY_COMMENT_PAGE,
+  DISCOVERY_FAVOR,
+  DISCOVERY_FAVOR_PAGE,
+  DISCOVERY_LICK_PAGE,
+  DISCOVERY_LIKE,
+  DISCOVERY_PAGE,
+  DISCOVERY_SAVE,
+  DISCOVERY_UNFAVOR,
+  DISCOVERY_UNLICK
 } from '@constants/api'
 import qs from 'query-string'
 
@@ -113,7 +123,7 @@ export function fetchConsumeList(params) {
 
 export function fetchUserAddress(payload) {
   return fetch({
-    url:GET_USER_ADDRESS,
+    url: GET_USER_ADDRESS,
     method: 'POST',
     payload
   })
@@ -151,9 +161,9 @@ export function evaluateOrder(payload) {
 }
 
 export function fetchEvaluatePage(payload) {
-  const {page, size, ...params} = payload
+  const { page, size, ...params } = payload
   return fetch({
-    url: EVALUATE_PAGE+`?status=1&${qs.stringify(params)}`,
+    url: EVALUATE_PAGE + `?status=1&${qs.stringify(params)}`,
     method: 'POST',
     payload: {
       page,
@@ -166,23 +176,25 @@ export function fetchCouponPage(params) {
   return fetch({
     url: COUPON_PAGE,
     method: 'POST',
-    payload: {page_request_data:{
-      page: 0,
-      size: 100,
-      sort_data_list: [
-        {
-          direction: 'DESC',
-          property: 'createTime'
-        }
-      ]
-    },
-    ...params}
+    payload: {
+      page_request_data: {
+        page: 0,
+        size: 100,
+        sort_data_list: [
+          {
+            direction: 'DESC',
+            property: 'createTime'
+          }
+        ]
+      },
+      ...params
+    }
   })
 }
 
 export function obtainCoupon(params) {
   return fetch({
-    url: COUPON_OBTAIN+`?${qs.stringify(params)}`,
+    url: COUPON_OBTAIN + `?${qs.stringify(params)}`,
     method: 'GET'
   })
 }
@@ -202,5 +214,89 @@ export function fetchCouponList(payload) {
     url: COUPON_POOL,
     method: 'POST',
     payload
+  })
+}
+
+export function fetchDiscoveryPage(payload) {
+  return fetch({
+    url: DISCOVERY_PAGE,
+    method: 'POST',
+    payload: {
+      ...payload,
+      valid: true
+    }
+  })
+}
+
+export function saveDiscovery(payload) {
+  return fetch({
+    url: DISCOVERY_SAVE,
+    method: 'POST',
+    payload
+  })
+}
+
+export function fetchDiscoveryLikePage(payload) {
+  return fetch({
+    url: DISCOVERY_LICK_PAGE,
+    method: 'POST',
+    payload
+  })
+}
+
+export function fetchDiscoveryLike(payload) {
+  return fetch({
+    url: DISCOVERY_LIKE,
+    method: 'POST',
+    payload
+  })
+}
+
+export function fetchDiscoveryUnlike(id) {
+  return fetch({
+    url: DISCOVERY_UNLICK.replace('{id}', id),
+    method: 'POST'
+  })
+}
+
+export function fetchDiscoveryCommentPage(payload) {
+  return fetch({
+    url: DISCOVERY_COMMENT_PAGE,
+    method: 'POST',
+    payload: {
+      ...payload,
+      valid: true
+    }
+  })
+}
+
+export function fetchDiscoveryComment(payload) {
+  return fetch({
+    url: DISCOVERY_COMMENT,
+    method: 'POST',
+    payload
+  })
+}
+
+export function fetchDiscoveryFavorPage(payload) {
+  return fetch({
+    url: DISCOVERY_FAVOR_PAGE,
+    method: 'POST',
+    payload
+  })
+}
+
+export function fetchDiscoveryFavor(payload) {
+  return fetch({
+    url: DISCOVERY_FAVOR,
+    method: 'POST',
+    payload
+  })
+}
+
+export function fetchDiscoveryUnfavor(id) {
+  return fetch({
+    url: DISCOVERY_UNFAVOR.replace('{id}', id),
+    method: 'POST'
   })
 }

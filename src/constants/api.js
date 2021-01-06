@@ -114,3 +114,33 @@ export const COUPON_OBTAIN = `${host}/travel/coupon/obtain`
 
 // 获取账单可用优惠券
 export const COUPON_USABLE = `${host}/travel/coupon/usable_list`
+
+// 我的发现
+export const DISCOVERY_PAGE = `${host}/travel/faxian/page`
+
+// 投稿
+export const DISCOVERY_SAVE = `${host}/travel/faxian/save`
+
+// 发现-我的点赞
+export const DISCOVERY_LICK_PAGE =  `${host}/travel/faxian_zan/page`
+
+// 发现-点赞
+export const DISCOVERY_LIKE = `${host}/travel/faxian_zan/save`
+
+// 发现-取消点赞
+export const DISCOVERY_UNLICK = `${host}/travel/faxian_zan/{id}/delete`
+
+// 发现-我的评价
+export const DISCOVERY_COMMENT_PAGE =  `${host}/travel/faxian_evaluate/page`
+
+// 发现-评价
+export const DISCOVERY_COMMENT = `${host}/travel/faxian_evaluate/save`
+
+// 发现-收藏
+export const DISCOVERY_FAVOR = `${host}/travel/faxian_collect/save`
+
+// 发现-取消收藏
+export const DISCOVERY_UNFAVOR = `${host}/travel/faxian_collect/{id}/delete`
+
+// 发现-我的收藏
+export const DISCOVERY_FAVOR_PAGE =  `${host}/travel/faxian_collect/page`

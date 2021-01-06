@@ -34,6 +34,9 @@
         font-size: 24px;
         font-weight: 400;
         margin-left: 58px;
+        height: 28px;
+        line-height: 28px;
+        display: flex;
         .favor-icon-like {
           display: inline-block;
           @include image('like');
@@ -41,7 +44,7 @@
           background-repeat: no-repeat;
           width: 28px;
           height: 28px;
-          margin-right: 4px;
+          margin-right: 10px;
         }
         .favor-icon-comment {
           display: inline-block;
@@ -50,7 +53,7 @@
           background-repeat: no-repeat;
           width: 28px;
           height: 28px;
-          margin-right: 4px;
+          margin-right: 10px;
         }
         .favor-icon-favor {
           display: inline-block;
@@ -59,7 +62,7 @@
           background-repeat: no-repeat;
           width: 28px;
           height: 28px;
-          margin-right: 4px;
+          margin-right: 10px;
         }
       }
     }

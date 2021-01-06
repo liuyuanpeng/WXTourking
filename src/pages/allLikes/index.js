@@ -28,14 +28,14 @@ const DISCOVERY_TYPES = {
 }
 
 @connect(({ discovery }) => ({
-  listFavorJINGDIAN: discovery.listFavorJINGDIAN,
-  listFavorMEISHI: discovery.listFavorMEISHI,
-  listFavorSHIPIN: discovery.listFavorSHIPIN,
-  listFavorGONGLUE: discovery.listFavorGONGLUE
+  listLikeJINGDIAN: discovery.listLikeJINGDIAN,
+  listLikeMEISHI: discovery.listLikeMEISHI,
+  listLikeSHIPIN: discovery.listLikeSHIPIN,
+  listLikeGONGLUE: discovery.listLikeGONGLUE
 }))
-class AllFavors extends Component {
+class AllLikes extends Component {
   config = {
-    navigationBarTitleText: '我的收藏'
+    navigationBarTitleText: '我的点赞'
   }
 
   state = {
@@ -69,7 +69,7 @@ class AllFavors extends Component {
         break
     }
     this.props.dispatch({
-      type: `discovery/getDiscoveryFavorList`,
+      type: `discovery/getDiscoveryLikeList`,
       payload: {
         faxian_category: scene,
         user_id: Taro.getStorageSync(STORAGE.USER_ID)
@@ -98,7 +98,7 @@ class AllFavors extends Component {
       }
     ]
 
-    const {listFavorJINGDIAN, listFavorMEISHI, listFavorSHIPIN, listFavorGONGLUE} = this.props
+    const {listLikeJINGDIAN, listLikeMEISHI, listLikeSHIPIN, listLikeGONGLUE} = this.props
     
     const scrollStyle = {
       height: `${Taro.$windowHeight - 85 - 88 - Taro.$statusBarHeight}rpx`
@@ -106,11 +106,11 @@ class AllFavors extends Component {
 
     return (
       <View
-        className='all-favor-page'
+        className='all-like-page'
         style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
       >
-        <SysNavBar title='我的收藏' />
-        <View className='all-favor-tabs'>
+        <SysNavBar title='我的点赞' />
+        <View className='all-like-tabs'>
           <AtTabs
             current={this.state.current}
             tabList={tabList}
@@ -118,29 +118,29 @@ class AllFavors extends Component {
           >
             <AtTabsPane current={this.state.current} index={0}>
               <ScrollView scrollY style={scrollStyle}>
-                {listFavorJINGDIAN.map((item, index) => (
-                  <FavorItem key={`favor-item-${index}`} {...item.find} />
+                {listLikeJINGDIAN.map((item, index) => (
+                  <FavorItem key={`like-item-${index}`} {...item.find} />
                 ))}
               </ScrollView>
             </AtTabsPane>
             <AtTabsPane current={this.state.current} index={1}>
               <ScrollView scrollY style={scrollStyle}>
-                {listFavorMEISHI.map((item, index) => (
-                  <FavorItem key={`favor-item-${index}`} {...item.find} />
+                {listLikeMEISHI.map((item, index) => (
+                  <FavorItem key={`like-item-${index}`} {...item.find} />
                 ))}
               </ScrollView>
             </AtTabsPane>
             <AtTabsPane current={this.state.current} index={2}>
               <ScrollView scrollY style={scrollStyle}>
-                {listFavorSHIPIN.map((item, index) => (
-                  <FavorItem key={`favor-item-${index}`} {...item.find} />
+                {listLikeSHIPIN.map((item, index) => (
+                  <FavorItem key={`like-item-${index}`} {...item.find} />
                 ))}
               </ScrollView>
             </AtTabsPane>
             <AtTabsPane current={this.state.current} index={3}>
               <ScrollView scrollY style={scrollStyle}>
-                {listFavorGONGLUE.map((item, index) => (
-                  <FavorItem key={`favor-item-${index}`} {...item.find} />
+                {listLikeGONGLUE.map((item, index) => (
+                  <FavorItem key={`like-item-${index}`} {...item.find} />
                 ))}
               </ScrollView>
             </AtTabsPane>
@@ -151,4 +151,4 @@ class AllFavors extends Component {
   }
 }
 
-export default AllFavors
+export default AllLikes
