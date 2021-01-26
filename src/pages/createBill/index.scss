@@ -1,0 +1,146 @@
+@import '../../common/index.scss';
+.create-bill {
+  width: 100%;
+  background-color: #f7f7f7;
+  position: relative;
+  font-weight: normal;
+  &-label {
+    height: 80px;
+    padding: 0 24px;
+    box-sizing: border-box;
+    color: #999999;
+    font-size: 28px;
+    line-height: 80px;
+  }
+  &-content {
+    margin: 0 24px;
+    border-radius: 20px;
+    background-color: white;
+    &-price {
+      color: #fd7d59;
+      height: 80rpx;
+      line-height: 80rpx;
+      padding: 0 24rpx;
+      font-size: 36rpx;
+      font-weight: bold;
+    }
+  }
+  &-btn {
+    margin: 0 auto;
+    width: 702px;
+    height: 100px;
+    background: linear-gradient(
+      90deg,
+      rgba(254, 213, 0, 1) 0%,
+      rgba(254, 200, 2, 1) 100%
+    );
+    border-radius: 8px;
+    color: #333333;
+    font-size: 32px;
+    line-height: 100px;
+    text-align: center;
+    &-submit {
+      margin-top: 30px;
+    }
+  }
+  .bill-head-item {
+    margin: 0 24px;
+    border-radius: 20px;
+    background-color: white;
+    padding: 34px 24px;
+    box-sizing: border-box;
+    position: relative;
+    &-title {
+      font-size: 32px;
+      color: #333333;
+      height: 44px;
+      line-height: 44px;
+      max-width: 600px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    &-subtitle {
+      font-size: 26px;
+      color: #999999;
+      height: 36px;
+      line-height: 36px;
+      margin-top: 8px;
+      max-width: 600px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .more-head {
+      position: absolute;
+    right: 24rpx;
+    top: 50rpx;
+    width: 28rpx;
+    height: 54rpx;
+    background-image: url(http://tms.kingtrip.vip/images/more.png);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    }
+  }
+  .address {
+    margin: 0 24px;
+    border-radius: 20px;
+    background-color: white;
+    .address-icon {
+      @include image('address');
+      width: 60px;
+      height: 60px;
+      background-size: 100% 100%;
+      margin-top: 80px;
+      margin-left: 24px;
+      display: inline-block;
+      vertical-align: top;
+    }
+    .address-details {
+      display: inline-block;
+      margin-left: 20px;
+      margin-top: 60px;
+      font-weight: 400;
+      margin-bottom: 68px;
+      vertical-align: top;
+      .name {
+        font-size: 32px;
+        height: 44px;
+        line-height: 44px;
+      }
+      .phone {
+        font-size: 24px;
+        color: #999999;
+        margin-left: 30px;
+        margin-top: 6px;
+        height: 34px;
+        line-height: 34px;
+      }
+      .address-text {
+        margin-top: 8px;
+        font-size: 24px;
+        color: black;
+        height: 36px;
+        line-height: 36px;
+        width: 506px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  
+    .more-address {
+      display: inline-block;
+      margin-left: 50px;
+      margin-top: 90px;
+      width: 28px;
+      height: 54px;
+      @include image('more');
+      background-size: 100% 100%;
+      vertical-align: top;
+    }
+    
+  }
+}
+
+

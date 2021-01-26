@@ -14,6 +14,7 @@ import './index.scss'
 
 import { AtDivider, AtTabs } from 'taro-ui'
 import CommentItem from '@components/CommentItem'
+import { debounce } from 'debounce'
 
 @connect(({ city, evaluate }) => ({
   currentCity: city.current,
@@ -96,31 +97,31 @@ class ProductDetail extends Component {
   }
 
   onShareAppMessage = () => {
-    const {detail} = this.state
-    const {private_consume} = detail
+    const { detail } = this.state
+    const { private_consume } = detail
     if (!private_consume || !private_consume.id)
-    var shareObj = {
-      title: '旅王出行', // 默认是小程序的名称(可以写slogan等)
-      path: '/pages/routeDetail/index?id='+private_consume.id, // 默认是当前页面，必须是以‘/’开头的完整路径
-      imageUrl: '',
-      success: res => {
-        // 转发成功之后的回调
-        if (res.errMsg == 'shareAppMessage:ok') {
-          Taro.showToast({
-            title: '发送成功',
-            icon: 'success'
-          })
+      var shareObj = {
+        title: '旅王出行', // 默认是小程序的名称(可以写slogan等)
+        path: '/pages/routeDetail/index?id=' + private_consume.id, // 默认是当前页面，必须是以‘/’开头的完整路径
+        imageUrl: '',
+        success: res => {
+          // 转发成功之后的回调
+          if (res.errMsg == 'shareAppMessage:ok') {
+            Taro.showToast({
+              title: '发送成功',
+              icon: 'success'
+            })
+          }
+        },
+        fail: res => {
+          // 转发失败之后的回调
+          if (res.errMsg == 'shareAppMessage:fail cancel') {
+            // 用户取消转发
+          } else if (res.errMsg == 'shareAppMessage:fail') {
+            // 转发失败，其中 detail message 为详细失败信息
+          }
         }
-      },
-      fail: res => {
-        // 转发失败之后的回调
-        if (res.errMsg == 'shareAppMessage:fail cancel') {
-          // 用户取消转发
-        } else if (res.errMsg == 'shareAppMessage:fail') {
-          // 转发失败，其中 detail message 为详细失败信息
-        }
-      }
-    } // 返回shareObj
+      } // 返回shareObj
     return shareObj
   }
 
@@ -148,19 +149,25 @@ class ProductDetail extends Component {
   handleOK = e => {
     e.stopPropagation()
     const { detail } = this.state
-    const { private_consume } = detail
+    const { private_consume, car_levels } = detail
     if (!private_consume.price) return
     const { scene, price } = private_consume
     const { currentCity } = this.props
+    const data = {
+      scene,
+      city_id: currentCity.id,
+      private_consume,
+      price
+    }
+    if (car_levels && car_levels.length) {
+      const { chexing, zuowei } = car_levels[0]
+      data.chexing = chexing
+      data.zuowei = zuowei
+    }
     Taro.navigateTo({
       url: '../createOrder/index',
       success: res => {
-        res.eventChannel.emit('orderData', {
-          scene,
-          city_id: currentCity.id,
-          private_consume,
-          price
-        })
+        res.eventChannel.emit('orderData', data)
       }
     })
   }
@@ -169,7 +176,8 @@ class ProductDetail extends Component {
     return comment ? (
       <View className='comments-container'>
         <CommentItem
-          name={comment.username || comment.user_id}
+          name={comment.nick_name || comment.username || comment.user_id}
+          avatar={comment.avatar || ''}
           stars={comment.evaluate / 2}
           time={comment.create_time}
           comment={comment.content}
@@ -182,7 +190,9 @@ class ProductDetail extends Component {
   render() {
     const { comments } = this.props
     const { detail } = this.state
-    const { private_consume = {}, roads = [] } = detail
+    const { private_consume = {}, roads = [], car_levels = [] } = detail
+    const carLevel = car_levels[0] || {}
+    const { chexing, zuowei } = carLevel
     let banner
     let banners
     try {
@@ -259,11 +269,14 @@ class ProductDetail extends Component {
 
           <View className='subtitle'>{pDetail.subtitle}</View>
           <AtDivider lineColor='#F3F3F3' />
+          <View className='reason-title'>
+            车辆: {(chexing.name || '') + (zuowei.name || '')}
+          </View>
           <View className='reason-title'>推荐理由</View>
           <View className='reason'>{pDetail.reason}</View>
           <View className='comments-title'>
             {`达人点评（${pDetail.comments.length}）`}
-            <Label className='see-more' onClick={this.seeAll}>
+            <Label className='see-more' onClick={debounce(this.seeAll, 100)}>
               查看全部
             </Label>
           </View>
@@ -355,7 +368,7 @@ class ProductDetail extends Component {
             ￥{pDetail.price}
             <Label className='footer-price-unit'>起</Label>
           </View>
-          <View className='footer-btn' onClick={this.handleOK}>
+          <View className='footer-btn' onClick={debounce(this.handleOK, 100)}>
             下一步
           </View>
         </View>

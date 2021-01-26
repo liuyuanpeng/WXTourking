@@ -4,6 +4,7 @@ import { connect } from '@tarojs/redux'
 import './index.scss'
 import SysNavBar from '@components/SysNavBar'
 import { AtInput } from 'taro-ui'
+import { debounce } from 'debounce'
 
 @connect(({  }) => ({
 }))
@@ -106,7 +107,7 @@ class Login extends Component {
         />
         <View
           className={`login-next${nextEnable ? ' login-next-enable' : ''}`}
-          onClick={nextEnable ? this.handleNext : null}
+          onClick={nextEnable ? debounce(this.handleNext, 100) : null}
         >
           下一步
         </View>

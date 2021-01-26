@@ -13,7 +13,8 @@ const STORAGE = {
   SOURCE_DRIVER_ID: 'source-driver-id',
   HISTORY: 'search-history',
   USER_FANLI: 'user-fanli',
-  OLD_USER: 'old-user'
+  OLD_USER: 'old-user',
+  AD_TIME: 'ad-time'
 }
 
 export default STORAGE

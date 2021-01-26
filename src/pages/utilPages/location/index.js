@@ -243,7 +243,7 @@ class Location extends Component {
             value={keyword}
             onFocus={this.showList}
             onBlur={this.hideList}
-            onChange={debounce(this.handleKeyword, 250)}
+            onChange={debounce(this.handleKeyword, 100)}
           />
         </View>
         {keyword ? (

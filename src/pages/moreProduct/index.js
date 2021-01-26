@@ -17,6 +17,7 @@ import CommentItem from '@components/CommentItem'
 import SysNavBar from '@components/SysNavBar'
 import { returnFloat } from '@utils/tool'
 import ProductItem from '@components/ProductItem'
+import { debounce } from 'debounce'
 
 @connect(({ product, city }) => ({
   JINGDIAN: product.JINGDIAN,
@@ -26,7 +27,7 @@ import ProductItem from '@components/ProductItem'
 }))
 class MoreProduct extends Component {
   config = {
-    navigationBarTitleText: '订单支付'
+    navigationBarTitleText: '显示更多'
   }
 
   state = {
@@ -105,7 +106,7 @@ class MoreProduct extends Component {
               <ScrollView scrollY style={scrollStyle}>
                 {JINGDIAN.map(item => (
                   <ProductItem
-                    onClick={this.onSeeProduct.bind(this, item)}
+                    onClick={debounce(this.onSeeProduct.bind(this, item), 100)}
                     key={`scene-item-${item.private_consume.id}`}
                     type='scene'
                     image={item.private_consume.images.split(',')[0]}
@@ -124,7 +125,7 @@ class MoreProduct extends Component {
               <ScrollView scrollY style={scrollStyle}>
                 {MEISHI.map(item => (
                   <ProductItem
-                    onClick={this.onSeeProduct.bind(this, item)}
+                    onClick={debounce(this.onSeeProduct.bind(this, item), 100)}
                     key={`scene-item-${item.private_consume.id}`}
                     type='food'
                     image={item.private_consume.images.split(',')[0]}
@@ -143,7 +144,7 @@ class MoreProduct extends Component {
               <ScrollView scrollY style={scrollStyle}>
                 {BANSHOU.map(item => (
                   <ProductItem
-                    onClick={this.onSeeProduct.bind(this, item)}
+                    onClick={debounce(this.onSeeProduct.bind(this, item), 100)}
                     key={`scene-item-${item.private_consume.id}`}
                     type='gift'
                     image={item.private_consume.images.split(',')[0]}

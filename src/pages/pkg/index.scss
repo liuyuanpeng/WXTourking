@@ -125,6 +125,9 @@
   .pkg-footer {
     height: 126px;
     .pkg-ok-btn {
+      position: fixed;
+      bottom: 10px;
+      width: 702px;
       margin: 40px 24px;
       height: 88px;
       line-height: 88px;

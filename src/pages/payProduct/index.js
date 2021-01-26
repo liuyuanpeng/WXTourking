@@ -15,11 +15,13 @@ import STORAGE from '@constants/storage'
 
 import QQMapWX from '../utilPages/location/qqmap'
 import dayjs from 'dayjs'
+import { debounce } from 'debounce'
 
 let qqMapSDK = null
 
-@connect(({ city }) => ({
-  currentCity: city.current
+@connect(({ city, coupon }) => ({
+  currentCity: city.current,
+  usableList: coupon.usableList
 }))
 class PayProduct extends Component {
   config = {
@@ -31,8 +33,9 @@ class PayProduct extends Component {
     start_place: { title: '' },
     name: '',
     phone: '',
-    start_time: dayjs().add(1, 'day'),
-    price: 0
+    start_time: dayjs().add(5, 'm'),
+    price: 0,
+    coupon: ''
   }
 
   componentDidMount() {
@@ -41,12 +44,34 @@ class PayProduct extends Component {
       this.setState({
         order: data
       })
+      const { price } = data
+      this.props.dispatch({
+        type: 'coupon/getUsableCoupon',
+        payload: {
+          price: price || 0,
+          user_id: Taro.getStorageSync(STORAGE.USER_ID)
+        }
+      })
     })
     const name = Taro.getStorageSync(STORAGE.ORDER_USER_NAME) || ''
     const phone = Taro.getStorageSync(STORAGE.ORDER_USER_MOBILE) || ''
     this.setState({
       name,
       phone
+    })
+  }
+
+  goToCoupon = e => {
+    e.stopPropagation()
+    Taro.navigateTo({
+      url: '../coupon/index?canEdit=true&price=' + this.state.order.price,
+      events: {
+        acceptCoupon: coupon => {
+          this.setState({
+            coupon
+          })
+        }
+      }
     })
   }
 
@@ -78,16 +103,18 @@ class PayProduct extends Component {
     })
   }
 
-  handleChange = value => {
-    this.setState({
-      count: value
-    })
-  }
-
   handlePay = e => {
     e.stopPropagation()
     let msg = ''
-    const { start_place, start_time, phone, name, order, price } = this.state
+    const {
+      start_place,
+      start_time,
+      phone,
+      name,
+      order,
+      price,
+      coupon
+    } = this.state
     const regex = /^(13|14|15|16|17|18|19)\d{9}$/
     if (start_time.isBefore(dayjs())) {
       msg = '输入的时间过期了'
@@ -109,7 +136,7 @@ class PayProduct extends Component {
       })
       return
     }
-    
+
     const {
       scene,
       city_id,
@@ -150,6 +177,15 @@ class PayProduct extends Component {
       private_consume_id: private_consume.id,
       username: name
     }
+
+    // 使用优惠券信息
+    if (coupon && coupon.id) {
+      payload.coupon_id = coupon.id
+      payload.coupon_price = coupon.price
+      payload.price -= payload.coupon_price
+    }
+    if (payload.price <= 0) return
+
     this.props.dispatch({
       type: 'order/createOrder',
       payload,
@@ -162,15 +198,15 @@ class PayProduct extends Component {
         this.props.dispatch({
           type: 'order/setUserOrder',
           payload: {
-            order: {...result},
+            order: { ...result },
             chexing,
             zuowei,
             consume,
             private_consume
           },
-          success: ()=>{
+          success: () => {
             Taro.navigateTo({
-              url: '../orderStatus/index'
+              url: '../orderStatus/index?goHome=true'
             })
           }
         })
@@ -223,6 +259,13 @@ class PayProduct extends Component {
                 this.setState({
                   price: finalPrice
                 })
+                this.props.dispatch({
+                  type: 'coupon/getUsableCoupon',
+                  payload: {
+                    price: finalPrice || 0,
+                    user_id: Taro.getStorageSync(STORAGE.USER_ID)
+                  }
+                })
               },
               fail: () => {
                 Taro.showToast({
@@ -272,15 +315,18 @@ class PayProduct extends Component {
       phone,
       start_time,
       price,
-      order
+      order,
+      coupon
     } = this.state
     const { private_consume = {} } = order
+    const {usableList} = this.props
+    const couponClassName = usableList && usableList.length ? 'coupon-right' : 'coupon-right coupon-right-gray'
     let productImg
     try {
-      productImg = private_consume.images ? private_consume.images.split(',')[0] : ''
-    } catch (error) {
-      
-    }
+      productImg = private_consume.images
+        ? private_consume.images.split(',')[0]
+        : ''
+    } catch (error) {}
     return (
       <View
         className='pay-product'
@@ -288,16 +334,14 @@ class PayProduct extends Component {
       >
         <SysNavBar title='订单支付' />
         <View className='pay-product-header'>
-          <Image
-            className='header-image'
-            src={productImg}
-            mode='aspectFill'
-          />
+          <Image className='header-image' src={productImg} mode='aspectFill' />
           <View className='header-right'>
             <View className='header-title'>{private_consume.name}</View>
             <View className='header-subtitle'>{private_consume.tag}</View>
             <View className='header-declare'>付款后司机会主动联系您</View>
-            <View className='header-price'>￥{returnFloat(price)}</View>
+            <View className='header-price'>
+              ￥{returnFloat(price)}
+            </View>
           </View>
         </View>
         <View className='pay-product-detail'>
@@ -309,7 +353,7 @@ class PayProduct extends Component {
               placeholder='请选择上车地点'
               onChange={this.handleLocationChange}
             />
-            <View className='location-icon' onClick={this.onLocate}></View>
+            <View className='location-icon' onClick={debounce(this.onLocate, 100)}></View>
           </View>
           <View className='detail-split' />
           <View className='detail-item'>
@@ -343,11 +387,27 @@ class PayProduct extends Component {
             <View className='time-icon'></View>
           </View>
         </View>
+        <View className='coupon-container'>
+          <View className='title-label'>优惠券</View>
+          {/* <View className='subtitle-label'>增值税发票不享受优惠</View> */}
+          <View
+            className={couponClassName}
+            onClick={debounce(this.goToCoupon, 100)}
+          >
+            {coupon
+              ? `-${coupon.price}￥`
+              : usableList && usableList.length
+              ? `${usableList.length}张优惠券`
+              : '无可用优惠券'}
+          </View>
+        </View>
         <View className='pay-gift-footer'>
-          <Label className='pay-it' onClick={this.handlePay}>
+          <Label className='pay-it' onClick={debounce(this.handlePay, 200)}>
             立即支付
           </Label>
-          <Label className='total-footer'>{`￥${returnFloat(price)}`}</Label>
+          <Label className='total-footer'>{`￥${returnFloat(
+            price - (coupon ? coupon.price : 0)
+          )}`}</Label>
           <Label className='sum-text'>合计：</Label>
         </View>
       </View>

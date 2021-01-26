@@ -26,6 +26,7 @@ import { returnFloat } from '@utils/tool'
 import ProductItem from '@components/ProductItem'
 import STORAGE from '../../constants/storage'
 import search from '../../models/search'
+import { debounce } from 'debounce'
 
 @connect(({ city, search }) => ({
   cityList: city.list,
@@ -112,7 +113,7 @@ class Search extends Component {
           <View className='search-result' style={{height: (Taro.$windowHeight - Taro.$statusBarHeight - 204) + 'px'}}>
             {result.map((item) => (
               <ProductItem
-                onClick={this.handleProduct.bind(this, item)}
+                onClick={debounce(this.handleProduct.bind(this, item), 100)}
                 key={`scene-item-${item.private_consume.id}`}
                 type={
                   item.private_consume.scene === 'BANSHOU_PRIVATE'
@@ -136,7 +137,7 @@ class Search extends Component {
         {histories.length && <View className='tag-title'>历史搜索</View>}
         {histories.map((item, index) => (
           <AtTag
-            onClick={this.onSearch.bind(this, item)}
+            onClick={debounce(this.onSearch.bind(this, item), 100)}
             className='tag-item'
             key={`history-tag-${index}`}
             type='primary'
@@ -148,7 +149,7 @@ class Search extends Component {
         <View className='tag-title'>热门搜索</View>
         {hotSearch.map((item, index) => (
           <AtTag
-            onClick={this.onSearch.bind(this, item.name)}
+            onClick={debounce(this.onSearch.bind(this, item.name), 100)}
             className='tag-item'
             key={`history-tag-${index}`}
             type='primary'
@@ -163,7 +164,7 @@ class Search extends Component {
         <View className='tag-title'>其他城市</View>
         {cityList.map((item, index) => (
           <AtTag
-            onClick={this.handleSelectCity.bind(this, item.id)}
+            onClick={debounce(this.handleSelectCity.bind(this, item.id), 100)}
             type='primary'
             active={item === currentCity}
             className='tag-item'

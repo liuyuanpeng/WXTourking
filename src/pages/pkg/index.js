@@ -17,6 +17,7 @@ import SysNavBar from '@components/SysNavBar'
 import { returnFloat } from '@utils/tool'
 import BillItem from '@components/BillItem'
 import CheckBox from '@components/CheckBox'
+import { debounce } from 'debounce'
 
 @connect(({ city }) => ({
   currentCity: city.current
@@ -219,7 +220,7 @@ class Pkg extends Component {
           ))}
         </View>
         <View className='pkg-footer'>
-          <View className='pkg-ok-btn' onClick={this.handleOK}>
+          <View className='pkg-ok-btn' onClick={debounce(this.handleOK, 200)}>
             选车型
           </View>
         </View>

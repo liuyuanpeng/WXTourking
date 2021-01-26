@@ -13,6 +13,7 @@ import CheckBox from '@components/CheckBox'
 import PopView from '@components/PopView'
 import dayjs from 'dayjs'
 import STORAGE from '@constants/storage'
+import { debounce } from 'debounce'
 
 @connect(({ consume, city }) => ({
   consume: consume.consume,
@@ -271,7 +272,7 @@ class CarType extends Component {
                     </View>
                     <View
                       className='car-list-item-btn'
-                      onClick={this.handleOK.bind(this, item)}
+                      onClick={debounce(this.handleOK.bind(this, item), 100)}
                     >
                       立即预约
                     </View>

@@ -27,6 +27,7 @@ import LocationInput from '@components/LocationInput'
 import '../../common/index.scss'
 import './index.scss'
 import STORAGE from '../../constants/storage'
+import { debounce } from 'debounce'
 
 @connect(({}) => ({}))
 class Publish extends PureComponent {
@@ -395,7 +396,7 @@ class Publish extends PureComponent {
               ))}
             </View>
           </View>
-          <View className='publish-btn' onClick={this.handlePublish}>
+          <View className='publish-btn' onClick={debounce(this.handlePublish, 100)}>
             立即发布
           </View>
         </ScrollView>

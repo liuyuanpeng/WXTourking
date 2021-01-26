@@ -4,7 +4,7 @@ import NavBar from '@components/NavBar'
 import { AtTabs, AtTabsPane } from 'taro-ui'
 import { connect } from '@tarojs/redux'
 import '../../common/index.scss'
-import './index.less'
+import './index.scss'
 
 const homePng = IMAGE_HOST + '/images/bkg3.png'
 const daySchedulePng = IMAGE_HOST + '/images/day_schedule.png'
@@ -14,6 +14,9 @@ import ProductItem from '@components/ProductItem'
 import DecorateTitle from '@components/DecorateTitle'
 import STORAGE from '@constants/storage'
 import QQMapWX from '../utilPages/location/qqmap'
+import ModalView from '../../components/ModalView'
+import dayjs from 'dayjs'
+import { debounce } from 'debounce'
 
 let qqMapSDK = null
 
@@ -31,7 +34,8 @@ class Home extends Component {
 
   state = {
     opacity: 0,
-    current: 0
+    current: 0,
+    visible: false
   }
 
   componentDidShow() {
@@ -45,6 +49,15 @@ class Home extends Component {
       })
     }
     this.fetchData()
+
+    // 显示活动页面
+    const today = dayjs()
+      .startOf('day')
+      .valueOf()
+    const last = parseInt(Taro.getStorageSync(STORAGE.AD_TIME))
+    if (today !== last) {
+      this.showAD(true)
+    }
   }
 
   fetchData = () => {
@@ -67,15 +80,14 @@ class Home extends Component {
       })
 
       // 被邀请用户优惠券
-      if (Taro.getStorageSync(STORAGE.USER_FANLI))
-      {
+      if (Taro.getStorageSync(STORAGE.USER_FANLI)) {
         // 获取池
         dispatch({
           type: 'coupon/getPool',
           payload: {
             coupon_category: 'FANLI'
           },
-          success: (pool) => {
+          success: pool => {
             if (pool && pool.id) {
               dispatch({
                 type: 'coupon/obtainCoupon',
@@ -91,7 +103,6 @@ class Home extends Component {
             }
           }
         })
-      
       }
 
       // 获取新用户优惠券
@@ -102,7 +113,7 @@ class Home extends Component {
           payload: {
             coupon_category: 'XINYONGHU'
           },
-          success: (pool) => {
+          success: pool => {
             if (pool && pool.id) {
               dispatch({
                 type: 'coupon/obtainCoupon',
@@ -132,6 +143,20 @@ class Home extends Component {
     })
   }
 
+  showAD = visible => {
+    if (!visible) {
+      Taro.setStorageSync(
+        STORAGE.AD_TIME,
+        dayjs()
+          .startOf('day')
+          .valueOf()
+      )
+    }
+    this.setState({
+      visible
+    })
+  }
+
   gotoLogin = () => {
     Taro.navigateTo({
       url: '../../pagesLogin/login/index'
@@ -146,7 +171,8 @@ class Home extends Component {
     Taro.getLocation({
       type: 'gcj02',
       success: loc => {
-        qqMapSDK.reverseGeocoder({ //逆地址解析（经纬度 ==> 坐标位置）
+        qqMapSDK.reverseGeocoder({
+          //逆地址解析（经纬度 ==> 坐标位置）
           location: loc,
           success: result => {
             let curCity = result.result.ad_info.city
@@ -169,17 +195,34 @@ class Home extends Component {
                 if (Taro.getStorageSync(STORAGE.TOKEN)) {
                   // 获取用户信息
                   this.props.dispatch({
-                    type: 'user/getUserInfo'
+                    type: 'user/getUserInfo',
+                    success: user => {
+                      const app = Taro.getApp()
+                      const { avatarUrl, nickName } = app.globalData.wxInfo
+                      
+                      if (avatarUrl && nickName) {
+                        this.props.dispatch({
+                          type: 'user/updateUserInfo',
+                          payload: {
+                            user_id: user.id,
+                            avatar: avatarUrl,
+                            nick_name: nickName
+                          }
+                        })
+                      }
+                    }
                   })
-        
+
+                  
+
                   this.props.dispatch({
                     type: 'carTypes/getCarTypes'
                   })
-        
+
                   this.props.dispatch({
                     type: 'sit/getSitList'
                   })
-        
+
                   this.props.dispatch({
                     type: 'city/getCityList',
                     success: () => {
@@ -193,51 +236,9 @@ class Home extends Component {
               fail: () => {
                 this.gotoLogin()
               }
-            })        
+            })
           }
         })
-    
-      },
-    })
-
-    // 判断是否登录小程序
-    Taro.checkSession({
-      success: () => {
-        // 尝试获取/更新微信信息
-        Taro.getUserInfo({
-          lang: 'zh_CN',
-          success: res => {
-            const app = Taro.getApp()
-            app.globalData.wxInfo = { ...res.userInfo }
-          }
-        })
-        // 判断是否登录旅王系统
-        if (Taro.getStorageSync(STORAGE.TOKEN)) {
-          // 获取用户信息
-          this.props.dispatch({
-            type: 'user/getUserInfo'
-          })
-
-          this.props.dispatch({
-            type: 'carTypes/getCarTypes'
-          })
-
-          this.props.dispatch({
-            type: 'sit/getSitList'
-          })
-
-          this.props.dispatch({
-            type: 'city/getCityList',
-            success: () => {
-              this.fetchData()
-            }
-          })
-        } else {
-          this.gotoLogin()
-        }
-      },
-      fail: () => {
-        this.gotoLogin()
       }
     })
   }
@@ -250,10 +251,10 @@ class Home extends Component {
     })
   }
 
-  onSeeProduct = (detail, e)=> {
+  onSeeProduct = (detail, e) => {
     e.stopPropagation()
-    const {private_consume} = detail
-    const {scene} = private_consume
+    const { private_consume } = detail
+    const { scene } = private_consume
     if (scene === 'ROAD_PRIVATE') {
       Taro.navigateTo({
         url: '../routeDetail/index',
@@ -310,11 +311,27 @@ class Home extends Component {
     })
   }
 
+  handleJoin = e => {
+    e.stopPropagation()
+    Taro.setStorageSync(
+      STORAGE.AD_TIME,
+      dayjs()
+        .startOf('day')
+        .valueOf()
+    )
+    Taro.navigateTo({
+      url: '../invite/index'
+    })
+    this.setState({
+      visible: false
+    })
+  }
+
   render() {
     const scrollStyle = {
       height: `${Taro.$windowHeight - 100}rpx`
     }
-    const { opacity } = this.state
+    const { opacity, visible } = this.state
 
     const icons = [
       {
@@ -339,15 +356,12 @@ class Home extends Component {
       { title: '伴手礼' }
     ]
 
-
-
-
     const {
       hot,
       hotJINGDIAN,
       hotMEISHI,
       hotBANSHOU,
-      currentCity = {name: ''}
+      currentCity = { name: '' }
     } = this.props
 
     return (
@@ -378,18 +392,21 @@ class Home extends Component {
             </View>
             <View className='guess-you-like'>
               <DecorateTitle title='猜你喜欢' />
-              <Label onClick={this.onSeeMore} className='see-more'>
+              <Label onClick={debounce(this.onSeeMore, 100)} className='see-more'>
                 查看更多
               </Label>
               <View className='guess-you-like-container'>
                 {hot && hot[0] && (
-                  <View className='like-1' onClick={this.onSeeProduct.bind(this, hot[0])}>
+                  <View
+                    className='like-1'
+                    onClick={debounce(this.onSeeProduct.bind(this, hot[0]), 100)}
+                  >
                     <Image
                       className='like-image'
                       src={hot[0].private_consume.images.split(',')[0]}
                     />
                     <View className='like-tag'>
-                {currentCity.name}{' '}{hot[0].private_consume.tag}
+                      {currentCity.name} {hot[0].private_consume.tag}
                     </View>
                     <View className='like-name'>
                       {hot[0].private_consume.name}
@@ -398,14 +415,17 @@ class Home extends Component {
                 )}
                 <View className='like-2-3'>
                   {hot && hot[1] && (
-                    <View className='like-item' onClick={this.onSeeProduct.bind(this, hot[1])}>
+                    <View
+                      className='like-item'
+                      onClick={debounce(this.onSeeProduct.bind(this, hot[1]), 100)}
+                    >
                       <Image
                         className='like-image'
                         src={hot[1].private_consume.images.split(',')[1]}
                       />
 
                       <View className='like-tag'>
-                        {currentCity.name}{' '}{hot[2].private_consume.tag}
+                        {currentCity.name} {hot[2].private_consume.tag}
                       </View>
                       <View className='like-name'>
                         {hot[1].private_consume.name}
@@ -413,13 +433,16 @@ class Home extends Component {
                     </View>
                   )}
                   {hot && hot[2] && (
-                    <View className='like-item' onClick={this.onSeeProduct.bind(this, hot[2])}>
+                    <View
+                      className='like-item'
+                      onClick={debounce(this.onSeeProduct.bind(this, hot[2]), 100)}
+                    >
                       <Image
                         className='like-image'
                         src={hot[2].private_consume.images.split(',')[2]}
                       />
                       <View className='like-tag'>
-                        {currentCity.name}{' '}{hot[2].private_consume.tag}
+                        {currentCity.name} {hot[2].private_consume.tag}
                       </View>
                       <View className='like-name'>
                         {hot[2].private_consume.name}
@@ -439,18 +462,24 @@ class Home extends Component {
                   <View>
                     {hotJINGDIAN.map((item, index) => (
                       <ProductItem
-                        onClick={this.onSeeProduct.bind(this, item)}
+                        onClick={debounce(this.onSeeProduct.bind(this, item), 100)}
                         key={`scene-item-${index}`}
                         type='scene'
                         image={item.private_consume.images.split(',')[0]}
                         title={item.private_consume.name}
-                        pointDesc={`${item.private_consume.evaluate_score || 0}分 ${item.private_consume.evaluate_score>=7?'非常棒': ''}`}
-                        pointTail={`${item.private_consume.evaluate_count || 0}条点评`}
-                        subtitle={currentCity.name+'市'}
+                        pointDesc={`${item.private_consume.evaluate_score ||
+                          0}分 ${
+                          item.private_consume.evaluate_score >= 7
+                            ? '非常棒'
+                            : ''
+                        }`}
+                        pointTail={`${item.private_consume.evaluate_count ||
+                          0}条点评`}
+                        subtitle={currentCity.name + '市'}
                         endTitle={item.private_consume.tag || ''}
                       />
                     ))}
-                    <View className='more-btn' onClick={this.onMoreScene}>
+                    <View className='more-btn' onClick={debounce(this.onMoreScene, 100)}>
                       更多景点
                     </View>
                   </View>
@@ -459,18 +488,26 @@ class Home extends Component {
                   <View>
                     {hotMEISHI.map((item, index) => (
                       <ProductItem
-                        onClick={this.onSeeProduct.bind(this, item)}
+                        onClick={debounce(this.onSeeProduct.bind(this, item), 100)}
                         key={`scene-item-${index}`}
                         type='food'
                         image={item.private_consume.images.split(',')[0]}
                         title={item.private_consume.name}
-                        pointDesc={`${item.private_consume.evaluate_score || 0}分 ${item.private_consume.evaluate_score>=7?'非常棒': ''}`}
-                        pointTail={`${item.private_consume.evaluate_count || 0}条点评`}
-                        subtitle={currentCity.name+'市'}
-                        endTitle={item.private_consume.description || '未设置描述'}
+                        pointDesc={`${item.private_consume.evaluate_score ||
+                          0}分 ${
+                          item.private_consume.evaluate_score >= 7
+                            ? '非常棒'
+                            : ''
+                        }`}
+                        pointTail={`${item.private_consume.evaluate_count ||
+                          0}条点评`}
+                        subtitle={currentCity.name + '市'}
+                        endTitle={
+                          item.private_consume.description || '未设置描述'
+                        }
                       />
                     ))}
-                    <View className='more-btn' onClick={this.onMoreFood}>
+                    <View className='more-btn' onClick={debounce(this.onMoreFood, 100)}>
                       更多美食
                     </View>
                   </View>
@@ -479,18 +516,24 @@ class Home extends Component {
                   <View>
                     {hotBANSHOU.map((item, index) => (
                       <ProductItem
-                        onClick={this.onSeeProduct.bind(this, item)}
+                        onClick={debounce(this.onSeeProduct.bind(this, item), 100)}
                         key={`scene-item-${index}`}
                         type='gift'
                         image={item.private_consume.images.split(',')[0]}
                         title={item.private_consume.name}
-                        pointDesc={`${item.private_consume.evaluate_score || 0}分 ${item.private_consume.evaluate_score>=7?'非常棒': ''}`}
-                        pointTail={`${item.private_consume.evaluate_count || 0}条点评`}
+                        pointDesc={`${item.private_consume.evaluate_score ||
+                          0}分 ${
+                          item.private_consume.evaluate_score >= 7
+                            ? '非常棒'
+                            : ''
+                        }`}
+                        pointTail={`${item.private_consume.evaluate_count ||
+                          0}条点评`}
                         // subtitle={(item.private_consume.recommend_count || 0)+'买过的推荐'}
                         price={item.private_consume.price || '未定价'}
                       />
                     ))}
-                    <View className='more-btn' onClick={this.onMoreGift}>
+                    <View className='more-btn' onClick={debounce(this.onMoreGift, 100)}>
                       更多伴手礼
                     </View>
                   </View>
@@ -499,6 +542,17 @@ class Home extends Component {
             </View>
           </View>
         </ScrollView>
+        <ModalView
+          visible={visible}
+          onClose={this.showAD.bind(this, false)}
+        >
+          <View className='ad-content'>
+            <View className='ad-content-image' />
+            <View className='ad-content-btn' onClick={this.handleJoin}>
+              立即参与
+            </View>
+          </View>
+        </ModalView>
       </View>
     )
   }

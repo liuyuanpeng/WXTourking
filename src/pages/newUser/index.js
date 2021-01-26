@@ -13,6 +13,7 @@ const routeSchedulePng = IMAGE_HOST + '/images/route_schedule.png'
 import ProductItem from '@components/ProductItem'
 import DecorateTitle from '@components/DecorateTitle'
 import STORAGE from '@constants/storage'
+import { debounce } from 'debounce'
 
 @connect(({ coupon }) => ({
   pool: coupon.pool
@@ -60,7 +61,7 @@ class Home extends Component {
           <View className='new-coupon-desc'>订单满{pool.limit_price || 0}元</View>
           <View className='new-coupon-desc'>即可抵用</View>
         </View>
-        <View className='new-button' onClick={this.handleUse}>
+        <View className='new-button' onClick={debounce(this.handleUse, 100)}>
           立即使用
         </View>
       </View>

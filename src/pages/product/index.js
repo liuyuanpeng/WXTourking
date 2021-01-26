@@ -9,6 +9,7 @@ import { AtDivider } from 'taro-ui'
 import CommentItem from '@components/CommentItem'
 import SysNavBar from '@components/SysNavBar'
 import PRODUCT_TYPES from '@constants/types'
+import { debounce } from 'debounce'
 
 @connect(({ city, evaluate }) => ({
   currentCity: city.current,
@@ -168,7 +169,8 @@ class ProductDetail extends Component {
       <View className='comments-container'>
         <CommentItem
           key={comment.id}
-          name={comment.username || comment.user_id}
+          name={comment.nick_name || comment.username || comment.user_id}
+          avatar={comment.avatar || ''}
           stars={comment.evaluate / 2}
           time={comment.create_time}
           comment={comment.content}
@@ -231,7 +233,7 @@ class ProductDetail extends Component {
           <View className='reason'>{pDetail.reason}</View>
           <View className='comments-title'>
             {`达人点评（${pDetail.comments.length}）`}
-            <Label className='see-more' onClick={this.seeAll}>
+            <Label className='see-more' onClick={debounce(this.seeAll, 100)}>
               查看全部
             </Label>
           </View>
@@ -257,7 +259,7 @@ class ProductDetail extends Component {
             )}
             <View className='detail-desc'>{pDetail.description || ''}</View>
           </View>
-          <View className='i-want-it' onClick={this.onSubmit}>
+          <View className='i-want-it' onClick={debounce(this.onSubmit, 100)}>
             我想{type === '伴手礼' ? '要' : '去'}
           </View>
         </View>

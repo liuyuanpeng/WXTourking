@@ -78,7 +78,8 @@ class Comments extends Component {
             <View key={`comment-item-${index}`}>
               {index > 0 && <View className='split-line' />}
               <CommentItem
-                name={comment.username || comment.user_id}
+                name={comment.nick_name || comment.name || comment.user_id}
+                avatar={comment.avatar || ''}
                 stars={comment.evaluate/2}
                 time={comment.create_time}
                 comment={comment.content}

@@ -58,6 +58,9 @@ export const CODE_COMMENTS = `${host}/travel/config/get?code=CODE_COMMENTS`
 // 我的订单列表
 export const GET_TRIP_PAGE = `${host}/travel/order/user/page`
 
+// 用户可/已开发票订单
+export const GET_ORDER_BILL_PAGE = `${host}/travel/order/user/bill_page`
+
 // 获取订单详情
 export const GET_ORDER_DETAIL =  `${host}/travel/order/get`
 
@@ -94,6 +97,15 @@ export const SAVE_USER_ADDRESS = `${host}/travel/user_dizhi/save`
 // 删除用户地址
 export const DELETE_USER_ADDRESS = `${host}/travel/user_dizhi/ADDRESS_ID/delete`
 
+// 获取发票抬头
+export const GET_USER_BILL_HEADER = `${host}/travel/user_fapiao/list`
+
+// 新增/编辑发票抬头
+export const SAVE_USER_BILL_HEADER =  `${host}/travel/user_fapiao/save`
+
+// 删除发票抬头
+export const DELETE_USER_BILL_HEADER = `${host}/travel/user_fapiao/HEAD_ID/delete`
+
 // 评价司机
 export const EVALUATE_DRIVER = `${host}/travel/driver/evaluate`
 
@@ -111,6 +123,9 @@ export const COUPON_PAGE = `${host}/travel/coupon/page`
 
 // 领取优惠券
 export const COUPON_OBTAIN = `${host}/travel/coupon/obtain`
+
+// 判断是否已经领取优惠券
+export const COUPON_OBTAIN_CHECK = `${host}/travel/coupon/obtain_check`
 
 // 获取账单可用优惠券
 export const COUPON_USABLE = `${host}/travel/coupon/usable_list`
@@ -144,3 +159,14 @@ export const DISCOVERY_UNFAVOR = `${host}/travel/faxian_collect/{id}/delete`
 
 // 发现-我的收藏
 export const DISCOVERY_FAVOR_PAGE =  `${host}/travel/faxian_collect/page`
+
+// 获取发票列表
+export const GET_BILL_PAGE = `${host}/travel/bill/page`
+
+// 获取可开发票订单总金额
+export const GET_BILL_PRICE = `${host}/travel/bill/total_price`
+
+// 开具发票
+export const CREATE_BILL = `${host}/travel/bill/create`
+
+

@@ -18,6 +18,7 @@ const myCouponPng = IMAGE_HOST + '/images/my_coupon.png'
 const profilePng = IMAGE_HOST + '/images/profile.png'
 import { AtButton, AtIcon } from 'taro-ui'
 import STORAGE from '@constants/storage'
+import { debounce } from 'debounce'
 
 @connect(({ user }) => ({
   userInfo: user
@@ -61,7 +62,16 @@ class Home extends PureComponent {
     e.stopPropagation()
     const app = Taro.getApp()
     app.globalData.wxInfo = { ...e.detail.userInfo }
-    this.forceUpdate()
+    const {avatarUrl, nickName} = app.globalData.wxInfo
+    if (avatarUrl && nickName) {
+      this.props.dispatch({
+        type: 'user/updateUserInfo',
+        payload: {
+          avatar: avatarUrl,
+          nick_name: nickName
+        }
+      })
+    }
   }
 
   render() {
@@ -71,8 +81,11 @@ class Home extends PureComponent {
         title: '我的发票',
         icon: myBillPng,
         action: () => {
+          // Taro.navigateTo({
+          //   url: '../myBill/index'
+          // })
           Taro.navigateTo({
-            url: '../myBill/index'
+            url: '../billManager/index'
           })
         }
       },
@@ -85,15 +98,15 @@ class Home extends PureComponent {
           })
         }
       },
-      {
-        title: '我的余额',
-        icon: myBalancePng,
-        action: () => {
-          Taro.navigateTo({
-            url: '../myBalance/index'
-          })
-        }
-      },
+      // {
+      //   title: '我的余额',
+      //   icon: myBalancePng,
+      //   action: () => {
+      //     Taro.navigateTo({
+      //       url: '../myBalance/index'
+      //     })
+      //   }
+      // },
       {
         title: '我的评论',
         icon: myCommentPng,
@@ -152,7 +165,7 @@ class Home extends PureComponent {
         }
       },
       {
-        title: '我的福利',
+        title: '我的优惠券',
         icon: myCouponPng,
         action: () => {
           this.props.dispatch({
@@ -194,6 +207,7 @@ class Home extends PureComponent {
 
     const app = Taro.getApp()
     const avatarUrl = app.globalData.wxInfo.avatarUrl
+    const nickName = app.globalData.wxInfo.nickName
 
     return (
       <View
@@ -217,7 +231,7 @@ class Home extends PureComponent {
             <AtIcon className='mine-avatar' size={64} value='user' />
           )}
           <View className='mine-info'>
-            <View className='mine-nickname'>{userInfo.name || '昵称未设置'}</View>
+            <View className='mine-nickname'>{nickName || userInfo.name || '昵称未设置'}</View>
             <View className='mine-signature'>
               {userInfo.remark || '签名未设置'}
             </View>
@@ -232,35 +246,35 @@ class Home extends PureComponent {
           style={{ top: Taro.$statusBarHeight + 302 + 'rpx' }}
         >
           <View className='mine-order-title'>我的订单</View>
-          <View className='mine-all-order' onClick={this.showAllOrders}>
+          <View className='mine-all-order' onClick={debounce(this.showAllOrders, 100)}>
             全部订单
           </View>
           <View className='mine-order-split' />
           <View className='mine-order-category'>
             <View
               className='mine-order-category-item'
-              onClick={this.showOrder.bind(this, 1)}
+              onClick={debounce(this.showOrder.bind(this, 1), 100)}
             >
               <View className='mine-order-icon-1' />
               <View className='mine-order-category-text'>待付款</View>
             </View>
             <View
               className='mine-order-category-item'
-              onClick={this.showOrder.bind(this, 2)}
+              onClick={debounce(this.showOrder.bind(this, 2), 100)}
             >
               <View className='mine-order-icon-2' />
               <View className='mine-order-category-text'>待出行</View>
             </View>
             <View
               className='mine-order-category-item'
-              onClick={this.showOrder.bind(this, 3)}
+              onClick={debounce(this.showOrder.bind(this, 3), 100)}
             >
               <View className='mine-order-icon-3' />
               <View className='mine-order-category-text'>已完成</View>
             </View>
             <View
               className='mine-order-category-item'
-              onClick={this.showOrder.bind(this, 4)}
+              onClick={debounce(this.showOrder.bind(this, 4), 100)}
             >
               <View className='mine-order-icon-4' />
               <View className='mine-order-category-text'>待评价</View>

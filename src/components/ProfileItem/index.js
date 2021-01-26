@@ -11,16 +11,16 @@ class ProfileItem extends Taro.Component {
     action: null
   }
 
-  handleClick = e => {
+  handleClick = (subtitle, e) => {
     e.stopPropagation()
     const { action } = this.props
-    action && action()
+    action && action(subtitle)
   }
 
   render() {
     const { title, subtitle, hideRight } = this.props
     return (
-      <View className='profile-list-item' onClick={this.handleClick}>
+      <View className='profile-list-item' onClick={this.handleClick.bind(this, subtitle)}>
         <View className='profile-list-item-title'>{title}</View>
         {subtitle && (
           <View className='profile-list-item-subtitle'>{subtitle}</View>

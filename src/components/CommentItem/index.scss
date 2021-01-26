@@ -19,9 +19,14 @@
     margin-top: 30px;
     width: 68px;
     height: 68px;
-    border-radius: 33px;
+    border-radius: 34px;
     display: inline-block;
     vertical-align: top;
+    &-img {
+      width: 68px;
+      height: 68px;
+      border-radius: 34px;
+    }
   }
   .time {
     float: right;

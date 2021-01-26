@@ -1,10 +1,18 @@
 import modelExtend from 'dva-model-extend'
 import commonModel from './common'
-import { fetchOrders, fetchOrderDetail, fetchPrice, createOrder, cancelOrder, payOrder } from '../services/order'
+import {
+  fetchOrders,
+  fetchBillOrders,
+  fetchOrderDetail,
+  fetchPrice,
+  createOrder,
+  cancelOrder,
+  payOrder
+} from '../services/order'
 import Taro from '@tarojs/taro'
 import STORAGE from '@constants/storage'
 
-const SIZE = 100
+const SIZE = 1000
 
 export default modelExtend(commonModel, {
   namespace: 'order',
@@ -19,11 +27,13 @@ export default modelExtend(commonModel, {
     orderDetail: {},
     baocheOrders: { page: 0, size: SIZE, data_list: [] },
     jiejiOrders: { page: 0, size: SIZE, data_list: [] },
-    xianluOrders: { page: 0, size: SIZE, data_list: [] }
+    xianluOrders: { page: 0, size: SIZE, data_list: [] },
+    billOrders: { page: 0, size: SIZE, data_list: [] },
+    finishBillOrders: { page: 0, size: SIZE, data_list: [] }
   },
   reducers: {},
   effects: {
-    *payOrder({payload, success, fail}, {call, select, put}) {
+    *payOrder({ payload, success, fail }, { call, select, put }) {
       const res = yield call(payOrder, payload.id)
       if (res.code === 'SUCCESS') {
         const userOrder = yield select(state => state.order.userOrder)
@@ -34,7 +44,7 @@ export default modelExtend(commonModel, {
               ...userOrder,
               order: {
                 ...userOrder.order,
-                order_status: "AUTO"
+                order_status: 'AUTO'
               }
             }
           }
@@ -44,7 +54,7 @@ export default modelExtend(commonModel, {
         fail && fail(res.message)
       }
     },
-    *setUserOrder({payload, success}, {put}) {
+    *setUserOrder({ payload, success }, { put }) {
       yield put({
         type: 'updateState',
         payload: {
@@ -55,7 +65,7 @@ export default modelExtend(commonModel, {
       })
       success && success()
     },
-    *cancelOrder({payload, success, fail}, {call, put, select}) {
+    *cancelOrder({ payload, success, fail }, { call, put, select }) {
       const res = yield call(cancelOrder, payload.id)
       if (res.code === 'SUCCESS') {
         const userOrder = yield select(state => state.order.userOrder)
@@ -66,7 +76,7 @@ export default modelExtend(commonModel, {
               ...userOrder,
               order: {
                 ...userOrder.order,
-                order_status: "CANCEL_USER"
+                order_status: 'CANCEL_USER'
               }
             }
           }
@@ -76,7 +86,7 @@ export default modelExtend(commonModel, {
         fail && fail(res.message)
       }
     },
-    *createOrder({payload, success, fail}, {call}) {
+    *createOrder({ payload, success, fail }, { call }) {
       const res = yield call(createOrder, payload)
       if (res.code === 'SUCCESS') {
         success && success(res.data)
@@ -88,6 +98,42 @@ export default modelExtend(commonModel, {
       const res = yield call(fetchPrice, payload)
       if (res.code === 'SUCCESS') {
         success && success(res.data)
+      } else {
+        fail && fail(res.message)
+      }
+    },
+    *getBillOrders({ bill_type = 1, success, fail }, { call, put }) {
+      const body = { page: 0, size: SIZE }
+      const query = {
+        user_id: Taro.getStorageSync(STORAGE.USER_ID),
+        type: bill_type
+      }
+      const res = yield call(fetchBillOrders, { query, body })
+      if (res.code === 'SUCCESS') {
+        if (bill_type === 1) {
+          yield put({
+            type: 'updateState',
+            payload: {
+              billOrders: {
+                page: 0,
+                size: SIZE,
+                data_list: res.data.data_list
+              }
+            }
+          })
+        } else {
+          yield put({
+            type: 'updateState',
+            payload: {
+              finishBillOrders: {
+                page: 0,
+                size: SIZE,
+                data_list: res.data.data_list
+              }
+            }
+          })
+        }
+        success && success(res.data.data_list)
       } else {
         fail && fail(res.message)
       }
@@ -126,7 +172,9 @@ export default modelExtend(commonModel, {
     },
     *getWaitForPay({ more, success, fail }, { call, put, select }) {
       const body = { page: 0, size: SIZE }
-      const waitForPayOrders = yield select(state => state.order.waitForPayOrders)
+      const waitForPayOrders = yield select(
+        state => state.order.waitForPayOrders
+      )
       if (more) {
         body.page = waitForPayOrders.page + 1
       }
@@ -222,7 +270,9 @@ export default modelExtend(commonModel, {
     },
     *getWaitForComment({ more, success, fail }, { call, put, select }) {
       const body = { page: 0, size: SIZE }
-      const waitForCommentOrders = yield select(state => state.order.waitForCommentOrders)
+      const waitForCommentOrders = yield select(
+        state => state.order.waitForCommentOrders
+      )
       if (more) {
         body.page = waitForCommentOrders.page + 1
       }

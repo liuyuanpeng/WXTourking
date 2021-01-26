@@ -8,6 +8,7 @@ import './index.scss'
 
 import { connect } from '@tarojs/redux'
 import { AtIcon, AtToast } from 'taro-ui'
+import { debounce } from 'debounce'
 
 @connect(({}) => ({}))
 class DiscoveryItem extends Taro.Component {
@@ -54,7 +55,7 @@ class DiscoveryItem extends Taro.Component {
       name = '',
       images = '',
       faxian_category = 'JINGDIAN',
-      user
+      user = {}
     } = data
 
     let discoveryImage
@@ -68,7 +69,7 @@ class DiscoveryItem extends Taro.Component {
       console.log(error)
     }
     return (
-      <View className='discovery-item' onClick={this.gotoDetail}>
+      <View className='discovery-item' onClick={debounce(this.gotoDetail, 100)}>
         <Image
           className='discovery-item-image'
           src={discoveryImage}
@@ -81,9 +82,15 @@ class DiscoveryItem extends Taro.Component {
         <View className='discovery-item-footer'>
           <View className='discovery-item-footer-item'>
             <View className='discovery-item-footer-item-icon-avatar'>
-              <AtIcon size={30} value='user' />
+              {user.avatar ? (
+                <Image src={user.avatar} className='discovery-item-footer-item-icon-avatar-img' mode='aspectFill' />
+              ) : (
+                <AtIcon size={30} value='user' />
+              )}
             </View>
-            <View className='discovery-item-footer-item-text'>{user.name}</View>
+            <View className='discovery-item-footer-item-text'>
+              {user.nick_name || user.name || user.id}
+            </View>
           </View>
           <View className='discovery-item-footer-item'>
             <View className='discovery-item-footer-item-icon-like' />

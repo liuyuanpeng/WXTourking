@@ -3,6 +3,7 @@ import { View, Image, Label } from '@tarojs/components'
 
 import './index.scss'
 import dayjs from 'dayjs'
+import { debounce } from 'debounce'
 
 class CouponItem extends Taro.Component {
   static defaultProps = {
@@ -49,7 +50,7 @@ class CouponItem extends Taro.Component {
           )}
           <View
             className={`coupon-status ${isEffective ? 'yellow' : ''}`}
-            onClick={isEffective ? this.handleUse : null}
+            onClick={isEffective ? debounce(this.handleUse, 100) : null}
           >
             {isEffective ? '去使用' : isOverdue ? '已过期' : '已使用'}
           </View>

@@ -10,11 +10,13 @@ import CommentItem from '@components/CommentItem'
 import SysNavBar from '@components/SysNavBar'
 import { returnFloat } from '@utils/tool'
 import STORAGE from '@constants/storage'
+import { debounce } from 'debounce'
 
-@connect(({ city, address }) => ({
+@connect(({ city, address, coupon }) => ({
   currentCity: city.current,
   defaultAddress: address.defaultAddress,
-  addresses: address.list
+  addresses: address.list,
+  usableList: coupon.usableList
 }))
 class PayGift extends Component {
   config = {
@@ -24,7 +26,8 @@ class PayGift extends Component {
   state = {
     count: 1,
     address: this.props.defaultAddress,
-    data: {}
+    data: {},
+    coupon: ''
   }
 
   componentWillReceiveProps(nextProps) {
@@ -37,7 +40,7 @@ class PayGift extends Component {
     })
   }
 
-  componentWillMount() {
+  componentDidShow() {
     const { dispatch } = this.props
     dispatch({
       type: 'address/getUserAddress',
@@ -45,7 +48,7 @@ class PayGift extends Component {
         if (data) {
           const address = data.find(item => item.set_default)
           this.setState({
-            address
+            address: address || {}
           })
         }
       }
@@ -58,6 +61,30 @@ class PayGift extends Component {
       this.setState({
         data
       })
+      const { price } = data
+      // 获取可用优惠券
+      this.props.dispatch({
+        type: 'coupon/getUsableCoupon',
+        payload: {
+          price: price || 0,
+          user_id: Taro.getStorageSync(STORAGE.USER_ID)
+        }
+      })
+    })
+  }
+
+  goToCoupon = e => {
+    e.stopPropagation()
+    const {data, count} = this.state
+    Taro.navigateTo({
+      url: '../coupon/index?canEdit=true&price=' + data.price*count,
+      events: {
+        acceptCoupon: coupon => {
+          this.setState({
+            coupon
+          })
+        }
+      }
     })
   }
 
@@ -81,7 +108,7 @@ class PayGift extends Component {
   handlePay = e => {
     e.stopPropagation()
     const { dispatch, currentCity } = this.props
-    const { data, count, address } = this.state
+    const { data, count, address, coupon } = this.state
     const payload = {
       user_id: Taro.getStorageSync(STORAGE.USER_ID),
       user_mobile: Taro.getStorageSync(STORAGE.USER_PHONE),
@@ -100,6 +127,16 @@ class PayGift extends Component {
       mobile: address.mobile,
       username: address.name
     }
+
+    // 使用优惠券信息
+    if (coupon && coupon.id) {
+      payload.coupon_id = coupon.id
+      payload.coupon_price = coupon.price
+      payload.price -= payload.coupon_price
+    }
+
+    if (payload.price <= 0) return
+
     dispatch({
       type: 'order/createOrder',
       payload,
@@ -112,7 +149,7 @@ class PayGift extends Component {
           },
           success: () => {
             Taro.navigateTo({
-              url: '../orderStatus/index'
+              url: '../orderStatus/index?goHome=true'
             })
           }
         })
@@ -121,7 +158,8 @@ class PayGift extends Component {
   }
 
   render() {
-    const { count, address, data } = this.state
+    const { count, address, data, coupon } = this.state
+    const {usableList} = this.props
     let giftImg
     try {
       const images = data.images.split(',')
@@ -129,6 +167,8 @@ class PayGift extends Component {
         giftImg = images[0]
       }
     } catch (error) {}
+
+    const couponClassName = usableList && usableList.length ? 'coupon-right' : 'coupon-right coupon-right-gray'
     return (
       <View
         className='pay-gift'
@@ -136,7 +176,7 @@ class PayGift extends Component {
       >
         <SysNavBar title='订单支付' />
         {address && address.id ? (
-          <View className='address' onClick={this.onMoreAddress}>
+          <View className='address' onClick={debounce(this.onMoreAddress, 100)}>
             <View className='address-icon' />
             <View className='address-details'>
               <Label className='name'>{address.name}</Label>
@@ -146,7 +186,7 @@ class PayGift extends Component {
             <View className='more-address' />
           </View>
         ) : (
-          <View className='address-btn' onClick={this.onMoreAddress}>
+          <View className='address-btn' onClick={debounce(this.onMoreAddress, 100)}>
             去新增收货地址
           </View>
         )}
@@ -179,12 +219,27 @@ class PayGift extends Component {
             )}`}</Label>
           </View>
         </View>
+        <View className='coupon-container'>
+          <View className='title-label'>优惠券</View>
+          {/* <View className='subtitle-label'>增值税发票不享受优惠</View> */}
+          <View
+            className={couponClassName}
+            onClick={debounce(this.goToCoupon, 100)}
+          >
+            {coupon
+              ? `-${coupon.price}￥`
+              : usableList && usableList.length
+              ? `${usableList.length}张优惠券`
+              : '无可用优惠券'}
+          </View>
+        </View>
+        
         <View className='pay-gift-footer'>
-          <Label className='pay-it' onClick={this.handlePay}>
+          <Label className='pay-it' onClick={debounce(this.handlePay, 200)}>
             立即支付
           </Label>
           <Label className='total-footer'>{`￥${returnFloat(
-            data.price * count
+            data.price * count - (coupon ? coupon.price : 0)
           )}`}</Label>
           <Label className='sum-text'>合计：</Label>
           <Label className='sum-footer'>{`共${count}件，`}</Label>

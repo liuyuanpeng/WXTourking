@@ -11,16 +11,21 @@ class CommentItem extends Taro.Component {
     stars: 0,
     time: 0,
     comment: '',
-    images: []
+    images: [],
+    avatar: ''
   }
 
   render() {
-    const { name, stars, time, comment, images } = this.props
+    const { name, stars, time, comment, images, avatar } = this.props
     return (
       <View className='comment-item'>
         <View className='time'>{dayjs(time).format('YYYY-MM-DD')}</View>
         <View className='avatar'>
-          <AtIcon size={34} value='user' />
+          {avatar ? (
+            <Image src={avatar} className='avatar-img' mode='scaleToFill' />
+          ) : (
+            <AtIcon size={34} value='user' />
+          )}
         </View>
         <View className='comment-header'>
           <View className='name'>{name}</View>

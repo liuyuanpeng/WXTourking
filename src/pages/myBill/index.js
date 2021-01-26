@@ -17,8 +17,12 @@ import SysNavBar from '@components/SysNavBar'
 import { returnFloat } from '@utils/tool'
 import BillItem from '@components/BillItem'
 import CheckBox from '@components/CheckBox'
+import { debounce } from 'debounce'
 
-
+@connect(({ order }) => ({
+  billOrders: order.billOrders,
+  finishBillOrders: order.finishBillOrders
+}))
 class MyBill extends Component {
   config = {
     navigationBarTitleText: '我的发票'
@@ -35,112 +39,66 @@ class MyBill extends Component {
     this.setState({
       current: value
     })
-  }
-
-  
-
-  componentDidMount() {
-    const current = this.$router.params.index || 0
-    this.setState({
-      current: parseInt(current)
+    this.props.dispatch({
+      type: `order/getBillOrders`,
+      bill_type: value + 1,
+      fail: msg => {
+        Taro.showToast({
+          title: msg || '获取订单失败',
+          icon: 'none'
+        })
+      }
     })
   }
 
-  orders = [
-    {
-      id: '1',
-      type: 'daySchedule',
-      data: {
-        status: 'done',
-        start_place: '厦门',
-        target_place: '漳州',
-        day: 1,
-        time: new Date().getTime(),
-        car: {
-          type: '舒适',
-          sit: 5
-        },
-        price: 1793
+  componentDidMount() {
+    const current = parseInt(this.$router.params.index || 0)
+    this.setState({
+      current
+    })
+    this.props.dispatch({
+      type: `order/getBillOrders`,
+      bill_type: current + 1,
+      fail: msg => {
+        Taro.showToast({
+          title: msg || '获取订单失败',
+          icon: 'none'
+        })
       }
-    },
-    {
-      id: '2',
-      type: 'jiesongji',
-      data: {
-        status: 'wait_for_go',
-        start_place: '厦门高崎国际机场T3',
-        target_place: '厦门火车站',
-        time: new Date().getTime(),
-        car: {
-          type: '舒适',
-          sit: 7
-        },
-        price: 2135
-      }
-    },
-    {
-      id: '3',
-      type: 'routeSchedule',
-      data: {
-        status: 'wait_for_go',
-        day: 2,
-        car: {
-          type: '舒适',
-          sit: 5
-        },
-        price: 688,
-        template: {
-          title: '厦门老院子景区两日游',
-          image:
-            'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1592246709686&di=30081e07fdab9019b4aae97170c52194&imgtype=0&src=http%3A%2F%2Fa3.att.hudong.com%2F14%2F75%2F01300000164186121366756803686.jpg'
+    })
+  }
+
+  onNext = e => {
+    e.stopPropagation()
+    const { checks } = this.state
+    if (checks.length) {
+      const price = this.getPrice()
+      Taro.navigateTo({
+        url: '../createBill/index',
+        success: res => {
+          res.eventChannel.emit('acceptBillData', {
+            ids: checks.concat(),
+            price
+          })
         }
-      }
-    },
-    {
-      id: '4',
-      type: 'gift',
-      data: {
-        status: 'sending',
-        count: 2,
-        time: new Date().getTime(),
-        price: 126,
-        transport: 'LP00003688676142',
-        template: {
-          title: '苏小糖牛轧糖',
-          image:
-            'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1592246709686&di=30081e07fdab9019b4aae97170c52194&imgtype=0&src=http%3A%2F%2Fa3.att.hudong.com%2F14%2F75%2F01300000164186121366756803686.jpg'
-        }
-      }
-    },
-    {
-      id: '5',
-      type: 'routeSchedule',
-      data: {
-        status: 'wait_for_pay',
-        day: 2,
-        time: new Date().getTime(),
-        car: {
-          type: '舒适',
-          sit: 5
-        },
-        price: 688,
-        template: {
-          title: '厦门老院子景区两日游',
-          image:
-            'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1592246709686&di=30081e07fdab9019b4aae97170c52194&imgtype=0&src=http%3A%2F%2Fa3.att.hudong.com%2F14%2F75%2F01300000164186121366756803686.jpg'
-        }
-      }
+      })
+    } else {
+      Taro.showToast({
+        title: '请选择订单',
+        icon: 'none'
+      })
     }
-  ]
+  }
 
   onAllCheck = checked => {
     this.setState({
       allCheck: checked
     })
+    const { billOrders } = this.props
     if (checked) {
       let checks = []
-      this.orders.map(item => {
-        checks[item.id] = true
+      billOrders.data_list.map(item => {
+        checks.push(item.order.id)
       })
       this.setState({
         checks
@@ -152,9 +110,30 @@ class MyBill extends Component {
     }
   }
 
+  getPrice() {
+    let price = 0
+    const { billOrders } = this.props
+    const { checks } = this.state
+    checks.forEach(id => {
+      const bill = billOrders.data_list.find(item => item.order.id === id)
+      if (bill) {
+        price += bill.order.price
+      }
+    })
+    return price
+  }
+
   onCheck = (id, checked) => {
     let newChecks = this.state.checks.concat()
-    newChecks[id] = checked
+    const index = newChecks.indexOf(id)
+    if (checked) {
+      if (index === -1) {
+        newChecks.push(id)
+      }
+    } else {
+      newChecks.splice(index, 1)
+    }
+
     this.setState({
       checks: newChecks
     })
@@ -164,6 +143,8 @@ class MyBill extends Component {
     const tabList = [{ title: '可开具发票' }, { title: '已开具发票' }]
 
     const { checks, allCheck } = this.state
+
+    const { billOrders, finishBillOrders } = this.props
 
     const scrollStyle = {
       height: `${Taro.$windowHeight -
@@ -175,9 +156,7 @@ class MyBill extends Component {
     }
 
     const scrollStyle2 = {
-      height: `${Taro.$windowHeight -
-        Taro.$statusBarHeight -
-        88 - 88}rpx`
+      height: `${Taro.$windowHeight - Taro.$statusBarHeight - 88 - 88}rpx`
     }
 
     return (
@@ -194,12 +173,12 @@ class MyBill extends Component {
           >
             <AtTabsPane current={this.state.current} index={0}>
               <ScrollView scrollY style={scrollStyle}>
-                {this.orders.map((item, index) => {
+                {billOrders.data_list.map((item, index) => {
                   return (
                     <BillItem
                       canCheck
-                      checked={checks[item.id] || false}
-                      onCheck={this.onCheck.bind(this, item.id)}
+                      checked={checks.indexOf(item.order.id) !== -1}
+                      onCheck={this.onCheck.bind(this, item.order.id)}
                       key={`bill-item-${index}`}
                       {...item}
                     />
@@ -210,7 +189,8 @@ class MyBill extends Component {
                 <View className='bill-tip'>
                   共选择
                   <Label className='bill-tip-yellow'>{checks.length}</Label>
-                  个订单，<Label className='bill-tip-yellow'>{1793}</Label>元
+                  个订单，
+                  <Label className='bill-tip-yellow'>{this.getPrice()}</Label>元
                 </View>
               )}
               <View className='bill-bottom'>
@@ -220,14 +200,14 @@ class MyBill extends Component {
                   onChange={this.onAllCheck}
                   title='本页全选'
                 />
-                <View className='bill-button-next' onClick={this.onNext}>
+                <View className='bill-button-next' onClick={debounce(this.onNext, 100)}>
                   下一步
                 </View>
               </View>
             </AtTabsPane>
             <AtTabsPane current={this.state.current} index={1}>
               <ScrollView scrollY style={scrollStyle2}>
-                {orders.map((item, index) => (
+                {finishBillOrders.data_list.map((item, index) => (
                   <BillItem key={`bill-item-${index}`} {...item} />
                 ))}
               </ScrollView>

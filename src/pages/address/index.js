@@ -9,6 +9,7 @@ import { AtDivider, AtNavBar, AtInputNumber } from 'taro-ui'
 import CommentItem from '@components/CommentItem'
 import SysNavBar from '@components/SysNavBar'
 import { returnFloat } from '@utils/tool'
+import { debounce } from 'debounce'
 
 @connect(({ address }) => ({
   data: address.list,
@@ -85,7 +86,7 @@ class Address extends Component {
             </View>
           </View>
         ))}
-        <View className='address-new' onClick={this.handleNew}>新增地址</View>
+        <View className='address-new' onClick={debounce(this.handleNew, 100)}>新增地址</View>
       </View>
     )
   }

@@ -34,11 +34,6 @@ class MyBalance extends Component {
     })
   }
 
-  handleContact = e => {
-    console.log(e.detail.path)
-    console.log(e.detail.query)
-  }
-
   render() {
     return (
       <View
@@ -54,7 +49,6 @@ class MyBalance extends Component {
         <Button
           className='my-balance-button'
           open-type='contact'
-          onContact={this.handleContact}
         >
           在线客服
         </Button>

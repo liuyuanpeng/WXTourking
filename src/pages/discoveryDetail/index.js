@@ -269,7 +269,10 @@ class DiscoveryDetail extends Component {
           {commentList.map(comment => (
             <CommentItem
               key={comment.id}
-              name={comment.user.name}
+              name={
+                comment.user.nick_name || comment.user.name || comment.user.id
+              }
+              avatar={comment.user.avatar || ''}
               time={comment.create_time}
               comment={comment.content}
             />
@@ -344,7 +347,10 @@ class DiscoveryDetail extends Component {
             {comments.map(comment => (
               <CommentItem
                 key={comment.id}
-                name={comment.user.name}
+                name={
+                  comment.user.nick_name || comment.user.name || comment.user.id
+                }
+                avatar={comment.user.avatar || ''}
                 time={comment.create_time}
                 comment={comment.content}
               />

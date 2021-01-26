@@ -3,6 +3,7 @@ import { View, Image, Label } from '@tarojs/components'
 import dayjs from 'dayjs'
 
 import './index.scss'
+import { debounce } from 'debounce'
 
 class FavorItem extends Taro.Component {
   gotoDetail = e => {
@@ -16,7 +17,6 @@ class FavorItem extends Taro.Component {
   }
 
   render() {
-    console.log('props: ', this.props)
     const { images, name, zan_count, evaluate_count, collect_count, faxian_category, find_zan_id, find_collect_id } = this.props
     let image
     if (faxian_category !== 'SHIPIN') {
@@ -25,7 +25,7 @@ class FavorItem extends Taro.Component {
       image = images ? images.split(',')[1] : ''
     }
     return (
-      <View className='favor-item' onClick={this.gotoDetail}>
+      <View className='favor-item' onClick={debounce(this.gotoDetail, 100)}>
         <Image className='favor-item-image' src={image} mode='aspectFill' />
         <View className='favor-detail'>
           <View className='favor-item-title'>{name}</View>

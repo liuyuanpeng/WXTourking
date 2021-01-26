@@ -1,6 +1,12 @@
 import modelExtend from 'dva-model-extend'
 import commonModel from './common'
-import {fetchCouponList, fetchCouponPage, obtainCoupon, fetchUsableCoupon} from '../services/api.js'
+import {
+  fetchCouponList,
+  fetchCouponPage,
+  obtainCoupon,
+  fetchUsableCoupon,
+  obtainCouponCheck
+} from '../services/api.js'
 
 export default modelExtend(commonModel, {
   namespace: 'coupon',
@@ -13,8 +19,8 @@ export default modelExtend(commonModel, {
   },
   reducers: {},
   effects: {
-    *getCouponList({payload, success, fail}, {call, put}) {
-      const {status} = payload
+    *getCouponList({ payload, success, fail }, { call, put }) {
+      const { status } = payload
       const res = yield call(fetchCouponPage, payload)
       if (res.code === 'SUCCESS') {
         const newState = {}
@@ -29,34 +35,49 @@ export default modelExtend(commonModel, {
         }
         yield put({
           type: 'updateState',
-          payload: {...newState}
+          payload: { ...newState }
         })
         success && success()
       } else {
         fail && fail(res.message)
       }
     },
-    *getPool({payload, success, fail}, {call, put}) {
+    *getPool({ payload, success, fail }, { call, put }) {
       const res = yield call(fetchCouponList, payload)
       if (res.code === 'SUCCESS') {
         yield put({
           type: 'updateState',
-          payload: {pool: res.data&&res.data.length ? res.data[0] : {}}
+          payload: { pool: res.data && res.data.length ? res.data[0] : {} }
         })
-        success && success(res.data&&res.data.length ? res.data[0] : {})
+        success && success(res.data && res.data.length ? res.data[0] : {})
       } else {
         fail && fail(res.message)
       }
     },
-    *obtainCoupon({payload, success, fail}, {call}) {
-      const res = yield call(obtainCoupon, payload)
-      if (res.code === 'SUCCESS') {
-        success && success(res.data)
+    *obtainCoupon({ payload, success, fail }, { call }) {
+      const check = yield call(obtainCouponCheck, payload)
+      if (check.code === 'SUCCESS' && check.data !== true) {
+        const res = yield call(obtainCoupon, payload)
+        if (res.code === 'SUCCESS') {
+          success && success(res.data)
+        } else {
+          fail && fail(res.message)
+        }
       } else {
-        fail && fail(res.message)
+        fail && fail('没有更多的优惠券了')
       }
     },
-    *getUsableCoupon({payload, success, fail}, {call, put}) {
+    *getUsableCoupon({ payload, success, fail }, { call, put }) {
+      const { price } = payload
+      if (price === 0) {
+        yield put({
+          type: 'updateState',
+          payload: {
+            usableList: []
+          }
+        })
+        return
+      }
       const res = yield call(fetchUsableCoupon, payload)
       if (res.code === 'SUCCESS') {
         yield put({

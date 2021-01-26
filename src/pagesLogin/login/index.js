@@ -4,6 +4,7 @@ import { connect } from '@tarojs/redux'
 import './index.scss'
 import SysNavBar from '@components/SysNavBar'
 import STORAGE from '@constants/storage'
+import { debounce } from 'debounce'
 
 @connect(({}) => ({}))
 class Login extends Component {
@@ -113,7 +114,7 @@ class Login extends Component {
         >
           微信用户一键登录
         </Button>
-        <View className='login-manual' onClick={this.handleManual}>
+        <View className='login-manual' onClick={debounce(this.handleManual, 100)}>
           输入手机号码登录/注册
         </View>
       </View>

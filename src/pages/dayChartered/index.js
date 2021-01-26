@@ -13,6 +13,7 @@ import DaysPicker from '@components/DaysPicker'
 import DecorateTitle from '@components/DecorateTitle'
 import CommentItem from '@components/CommentItem'
 import dayjs from 'dayjs'
+import { debounce } from 'debounce'
 
 const service_assurance_png = IMAGE_HOST + '/images/service_assurance.png'
 const precious_png = IMAGE_HOST + '/images/precious.png'
@@ -28,7 +29,7 @@ class DayChartered extends PureComponent {
 
   state = {
     start_place: {title: ''},
-    start_time: dayjs(),
+    start_time: dayjs().add(5, 'm'),
     days: 1
   }
 
@@ -205,7 +206,7 @@ class DayChartered extends PureComponent {
                 onOk={this.handleDaysChange}
               />
               <View className='split-line' />
-              <View className='chartered-btn' onClick={this.handleChartered}>
+              <View className='chartered-btn' onClick={debounce(this.handleChartered, 100)}>
                 立即包车
               </View>
               <View className='chartered-ensure'>

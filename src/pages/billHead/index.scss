@@ -1,0 +1,122 @@
+.bill-head {
+  width: 100%;
+  background-color: #f7f7f7;
+  position: relative;
+  font-weight: normal;
+  &-item {
+    width: 100%;
+    height: 100px;
+    background: white;
+    padding: 28px 24px;
+    box-sizing: border-box;
+    position: relative;
+    &-split {
+      width: 702px;
+      height: 2px;
+      background-color: #f3f3f3;
+      margin: 0 auto;
+      position: absolute;
+      bottom: 0;
+      left: 24px;
+    }
+    &-label {
+      font-size: 32px;
+      color: #333333;
+      height: 44px;
+      line-height: 44px;
+      position: relative;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    &-label-required {
+      font-size: 32px;
+      color: #333333;
+      height: 44px;
+      line-height: 44px;
+      position: relative;
+      display: inline-block;
+      vertical-align: middle;
+      &::after {
+        content: '*';
+        color: #fd7d59;
+        width: 24px;
+        height: 24px;
+        position: absolute;
+        right: -30px;
+        top: 6px;
+      }
+    }
+    &-content {
+      display: inline-block;
+      vertical-align: middle;
+      position: absolute;
+      left: 250px;
+      &-input {
+        font-size: 28px;
+        width: 500px;
+      }
+      &-check {
+        display: inline-block;
+        width: 200px;
+      }
+    }
+  }
+  .save-bill-head {
+    margin: 50px 24px;
+    height: 100px;
+    background: linear-gradient(
+      90deg,
+      rgba(254, 213, 0, 1) 0%,
+      rgba(254, 200, 2, 1) 100%
+    );
+    border-radius: 8px;
+    text-align: center;
+    line-height: 100px;
+    font-size: 32px;
+    font-weight: bold;
+    color: #333333;
+  }
+  .delete-bill-head {
+    margin: 32px auto;
+    color: #fd7d59;
+    height: 40px;
+    line-height: 40px;
+    font-size: 28px;
+    font-weight: 400;
+    text-align: center;
+  }
+  .form-item {
+    border-bottom: solid 1px #f3f3f3;
+    height: 120px;
+    line-height: 120px;
+    font-weight: 400;
+    background: white;
+    padding: 0 24px;
+    .label-name {
+      color: #bdbdbd;
+      font-size: 32px;
+      height: 120px;
+    }
+    .form-input {
+      margin-left: 74px;
+      display: inline-block;
+      color: #333333;
+      font-size: 32px;
+      height: 50px;
+    }
+    .label-name-ex {
+      color: #333333;
+      font-size: 32px;
+    }
+    .form-switch {
+      float: right;
+      padding: 0;
+      margin: 0;
+      top: 30px;
+      height: 60px;
+      .at-switch__container {
+        height: 60px;
+      }
+    }
+  }
+}

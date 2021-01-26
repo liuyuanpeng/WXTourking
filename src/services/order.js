@@ -1,6 +1,14 @@
 import fetch from '../utils/request'
-import { host, GET_TRIP_PAGE, GET_ORDER_DETAIL, GET_PRICE, CREATE_ORDER, CANCEL_ORDER } from '@constants/api'
+import {
+  host,
+  GET_TRIP_PAGE,
+  GET_ORDER_DETAIL,
+  GET_PRICE,
+  CREATE_ORDER,
+  CANCEL_ORDER
+} from '@constants/api'
 import qs from 'query-string'
+import { GET_ORDER_BILL_PAGE } from '../constants/api'
 
 export function cancelOrder(id) {
   return fetch({
@@ -21,7 +29,7 @@ export function createOrder(payload) {
     url: CREATE_ORDER,
     method: 'POST',
     payload
-  }) 
+  })
 }
 
 export function fetchPrice(payload) {
@@ -29,19 +37,41 @@ export function fetchPrice(payload) {
     url: GET_PRICE,
     method: 'POST',
     payload
-  }) 
+  })
 }
 
 export function fetchOrders(payload) {
-  const {query, body} = payload
+  const { query, body } = payload
   return fetch({
     url: `${GET_TRIP_PAGE}?${qs.stringify(query)}`,
     method: 'POST',
     payload: {
       ...body,
-      sort_data_list: []
+      sort_data_list: [
+        {
+          direction: 'DESC',
+          property: 'createTime'
+        }
+      ]
     }
   })
+}
+
+export function fetchBillOrders(payload) {
+  const {query, body} = payload
+  return fetch({
+    url: `${GET_ORDER_BILL_PAGE}?${qs.stringify(query)}`,
+    method: 'POST',
+    payload: {
+      ...body,
+      sort_data_list: [
+        {
+          direction: 'DESC',
+          property: 'createTime'
+        }
+      ]
+    }
+  }) 
 }
 
 export function fetchOrderDetail(payload) {

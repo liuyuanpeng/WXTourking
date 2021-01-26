@@ -5,6 +5,7 @@ import { connect } from '@tarojs/redux'
 import './index.scss'
 import STORAGE from '../../constants/storage'
 import search from '../../models/search'
+import { debounce } from 'debounce'
 /**
  * static defaultProps = {
     opacity: 0,
@@ -152,7 +153,7 @@ class Navbar extends Taro.Component {
         </View>
         {showSearch && (
           <View className='search-bar'>
-            <View className='location' onClick={this.onLocate}>
+            <View className='location' onClick={debounce(this.onLocate, 100)}>
               {currentCity.name}
             </View>
             <View className='search'>

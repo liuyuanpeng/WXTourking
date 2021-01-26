@@ -47,7 +47,6 @@ export default modelExtend(commonModel, {
       }
     },
     *getUserInfo({ success, fail }, { call, put }) {
-      console.log('wtf')
       const res = yield call(fetchUserInfo, {
         user_id: Taro.getStorageSync(STORAGE.USER_ID)
       })
@@ -60,7 +59,7 @@ export default modelExtend(commonModel, {
           type: 'updateState',
           payload: { ...res.data.user }
         })
-        success && success()
+        success && success(res.data.user)
       } else {
         fail && fail(res.message)
       }

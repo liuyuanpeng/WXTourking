@@ -19,6 +19,7 @@ import DateTimePicker from '@components/DateTimePicker'
 import CheckBox from '@components/CheckBox'
 
 import QQMapWX from '../utilPages/location/qqmap'
+import { debounce } from 'debounce'
 
 let qqMapSDK = null
 
@@ -34,12 +35,12 @@ class JSJPage extends Component {
     isSJ: false,
     start_place: { title: '' },
     target_place: { title: '' },
-    start_time: dayjs(),
+    start_time: dayjs().add(5, 'm'),
     fly: '',
     backCheck: false,
     start_place_back: { title: '' },
     target_place_back: { title: '' },
-    start_time_back: dayjs()
+    start_time_back: dayjs().add(5, 'm')
   }
 
   handleTypeChange = value => {
@@ -353,7 +354,7 @@ class JSJPage extends Component {
                   )}
                 </View>
               )}
-              <View className='JSJ-content-button' onClick={this.handleOK}>
+              <View className='JSJ-content-button' onClick={debounce(this.handleOK, 100)}>
                 立即预约
               </View>
               <View className='JSJ-content-ensure'>

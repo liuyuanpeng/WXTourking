@@ -18,6 +18,7 @@ import { returnFloat } from '@utils/tool'
 import CouponItem from '@components/CouponItem'
 import dayjs from 'dayjs'
 import STORAGE from '@constants/storage'
+import { debounce } from 'debounce'
 
 @connect(({ coupon }) => ({
   list: coupon.list,
@@ -27,7 +28,7 @@ import STORAGE from '@constants/storage'
 }))
 class Coupon extends Component {
   config = {
-    navigationBarTitleText: '我的福利'
+    navigationBarTitleText: '我的优惠券'
   }
 
   state = {
@@ -41,6 +42,16 @@ class Coupon extends Component {
     this.setState({
       current: value
     })
+
+
+    this.props.dispatch({
+      type: 'coupon/getCouponList',
+      payload: {
+        status: value + 1,
+        user_id: Taro.getStorageSync(STORAGE.USER_ID)
+      }
+    })
+
   }
 
   obtainCoupon = e => {
@@ -96,14 +107,7 @@ class Coupon extends Component {
     dispatch({
       type: 'coupon/getCouponList',
       payload: {
-        status: 2,
-        user_id
-      }
-    })
-    dispatch({
-      type: 'coupon/getCouponList',
-      payload: {
-        status: 3,
+        status: 1,
         user_id
       }
     })
@@ -157,7 +161,7 @@ class Coupon extends Component {
     const { list, usedList, overdueList, usableList } = this.props
 
     const scrollStyle = {
-      height: `${Taro.$windowHeight - Taro.$statusBarHeight - 376}rpx`
+      height: `${Taro.$windowHeight - Taro.$statusBarHeight - 276}rpx`
     }
 
     return (
@@ -165,7 +169,7 @@ class Coupon extends Component {
         className='all-coupon-page'
         style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
       >
-        <SysNavBar title='我的福利' />
+        <SysNavBar title='我的优惠券' />
         <View className='all-coupon-tabs'>
           <AtTabs
             current={this.state.current}
@@ -208,10 +212,10 @@ class Coupon extends Component {
             </AtTabsPane>
           </AtTabs>
         </View>
-        <View className='coupon-bottom'>
+        {/* <View className='coupon-bottom'>
           特别提示：每个用户1天最多使用2张优惠券
-        </View>
-        <View className='coupon-button' onClick={this.obtainCoupon}>
+        </View> */}
+        <View className='coupon-button' onClick={debounce(this.obtainCoupon, 100)}>
           领取更多优惠券
         </View>
       </View>

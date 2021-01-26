@@ -1,0 +1,186 @@
+@import '../../common/index.scss';
+
+.bill-manager {
+  width: 100%;
+  background-color: #FEC902;
+  position: absolute;
+  top: 0;
+  height: 100%;
+  &-header {
+    padding: 0 24px;
+    height: 394px;
+    position: relative;
+    &-title {
+      color: black;
+      font-size: 28px;
+      font-weight: bold;
+      top: 188px;
+      position: relative;
+      height: 40px;
+      font-weight: 40px;
+    }
+    &-content {
+      font-weight: bold;
+      color: black;
+      height: 40px;
+      line-height: 40px;
+      top: 234px;
+      position: relative;
+      &-icon {
+        font-size: 28px;
+        display: inline;
+        font-weight: normal;
+      }
+      &-number {
+        font-size: 56px;
+        display: inline;
+      }
+    }
+  }
+  &-content {
+    position: absolute;
+    top: 348px;
+    width: 100%;
+    background-color: white;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    overflow: hidden;
+    &-menu {
+      width: 100%;
+      height: 254px;
+      display: flex;
+      justify-content: space-around;
+      &-item {
+        margin-top: 67px;
+        width: 120px;
+        height: 120px;
+        text-align: center;
+        position: relative;
+        &-name {
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          font-size: 28px;
+          height: 40px;
+          line-height: 40px;
+          color: #999999;
+        }
+        &-icon-1 {
+          margin: 0 auto;
+          width: 74px;
+          height: 66px;
+          @include image('bill');
+        }
+        &-icon-2 {
+          margin: 0 auto;
+          width: 62px;
+          height: 68px;
+          @include image('bill_head');
+        }
+        &-icon-3 {
+          margin: 0 auto;
+          width: 62px;
+          height: 62px;
+          @include image('bill_address');
+        }
+      }
+    }
+
+  &-split {
+    width: 100%;
+    height: 20px;
+    background: #F7F7F7;
+  }
+    &-list {
+      font-weight: normal;
+      &-header {
+        width: 100%;
+        height: 88px;
+        border-bottom: #DEDEDE solid 1px;
+        padding: 22px 24px;
+        box-sizing: border-box;
+        position: relative;
+        &-title {
+          font-size: 32px;
+          height: 44px;
+          line-height: 44px;
+          color: #333333;
+        }
+        &-right {
+          font-size: 28px;
+          color: #BDBDBD;
+          height: 44px;
+          line-height: 44px;
+          position: absolute;
+          right: 24px;
+          top: 22px;
+          &-icon {
+            display: inline-block;
+            margin-left: 22px;
+            @include image('more');
+            width: 14px;
+            height: 26px;
+          }
+        }
+      }
+      &-content {
+        overflow-y: auto;
+        &-item {
+          position: relative;
+          width: 100%;
+          height: 200px;
+          padding: 34px 24px;
+          box-sizing: border-box;
+          &-split {
+            width: 702px;
+            left: 24px;
+            bottom: 0;
+            height: 0;
+            position: absolute;
+            border-bottom: #DEDEDE solid 2px;
+          }
+          &-title {
+            font-size: 32px;
+            color: #333333;
+            height: 44px;
+            line-height: 44px;
+            max-width: 600px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            display: inline-block;
+            vertical-align: middle;
+          }
+          &-status {
+            display: inline-block;
+            padding: 0 14px;
+            box-sizing: border-box;
+            height: 32px;
+            text-align: center;
+            background: linear-gradient(90deg, #FED500 0%, #FEC802 100%);
+            border-radius: 16px;
+            margin-left: 14px;
+            color: #333333;
+            font-size: 20px;
+            line-height: 32px;
+            vertical-align: middle;
+          }
+          &-price {
+            font-size: 26px;
+            height: 36px;
+            line-height: 36px;
+            margin-top: 8px;
+            color: #FD7D59;
+          }
+          &-time {
+            font-size: 26px;
+            height: 36px;
+            line-height: 36px;
+            margin-top: 8px;
+            color: #999999;
+          }
+        }
+      }
+    }
+  }
+}

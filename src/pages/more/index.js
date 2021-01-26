@@ -9,6 +9,7 @@ import './index.less'
 const homePng = IMAGE_HOST + '/images/bkg4.png'
 import ProductItem from '@components/ProductItem'
 import DecorateTitle from '@components/DecorateTitle'
+import { debounce } from 'debounce'
 
 @connect(({ product, city }) => ({
   list: product.ROAD,
@@ -50,11 +51,6 @@ class More extends Component {
     this.setState({
       opacity
     })
-  }
-
-  onSeeMore = e => {
-    e.stopPropagation()
-    console.log('onSeeMore')
   }
 
   handleProduct = (detail, e)=> {
@@ -113,7 +109,7 @@ class More extends Component {
                 let topText = '000000' + (index + 1)
                 topText = topText.substring(topText.length - 2)
                 return (
-                  <View className='choice-item' key={`choice-item-${index}`} onClick={this.handleProduct.bind(this, item)}>
+                  <View className='choice-item' key={`choice-item-${index}`} onClick={debounce(this.handleProduct.bind(this, item), 100)}>
                     <Image
                       src={item.private_consume.images.split(',')[0]}
                       className='choice-image'
@@ -150,7 +146,7 @@ class More extends Component {
             </View>*/}
             {list.map(item => (
               <ProductItem
-                onClick={this.handleProduct.bind(this, item)}
+                onClick={debounce(this.handleProduct.bind(this, item), 100)}
                 key={`scene-item-${item.private_consume.id}`}
                 type={
                   item.private_consume.scene === 'BANSHOU_PRIVATE'

@@ -61,7 +61,7 @@ export default modelExtend(commonModel, {
         },
         body: {
           page: 0,
-          size: target === 'recommend' ? 6 : 3
+          size: target === 'recommend' ? 6 : 10
         }
       })
       if (res.code === 'SUCCESS') {

@@ -92,6 +92,7 @@ class Profile extends Component {
       {
         title: '个人昵称',
         subtitle: nickName,
+        hideRight: true,
         action: () => {
           // 微信昵称不允许修改
           // Taro.navigateTo({
@@ -102,9 +103,9 @@ class Profile extends Component {
       {
         title: '真实姓名',
         subtitle: name,
-        action: () => {
+        action: subtitle => {
           Taro.navigateTo({
-            url: `../profileModify/index?key=name`
+            url: `../profileModify/index?key=name&value=${subtitle}`
           })
         }
       },
@@ -119,18 +120,18 @@ class Profile extends Component {
       {
         title: '常住地',
         subtitle: location || '',
-        action: () => {
+        action: subtitle => {
           Taro.navigateTo({
-            url: `../profileModify/index?key=location`
+            url: `../profileModify/index?key=location&value=${subtitle}`
           })
         }
       },
       {
         title: '个性签名',
         subtitle: remark || '',
-        action: () => {
+        action: subtitle => {
           Taro.navigateTo({
-            url: `../profileModify/index?key=remark`
+            url: `../profileModify/index?key=remark&value=${subtitle}`
           })
         }
       }

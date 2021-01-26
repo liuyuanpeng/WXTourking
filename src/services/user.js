@@ -16,7 +16,7 @@ export function fetchSession(code) {
     method: 'POST',
     payload: {
       code,
-      username: 'wtf'
+      username: 'username'
     }
   })
 }

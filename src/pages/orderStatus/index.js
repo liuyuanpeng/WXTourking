@@ -9,6 +9,7 @@ import SysNavBar from '@components/SysNavBar'
 import { returnFloat } from '@utils/tool'
 import dayjs from 'dayjs'
 import ORDER_STATUS from '@constants/status'
+import { debounce } from 'debounce'
 
 @connect(({ order }) => ({
   data: order.userOrder
@@ -19,8 +20,17 @@ class PayProduct extends Component {
   }
 
   state = {
-    showModal: false
+    showModal: false,
+    goHome: false
   }
+
+  componentDidMount() {
+    const goHome = !!this.$router.params.goHome
+    this.setState({
+      goHome
+    })
+  }
+  
 
   showModal = bShow => {
     this.setState({
@@ -88,7 +98,7 @@ class PayProduct extends Component {
   render() {
     const { data } = this.props
     const { order, private_consume, chexing, zuowei } = data
-    const { showModal } = this.state
+    const { showModal, goHome } = this.state
     if (!order) return null
     let productImg
     try {
@@ -144,7 +154,7 @@ class PayProduct extends Component {
 
     return (
       <View className='pay-product' style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}>
-        <SysNavBar title='确认订单' />
+        <SysNavBar title='确认订单' goHome={goHome} />
         {!isChartered && (
           <View className='pay-product-header'>
             {!isGift &&
@@ -207,7 +217,7 @@ class PayProduct extends Component {
           </View>
         )}
         {orderStatusDesc === '待付款' && (
-          <View className='pay-product-pay-btn' onClick={this.handlePay}>
+          <View className='pay-product-pay-btn' onClick={debounce(this.handlePay, 100)}>
             继续支付
           </View>
         )}

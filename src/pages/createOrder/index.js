@@ -1,5 +1,12 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Label, Text, ScrollView, Image, Button } from '@tarojs/components'
+import {
+  View,
+  Label,
+  Text,
+  ScrollView,
+  Image,
+  Button
+} from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 // import '../../common/index.scss'
 import './index.scss'
@@ -15,6 +22,7 @@ import { AtInput } from 'taro-ui'
 import STORAGE from '@constants/storage'
 import LocationInput from '@components/LocationInput'
 import DateTimePicker from '@components/DateTimePicker'
+import { debounce } from 'debounce'
 
 @connect(({ city, coupon }) => ({
   currentCity: city.current,
@@ -33,7 +41,7 @@ class CarType extends Component {
     phoneNumBackup: '',
     order: {},
     startPlace: { title: '' },
-    startTime: dayjs().add(1, 'day'),
+    startTime: dayjs().add(5, 'm'),
     coupon: ''
   }
 
@@ -44,17 +52,15 @@ class CarType extends Component {
         order: data
       })
 
-      const {price} = data
-      if (price) {
-        // 获取可用优惠券
-        this.props.dispatch({
-          type: 'coupon/getUsableCoupon',
-          payload: {
-            price,
-            user_id: Taro.getStorageSync(STORAGE.USER_ID)
-          }
-        })
-      }
+      const { price } = data
+      // 获取可用优惠券
+      this.props.dispatch({
+        type: 'coupon/getUsableCoupon',
+        payload: {
+          price: price || 0,
+          user_id: Taro.getStorageSync(STORAGE.USER_ID)
+        }
+      })
     })
 
     const name = Taro.getStorageSync(STORAGE.ORDER_USER_NAME) || ''
@@ -99,7 +105,7 @@ class CarType extends Component {
   goToCoupon = e => {
     e.stopPropagation()
     Taro.navigateTo({
-      url: '../coupon/index?canEdit=true&price='+this.state.order.price,
+      url: '../coupon/index?canEdit=true&price=' + this.state.order.price,
       events: {
         acceptCoupon: coupon => {
           this.setState({
@@ -139,7 +145,7 @@ class CarType extends Component {
       coupon
     } = this.state
 
-    const {currentCity} = this.props
+    const { currentCity } = this.props
 
     const {
       scene,
@@ -224,7 +230,9 @@ class CarType extends Component {
     if (coupon && coupon.id) {
       payload.coupon_id = coupon.id
       payload.coupon_price = coupon.price
+      payload.price -= payload.coupon_price
     }
+    if (payload.price <= 0) return
 
     this.props.dispatch({
       type: 'order/createOrder',
@@ -247,7 +255,7 @@ class CarType extends Component {
           },
           success: () => {
             Taro.navigateTo({
-              url: '../orderStatus/index'
+              url: '../orderStatus/index?goHome=true'
             })
           }
         })
@@ -281,11 +289,11 @@ class CarType extends Component {
             className='route-detail-item'
             key={`route-detail-item-${index}`}
           >
-            <Text className='route-detail-item-title'>{item.title}</Text>
+            <View className='route-detail-item-title'>{item.title}</View>
             {item.subtitle && (
-              <View className='route-detail-item-subtitle'>
+              <Text className='route-detail-item-subtitle'>
                 {item.subtitle}
-              </View>
+              </Text>
             )}
             {item.subtitles &&
               item.subtitles.map((subtitle, INDEX) => (
@@ -375,6 +383,32 @@ class CarType extends Component {
       }
     ]
 
+    const scheduleDetail = [
+      {
+        title: '费用说明',
+        subtitles: [
+          {
+            title: '免费等待90分钟',
+            subtitle: '从航班实际降落后开始时间计算，免费等待90分钟'
+          }
+        ]
+      },
+      {
+        title: '取消规则',
+        subtitle:
+          '北京时间02月01日14时15分前可免费取消，之后将收取100订单实付金额'
+      },
+      {
+        title: '更改规则',
+        subtitle:
+          '订单支付后，只可修改联系人姓名和联系方式\r\n如果需要更改服务时间、人数、车型、包车方式等信息的话，您需要取消订单后重新下单支付，重新下单价格可能会出现浮动（价格受汇率、节假日和急单预定时间等因素影响）\r\n如因不可抗力原因造成订单更改，且原订单当地人不能服务时，可免费取消订单；不可抗力包含自然灾害、社会事件、航班取消（仅限接机）出入境政策变更等'
+      },
+      {
+        title: '纸质发票',
+        subtitle: '订单完成后，可联系客服申请纸质发票，每个订单仅可开一次发票'
+      }
+    ]
+
     const routeDetail = [
       {
         title: '费用说明',
@@ -435,7 +469,8 @@ class CarType extends Component {
           total: true
         }
       ],
-      intro: routeDetail
+      intro:
+        scene === 'JIEJI' || scene === 'SONGJI' ? scheduleDetail : routeDetail
     }
 
     const scrollStyle = {
@@ -445,6 +480,11 @@ class CarType extends Component {
     const scrollStylePop = {
       height: `${Taro.$windowHeight - 400}rpx`
     }
+
+    const couponClassName =
+      usableList && usableList.length
+        ? 'coupon-right'
+        : 'coupon-right coupon-right-gray'
 
     return (
       <View className='car-page'>
@@ -472,7 +512,9 @@ class CarType extends Component {
         ) : (
           <View className='car-header'>
             <View>
-              {scene === 'DAY_PRIVATE' && <Label className='car-header-title'>包车{days}天</Label>}
+              {scene === 'DAY_PRIVATE' && (
+                <Label className='car-header-title'>包车{days}天</Label>
+              )}
               <Label className='car-header-start'>{currentCity.name}出发</Label>
             </View>
             <View className='car-header-time'>
@@ -508,7 +550,7 @@ class CarType extends Component {
             <View className='phones-header'>
               <View className='phones-header-title'>如何联系您</View>
               <Text className='phones-header-subtitle'>
-                请留下您的电话号码，车导师傅会通过电话、短信联系您
+                司机将会通过电话或短信联系您
               </Text>
             </View>
             <View className='phones-item'>
@@ -574,12 +616,16 @@ class CarType extends Component {
           </View>
           <View className='coupon-container'>
             <View className='title-label'>优惠券</View>
-            <View className='subtitle-label'>增值税发票不享受优惠</View>
+            {/* <View className='subtitle-label'>增值税发票不享受优惠</View> */}
             <View
-              className={`coupon-right ${usableList && usableList.length ? '' : 'coupon-right-gray'}`}
-              onClick={this.goToCoupon}
+              className={couponClassName}
+              onClick={debounce(this.goToCoupon, 100)}
             >
-              {coupon ? `-${coupon.price}￥` : (usableList && usableList.length ? `${usableList.length}张优惠券` : '无可用优惠券')}
+              {coupon
+                ? `-${coupon.price}￥`
+                : usableList && usableList.length
+                ? `${usableList.length}张优惠券`
+                : '无可用优惠券'}
             </View>
           </View>
           <View className='contact'>
@@ -615,11 +661,13 @@ class CarType extends Component {
           )}前可免费取消`}
         </View>
         <View className='footer'>
-          <View className='price'>￥{coupon ? price-coupon.price : price}</View>
+          <View className='price'>
+            ￥{coupon ? price - coupon.price : price}
+          </View>
           <View className='detail' onClick={this.showDetail}>
             明细
           </View>
-          <View className='pay-button' onClick={this.handlePay}>
+          <View className='pay-button' onClick={debounce(this.handlePay, 200)}>
             立即支付
           </View>
         </View>
@@ -630,7 +678,11 @@ class CarType extends Component {
           onClose={this.showScheduleDetail.bind(this, false)}
         >
           <View className='pop-container'>
-            {this.getRouteDetail(routeDetail)}
+            {this.getRouteDetail(
+              scene === 'JIEJI' || scene === 'SONGJI'
+                ? scheduleDetail
+                : routeDetail
+            )}
           </View>
         </PopView>
         <PopView

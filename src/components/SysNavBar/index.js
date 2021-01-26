@@ -9,13 +9,18 @@ class SysNavBar extends Taro.Component {
     transparent: false,
     hideBack: false,
     noBorder: false,
-    redirectTo: ''
+    redirectTo: '',
+    goHome: false
   }
 
   onBack = e => {
     e.stopPropagation()
-    const { redirectTo } = this.props
-    if (redirectTo) {
+    const { redirectTo, goHome } = this.props
+    if (goHome) {
+      Taro.switchTab({
+        url: '../home/index'
+      })
+    } else if (redirectTo) {
       Taro.redirectTo({
         url: `../../pages/${redirectTo}/index`
       })

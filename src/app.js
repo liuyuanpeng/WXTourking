@@ -101,7 +101,12 @@ class App extends Component {
       'pages/routeDetail/index',
       'pages/evaluate/index',
       'pages/newUser/index',
-      'pages/customerService/index'
+      'pages/customerService/index',
+      'pages/billManager/index',
+      'pages/createBill/index',
+      'pages/billHead/index',
+      'pages/headers/index',
+      'pages/allBill/index'
     ],
     window: {
       backgroundTextStyle: 'light',

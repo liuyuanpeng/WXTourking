@@ -10,6 +10,7 @@ const carPng = IMAGE_HOST + '/images/car.png'
 const giftPng = IMAGE_HOST + '/images/gift.png'
 
 import { connect } from '@tarojs/redux'
+import { debounce } from 'debounce'
 
 @connect(({}) => ({}))
 class OrderItem extends Taro.Component {
@@ -20,7 +21,7 @@ class OrderItem extends Taro.Component {
 
   showTransferNumber = (express_number, e) => {
     e.stopPropagation()
-    const {showModalMsg} = this.props
+    const { showModalMsg } = this.props
     showModalMsg && showModalMsg(express_number)
   }
 
@@ -39,8 +40,8 @@ class OrderItem extends Taro.Component {
   }
 
   goToEvaluate = e => {
-    e.stopPropagation();
-    const {data} = this.props
+    e.stopPropagation()
+    const { data } = this.props
     Taro.navigateTo({
       url: '../../pages/evaluate/index',
       success: res => {
@@ -77,7 +78,7 @@ class OrderItem extends Taro.Component {
         />
         <View className='order-item-type-text'>{type}</View>
         <View className='order-item-status-text'>
-          {ORDER_STATUS[data.status]}
+          {ORDER_STATUS[order.order_status]}
         </View>
         {order.scene === 'JIEJI' ||
         order.scene === 'SONGJI' ||
@@ -86,8 +87,8 @@ class OrderItem extends Taro.Component {
             <View className='order-normal-title'>{`${order.start_place}-${
               order.target_place ? order.target_place : '无'
             }`}</View>
-            {order.day && (
-              <View className='order-normal-text'>{`包车天数${order.day}天`}</View>
+            {order.days && (
+              <View className='order-normal-text'>{`包车天数:${order.days}天`}</View>
             )}
             <View className='order-normal-text'>{`用车时间:${dayjs(
               order.start_time
@@ -95,6 +96,17 @@ class OrderItem extends Taro.Component {
             <View className='order-normal-text'>
               {`车型:${chexing.name || ''}${zuowei.name || ''}`}
             </View>
+            {((order.order_status === 'ON_THE_WAY' ||
+              order.order_status === 'ACCEPTED')&&type!=='伴手礼') && (
+              <View>
+                <View className='order-normal-text'>{`司机:${order.driver_user_name ||
+                  ''}`}</View>
+                <View className='order-normal-text'>{`司机电话:${order.driver_mobile ||
+                  ''}`}</View>
+                <View className='order-normal-text'>{`车牌号:${order.driver_car_no ||
+                  ''}`}</View>
+              </View>
+            )}
             <View className='order-price'>
               合计
               <Label className='order-price-total'>{`￥ ${order.price}`}</Label>
@@ -102,14 +114,18 @@ class OrderItem extends Taro.Component {
             <View className='order-buttons'>
               {(ORDER_STATUS[order.order_status] === '待出行' ||
                 ORDER_STATUS[order.order_status] === '待付款') && (
-                <View className='order-btn' onClick={this.goToDetail}>
+                <View className='order-btn' onClick={debounce(this.goToDetail, 100)}>
                   取消订单
                 </View>
               )}
               {ORDER_STATUS[order.order_status] === '已完成' &&
-                !order.evaluate && <View className='order-btn-red' onClick={this.goToEvaluate}>评价</View>}
+                !order.evaluate && (
+                  <View className='order-btn-red' onClick={debounce(this.goToEvaluate, 100)}>
+                    评价
+                  </View>
+                )}
               {ORDER_STATUS[order.order_status] === '待付款' && (
-                <View className='order-btn-red' onClick={this.goToDetail}>
+                <View className='order-btn-red' onClick={debounce(this.goToDetail, 100)}>
                   去付款
                 </View>
               )}
@@ -134,34 +150,59 @@ class OrderItem extends Taro.Component {
               )}
               <View className='order-template-text'>
                 {type === '伴手礼' ? '下单' : '用车'}
-                {`时间: ${dayjs(type==='伴手礼' ? order.create_time : order.start_time).format('YYYY-MM-DD')}`}
+                {`时间: ${dayjs(
+                  type === '伴手礼' ? order.create_time : order.start_time
+                ).format('YYYY-MM-DD')}`}
               </View>
               {type !== '线路包车' && type !== '伴手礼' && (
                 <View className='order-template-text'>{`车型: ${chexing.name ||
                   ''}${zuowei.name || ''}`}</View>
               )}
-            </View>
 
+              {(order.order_status === 'ON_THE_WAY' ||
+                order.order_status === 'ACCEPTED') && (
+                <View>
+                  <View className='order-template-text'>{`司机:${order.driver_user_name ||
+                    ''}`}</View>
+                  <View className='order-template-text'>{`司机电话:${order.driver_mobile ||
+                    ''}`}</View>
+                  <View className='order-template-text'>{`车牌号:${order.driver_car_no ||
+                    ''}`}</View>
+                </View>
+              )}
+            </View>
             <View className='order-price'>
               合计
               <Label className='order-price-total'>{`￥ ${order.price}`}</Label>
             </View>
             <View className='order-buttons'>
-            {ORDER_STATUS[order.order_status] === '已完成' &&
-                !order.evaluate && <View className='order-btn-red' onClick={this.goToEvaluate}>评价</View>}
+              {ORDER_STATUS[order.order_status] === '已完成' &&
+                !order.evaluate && (
+                  <View className='order-btn-red' onClick={debounce(this.goToEvaluate, 100)}>
+                    评价
+                  </View>
+                )}
               {(ORDER_STATUS[order.order_status] === '待出行' ||
                 ORDER_STATUS[order.order_status] === '待付款') && (
-                <View className='order-btn' onClick={this.goToDetail}>
+                <View className='order-btn' onClick={debounce(this.goToDetail, 100)}>
                   取消订单
                 </View>
               )}
-              {order.scene === 'BANSHOU_PRIVATE' && (ORDER_STATUS[order.order_status] === '已完成' || ORDER_STATUS[order.order_status] === '进行中') && (
-                <View className='order-btn' onClick={this.showTransferNumber.bind(this, order.express_number)}>
-                  查看物流编号
-                </View>
-              )}
+              {order.scene === 'BANSHOU_PRIVATE' &&
+                (ORDER_STATUS[order.order_status] === '已完成' ||
+                  ORDER_STATUS[order.order_status] === '进行中') && (
+                  <View
+                    className='order-btn'
+                    onClick={this.showTransferNumber.bind(
+                      this,
+                      order.express_number
+                    )}
+                  >
+                    查看物流编号
+                  </View>
+                )}
               {ORDER_STATUS[order.order_status] === '待付款' && (
-                <View className='order-btn-red' onClick={this.goToDetail}>
+                <View className='order-btn-red' onClick={debounce(this.goToDetail, 100)}>
                   去付款
                 </View>
               )}

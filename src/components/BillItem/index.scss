@@ -132,6 +132,7 @@
       vertical-align: top;
       margin-left: 24px;
       font-weight: 400;
+      max-width: 350px;
       .bill-template-title {
         color: #333333;
         font-size: 32px;
@@ -139,6 +140,10 @@
         line-height: 44px;
         font-weight: bold;
         margin: 14px 0;
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       .bill-template-text {
         height: 34px;

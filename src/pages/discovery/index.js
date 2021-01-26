@@ -13,6 +13,7 @@ import SysNavBar from '@components/SysNavBar'
 import DiscoveryItem from '@components/DiscoveryItem'
 import '../../common/index.scss'
 import './index.scss'
+import { debounce } from 'debounce'
 
 const DISCOVERY_TYPES = {
   JINGDIAN: '景点',
@@ -260,7 +261,7 @@ class Discovery extends PureComponent {
             <Button onClick={this.closeModal}>确定</Button>
           </AtModalAction>
         </AtModal>
-        <View className='discovery-add' onClick={this.handleAdd} />
+        <View className='discovery-add' onClick={debounce(this.handleAdd, 100)} />
       </View>
     )
   }

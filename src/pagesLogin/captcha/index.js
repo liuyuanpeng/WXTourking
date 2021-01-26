@@ -5,6 +5,7 @@ import './index.scss'
 import SysNavBar from '@components/SysNavBar'
 import { AtInput } from 'taro-ui'
 import CountDown from '@components/CountDown'
+import { debounce } from 'debounce'
 
 @connect(({}) => ({}))
 class Captcha extends Component {
@@ -57,7 +58,21 @@ class Captcha extends Component {
       success: () => {
         // 获取用户信息
         this.props.dispatch({
-          type: 'user/getUserInfo'
+          type: 'user/getUserInfo',
+          success: user => {
+            const app = Taro.getApp()
+            const { avatarUrl, nickName } = app.globalData.wxInfo
+            if (avatarUrl && nickName) {
+              this.props.dispatch({
+                type: 'user/updateUserInfo',
+                payload: {
+                  user_id: user.id,
+                  avatar: avatarUrl,
+                  nick_name: nickName
+                }
+              })
+            }
+          }
         })
 
         this.props.dispatch({
@@ -134,14 +149,17 @@ class Captcha extends Component {
               onTimeUp={this.onTimeUp}
             />
           ) : (
-            <View className='captcha-tip-resend' onClick={this.handleResend}>
+            <View
+              className='captcha-tip-resend'
+              onClick={debounce(this.handleResend, 100)}
+            >
               重新发送
             </View>
           )}
         </View>
         <View
           className={`login-next${nextEnable ? ' login-next-enable' : ''}`}
-          onClick={nextEnable ? this.handleLogin : null}
+          onClick={nextEnable ? debounce(this.handleLogin, 100) : null}
         >
           登录
         </View>

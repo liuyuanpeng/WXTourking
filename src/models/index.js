@@ -13,5 +13,7 @@ import search from './search'
 import evaluate from './evaluate'
 import coupon from './coupon'
 import discovery from './discovery'
+import header from './header'
+import bill from './bill'
 
-export default [discovery, coupon, evaluate, search, home, login, user, order, city, carTypes, consume, sit, location, product, address]
+export default [header, bill, discovery, coupon, evaluate, search, home, login, user, order, city, carTypes, consume, sit, location, product, address]

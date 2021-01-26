@@ -31,6 +31,7 @@ import {
   DISCOVERY_UNLICK
 } from '@constants/api'
 import qs from 'query-string'
+import { COUPON_OBTAIN_CHECK, CREATE_BILL, DELETE_USER_BILL_HEADER, GET_BILL_PAGE, GET_BILL_PRICE, GET_USER_BILL_HEADER, SAVE_USER_BILL_HEADER } from '../constants/api'
 
 export function fetchProductPage({ query, body }) {
   return fetch({
@@ -44,6 +45,10 @@ export function fetchProductPage({ query, body }) {
         {
           direction: 'DESC',
           property: 'weight'
+        },
+        {
+          direction: 'DESC',
+          property: 'createTime'
         }
       ]
     }
@@ -57,6 +62,10 @@ export function fetchProductList(params) {
       {
         direction: 'DESC',
         property: 'weight'
+      },
+      {
+        direction: 'DESC',
+        property: 'createTime'
       }
     ]
   })
@@ -144,6 +153,31 @@ export function deleteUserAddress(params) {
   })
 }
 
+
+export function fetchUserBillHeader(payload) {
+  return fetch({
+    url: GET_USER_BILL_HEADER,
+    method: 'POST',
+    payload
+  })
+}
+
+export function saveUserBillHeader(payload) {
+  return fetch({
+    url: SAVE_USER_BILL_HEADER,
+    method: 'POST',
+    payload
+  })
+}
+
+export function deleteUserBillHeader(params) {
+  return fetch({
+    url: DELETE_USER_BILL_HEADER.replace('HEADER_ID', params.id),
+    method: 'POST'
+  })
+}
+
+
 export function evaluateDriver(payload) {
   return fetch({
     url: EVALUATE_DRIVER,
@@ -195,6 +229,13 @@ export function fetchCouponPage(params) {
 export function obtainCoupon(params) {
   return fetch({
     url: COUPON_OBTAIN + `?${qs.stringify(params)}`,
+    method: 'GET'
+  })
+}
+
+export function obtainCouponCheck(params) {
+  return fetch({
+    url: COUPON_OBTAIN_CHECK + `?${qs.stringify(params)}`,
     method: 'GET'
   })
 }
@@ -298,5 +339,28 @@ export function fetchDiscoveryUnfavor(id) {
   return fetch({
     url: DISCOVERY_UNFAVOR.replace('{id}', id),
     method: 'POST'
+  })
+}
+
+export function fetchCreateBill(payload) {
+  return fetch({
+    url: CREATE_BILL,
+    method: 'post',
+    payload
+  })
+}
+
+export function fetchBillPage(payload) {
+  return fetch({
+    url: GET_BILL_PAGE,
+    method: 'post',
+    payload
+  })
+}
+
+export function fetchBillPrice() {
+  return fetch({
+    url: GET_BILL_PRICE,
+    method: 'get'
   })
 }

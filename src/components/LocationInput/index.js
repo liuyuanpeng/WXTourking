@@ -3,6 +3,7 @@ import { View } from '@tarojs/components'
 
 
 import './index.scss'
+import { debounce } from 'debounce'
 
 class LocationInput extends Taro.Component {
   static defaultProps = {
@@ -33,7 +34,7 @@ class LocationInput extends Taro.Component {
   render() {
     const { title, placeholder } = this.props
     return (
-      <View className='wrap-class' onClick={this.handleClick}>
+      <View className='wrap-class' onClick={debounce(this.handleClick, 100)}>
         <View className={`address ${title?'':'placeholder'}`}>{title || placeholder}</View>
       </View>
     )

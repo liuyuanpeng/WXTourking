@@ -2,6 +2,7 @@ import Taro from '@tarojs/taro'
 import { View, Image } from '@tarojs/components'
 
 import './index.scss'
+import { debounce } from 'debounce'
 
 class MineListItem extends Taro.Component {
   static defaultProps = {
@@ -26,7 +27,7 @@ class MineListItem extends Taro.Component {
       hideRight
     } = this.props
     return (
-      <View className='mine-list-item' onClick={this.handleClick}>
+      <View className='mine-list-item' onClick={debounce(this.handleClick, 100)}>
         {icon && <Image className='mine-list-item-icon' src={icon} mode='widthFix' />}
     <View className='mine-list-item-title'>{title}</View>
     {subtitle && <View className='mine-list-item-subtitle'>{subtitle}</View>}
