@@ -14,6 +14,8 @@ import DiscoveryItem from '@components/DiscoveryItem'
 import '../../common/index.scss'
 import './index.scss'
 import { debounce } from 'debounce'
+import STORAGE from '@constants/storage'
+import { checkLogin } from '@utils/tool'
 
 const DISCOVERY_TYPES = {
   JINGDIAN: '景点',
@@ -134,9 +136,11 @@ class Discovery extends PureComponent {
 
   handleAdd = e => {
     e.stopPropagation()
-    Taro.navigateTo({
-      url: '../publish/index'
-    })
+    if (checkLogin()) {
+      Taro.navigateTo({
+        url: '../publish/index'
+      })
+    }
   }
 
   render() {
@@ -261,7 +265,10 @@ class Discovery extends PureComponent {
             <Button onClick={this.closeModal}>确定</Button>
           </AtModalAction>
         </AtModal>
-        <View className='discovery-add' onClick={debounce(this.handleAdd, 100)} />
+        <View
+          className='discovery-add'
+          onClick={debounce(this.handleAdd, 100)}
+        />
       </View>
     )
   }

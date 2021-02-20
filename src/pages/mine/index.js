@@ -19,6 +19,7 @@ const profilePng = IMAGE_HOST + '/images/profile.png'
 import { AtButton, AtIcon } from 'taro-ui'
 import STORAGE from '@constants/storage'
 import { debounce } from 'debounce'
+import { isLogin } from '../../utils/tool'
 
 @connect(({ user }) => ({
   userInfo: user
@@ -38,10 +39,12 @@ class Home extends PureComponent {
         selected: 3
       })
     }
-
-    this.props.dispatch({
-      type: 'user/getUserInfo'
-    })
+    if (isLogin()) {
+      this.props.dispatch({
+        type: 'user/getUserInfo'
+      })
+    }
+    
   }
 
   showAllOrders = e => {
@@ -56,22 +59,6 @@ class Home extends PureComponent {
     Taro.navigateTo({
       url: `../allOrders/index?index=${index}`
     })
-  }
-
-  onGetUserInfo = e => {
-    e.stopPropagation()
-    const app = Taro.getApp()
-    app.globalData.wxInfo = { ...e.detail.userInfo }
-    const {avatarUrl, nickName} = app.globalData.wxInfo
-    if (avatarUrl && nickName) {
-      this.props.dispatch({
-        type: 'user/updateUserInfo',
-        payload: {
-          avatar: avatarUrl,
-          nick_name: nickName
-        }
-      })
-    }
   }
 
   render() {
@@ -237,9 +224,9 @@ class Home extends PureComponent {
             </View>
           </View>
 
-          <Button style={{margin: '30rpx'}} open-type='getUserInfo' onGetUserInfo={this.onGetUserInfo}>
+          {/* <Button style={{margin: '30rpx'}} open-type='getUserInfo' onGetUserInfo={this.onGetUserInfo}>
             测试版获取微信用户信息
-          </Button>
+          </Button> */}
         </View>
         <View
           className='mine-order-container'

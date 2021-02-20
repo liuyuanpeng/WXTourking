@@ -23,6 +23,7 @@ import STORAGE from '@constants/storage'
 import LocationInput from '@components/LocationInput'
 import DateTimePicker from '@components/DateTimePicker'
 import { debounce } from 'debounce'
+import { checkLogin, isLogin } from '../../utils/tool'
 
 @connect(({ city, coupon }) => ({
   currentCity: city.current,
@@ -45,14 +46,9 @@ class CarType extends Component {
     coupon: ''
   }
 
-  componentDidMount() {
-    const eventChannel = this.$scope.getOpenerEventChannel()
-    eventChannel.on('orderData', data => {
-      this.setState({
-        order: data
-      })
-
-      const { price } = data
+  componentDidShow() {
+    if (isLogin()) {
+      const { price } = this.state.order
       // 获取可用优惠券
       this.props.dispatch({
         type: 'coupon/getUsableCoupon',
@@ -60,6 +56,15 @@ class CarType extends Component {
           price: price || 0,
           user_id: Taro.getStorageSync(STORAGE.USER_ID)
         }
+      })
+    }
+  }
+
+  componentDidMount() {
+    const eventChannel = this.$scope.getOpenerEventChannel()
+    eventChannel.on('orderData', data => {
+      this.setState({
+        order: data
       })
     })
 
@@ -104,16 +109,18 @@ class CarType extends Component {
 
   goToCoupon = e => {
     e.stopPropagation()
-    Taro.navigateTo({
-      url: '../coupon/index?canEdit=true&price=' + this.state.order.price,
-      events: {
-        acceptCoupon: coupon => {
-          this.setState({
-            coupon
-          })
+    if (checkLogin()) {
+      Taro.navigateTo({
+        url: '../coupon/index?canEdit=true&price=' + this.state.order.price,
+        events: {
+          acceptCoupon: coupon => {
+            this.setState({
+              coupon
+            })
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   handleChat = e => {
@@ -135,6 +142,9 @@ class CarType extends Component {
 
   handlePay = e => {
     e.stopPropagation()
+    if (!checkLogin()) {
+      return
+    }
     const {
       name,
       phoneNum,
@@ -233,7 +243,17 @@ class CarType extends Component {
       payload.price -= payload.coupon_price
     }
     if (payload.price <= 0) return
+    
+    const sourceShopId = Taro.getStorageSync(STORAGE.SOURCE_SHOP_ID)
+    if (sourceShopId) {
+      payload.source_shop_id = sourceShopId
+    }
 
+    const sourceDriverId = Taro.getStorageSync(STORAGE.SOURCE_DRIVER_ID)
+    if (sourceDriverId) {
+      payload.source_driver_id = sourceDriverId
+    }
+    
     this.props.dispatch({
       type: 'order/createOrder',
       payload,
@@ -242,20 +262,50 @@ class CarType extends Component {
         Taro.setStorageSync(STORAGE.ORDER_USER_NAME, name)
         Taro.setStorageSync(STORAGE.ORDER_USER_MOBILE, phoneNum)
         Taro.setStorageSync(STORAGE.ORDER_USER_MOBILE_BACKUP, phoneNumBackup)
-        // 拉起支付
 
-        this.props.dispatch({
-          type: 'order/setUserOrder',
-          payload: {
-            order: { ...result },
-            chexing,
-            zuowei,
-            consume,
-            private_consume
-          },
+        Taro.setStorageSync(STORAGE.SOURCE_SHOP_ID, 0)
+        Taro.setStorageSync(STORAGE.SOURCE_DRIVER_ID, 0)
+
+        // 拉起支付
+        Taro.requestPayment({
+          timeStamp: result.wechat_timestamp,
+          nonceStr: result.wechat_nonce_str,
+          package: 'prepay_id=' + result.wechat_order_id,
+          signType: 'MD5',
+          paySign: result.wechat_pay_sign,
           success: () => {
-            Taro.navigateTo({
-              url: '../orderStatus/index?goHome=true'
+            this.props.dispatch({
+              type: 'order/setUserOrder',
+              payload: {
+                // 付款成功修改订单状态
+                order: { ...result, order_status: 'WAIT_ACCEPT' },
+                chexing,
+                zuowei,
+                consume,
+                private_consume
+              },
+              success: () => {
+                Taro.navigateTo({
+                  url: '../orderStatus/index?goHome=true'
+                })
+              }
+            })
+          },
+          fail: () => {
+            this.props.dispatch({
+              type: 'order/setUserOrder',
+              payload: {
+                order: { ...result },
+                chexing,
+                zuowei,
+                consume,
+                private_consume
+              },
+              success: () => {
+                Taro.navigateTo({
+                  url: '../orderStatus/index?goHome=true'
+                })
+              }
             })
           }
         })

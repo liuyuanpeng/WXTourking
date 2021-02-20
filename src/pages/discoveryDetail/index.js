@@ -19,6 +19,7 @@ import CommentItem from '@components/CommentItem'
 import PopView from '@components/PopView'
 import dayjs from 'dayjs'
 import STORAGE from '../../constants/storage'
+import { checkLogin } from '../../utils/tool'
 
 @connect(({ discovery }) => ({
   comments: discovery.listComment
@@ -67,6 +68,9 @@ class DiscoveryDetail extends Component {
 
   changeLike = e => {
     e.stopPropagation()
+    if (!checkLogin()) {
+      return
+    }
     const { detail } = this.state
     const { find_zan_id, faxian_category, id, zan_count = 0 } = detail
     if (find_zan_id) {
@@ -110,6 +114,9 @@ class DiscoveryDetail extends Component {
 
   changeFavor = e => {
     e.stopPropagation()
+    if (!checkLogin()) {
+      return
+    }
     const { detail } = this.state
     const { find_collect_id, id, faxian_category, collect_count = 0 } = detail
     if (find_collect_id) {
@@ -159,6 +166,9 @@ class DiscoveryDetail extends Component {
   }
 
   handleComment = inputValue => {
+    if (!checkLogin()) {
+      return
+    }
     const { detail } = this.state
     const { id, faxian_category } = detail
     if (inputValue.trim()) {

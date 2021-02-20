@@ -42,8 +42,11 @@ export default modelExtend(commonModel, {
         fail && fail(res.message)
       }
     },
-    *getHotProduct({ target = 'hot', success, fail }, { call, put, select }) {
-      const currentCity = yield select(state => state.city.current)
+    *getHotProduct({ target = 'hot', city, success, fail }, { call, put, select }) {
+      const currentCity = city || (yield select(state => state.city.current))
+      if (!currentCity.id) {
+        return
+      }
       let scene
       if (target === 'hot' || target === 'recommend') {
         scene = ['ROAD_PRIVATE'].toString()

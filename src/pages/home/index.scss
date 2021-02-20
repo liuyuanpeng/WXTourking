@@ -155,6 +155,15 @@
   width: 100%;
   height: 100%;
   position: relative;
+  &-text {
+    font-size: 36px;
+    font-weight: bold;
+    text-align: center;
+    color: #FF6B00;
+    height: 25px;
+    line-height: 25px;
+    margin: 0 auto;
+  }
   &-image {
     width: 100%;
     height: 352px;

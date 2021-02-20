@@ -104,7 +104,7 @@ class Login extends Component {
         className='login-page'
         style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
       >
-        <SysNavBar title='登录' noBorder hideBack />
+        <SysNavBar title='登录' noBorder />
         <View className='login-logo' />
         <Button
           lang='zh_CN'

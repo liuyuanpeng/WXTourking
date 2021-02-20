@@ -11,6 +11,7 @@ import SysNavBar from '@components/SysNavBar'
 import { returnFloat } from '@utils/tool'
 import STORAGE from '@constants/storage'
 import { debounce } from 'debounce'
+import { checkLogin, isLogin } from '../../utils/tool'
 
 @connect(({ city, address, coupon }) => ({
   currentCity: city.current,
@@ -41,6 +42,9 @@ class PayGift extends Component {
   }
 
   componentDidShow() {
+    if (!isLogin()) {
+      return
+    }
     const { dispatch } = this.props
     dispatch({
       type: 'address/getUserAddress',
@@ -53,6 +57,15 @@ class PayGift extends Component {
         }
       }
     })
+    const { price } = this.state.data
+    // 获取可用优惠券
+    this.props.dispatch({
+      type: 'coupon/getUsableCoupon',
+      payload: {
+        price: price || 0,
+        user_id: Taro.getStorageSync(STORAGE.USER_ID)
+      }
+    })
   }
 
   componentDidMount() {
@@ -61,38 +74,33 @@ class PayGift extends Component {
       this.setState({
         data
       })
-      const { price } = data
-      // 获取可用优惠券
-      this.props.dispatch({
-        type: 'coupon/getUsableCoupon',
-        payload: {
-          price: price || 0,
-          user_id: Taro.getStorageSync(STORAGE.USER_ID)
-        }
-      })
     })
   }
 
   goToCoupon = e => {
     e.stopPropagation()
-    const {data, count} = this.state
-    Taro.navigateTo({
-      url: '../coupon/index?canEdit=true&price=' + data.price*count,
-      events: {
-        acceptCoupon: coupon => {
-          this.setState({
-            coupon
-          })
+    if (checkLogin()) {
+      const { data, count } = this.state
+      Taro.navigateTo({
+        url: '../coupon/index?canEdit=true&price=' + data.price * count,
+        events: {
+          acceptCoupon: coupon => {
+            this.setState({
+              coupon
+            })
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   onMoreAddress = e => {
     e.stopPropagation()
-    Taro.navigateTo({
-      url: `../address/index?mode=select`
-    })
+    if (checkLogin()) {
+      Taro.navigateTo({
+        url: `../address/index?mode=select`
+      })
+    }
   }
 
   selectAddress = address => {
@@ -107,8 +115,18 @@ class PayGift extends Component {
 
   handlePay = e => {
     e.stopPropagation()
+    if (!checkLogin()) {
+      return
+    }
     const { dispatch, currentCity } = this.props
     const { data, count, address, coupon } = this.state
+    if (!address || !address.id) {
+      Taro.showToast({
+        title: '请选择收货地址',
+        icon: 'none'
+      })
+      return
+    }
     const payload = {
       user_id: Taro.getStorageSync(STORAGE.USER_ID),
       user_mobile: Taro.getStorageSync(STORAGE.USER_PHONE),
@@ -137,19 +155,58 @@ class PayGift extends Component {
 
     if (payload.price <= 0) return
 
+    const sourceShopId = Taro.getStorageSync(STORAGE.SOURCE_SHOP_ID)
+    if (sourceShopId) {
+      payload.source_shop_id = sourceShopId
+    }
+
+    const sourceDriverId = Taro.getStorageSync(STORAGE.SOURCE_DRIVER_ID)
+    if (sourceDriverId) {
+      payload.source_driver_id = sourceDriverId
+    }
+
     dispatch({
       type: 'order/createOrder',
       payload,
       success: result => {
-        dispatch({
-          type: 'order/setUserOrder',
-          payload: {
-            order: { ...result },
-            private_consume: data
-          },
+
+        Taro.setStorageSync(STORAGE.SOURCE_SHOP_ID, 0)
+        Taro.setStorageSync(STORAGE.SOURCE_DRIVER_ID, 0)
+        
+        // 拉起支付
+        Taro.requestPayment({
+          timeStamp: result.wechat_timestamp,
+          nonceStr: result.wechat_nonce_str,
+          package: 'prepay_id=' + result.wechat_order_id,
+          signType: 'MD5',
+          paySign: result.wechat_pay_sign,
           success: () => {
-            Taro.navigateTo({
-              url: '../orderStatus/index?goHome=true'
+            dispatch({
+              type: 'order/setUserOrder',
+              payload: {
+                // 付款成功修改订单状态
+                order: { ...result, order_status: 'WAIT_ACCEPT' },
+                private_consume: data
+              },
+              success: () => {
+                Taro.navigateTo({
+                  url: '../orderStatus/index?goHome=true'
+                })
+              }
+            })
+          },
+          fail: () => {
+            dispatch({
+              type: 'order/setUserOrder',
+              payload: {
+                order: { ...result },
+                private_consume: data
+              },
+              success: () => {
+                Taro.navigateTo({
+                  url: '../orderStatus/index?goHome=true'
+                })
+              }
             })
           }
         })
@@ -159,7 +216,7 @@ class PayGift extends Component {
 
   render() {
     const { count, address, data, coupon } = this.state
-    const {usableList} = this.props
+    const { usableList } = this.props
     let giftImg
     try {
       const images = data.images.split(',')
@@ -168,7 +225,10 @@ class PayGift extends Component {
       }
     } catch (error) {}
 
-    const couponClassName = usableList && usableList.length ? 'coupon-right' : 'coupon-right coupon-right-gray'
+    const couponClassName =
+      usableList && usableList.length
+        ? 'coupon-right'
+        : 'coupon-right coupon-right-gray'
     return (
       <View
         className='pay-gift'
@@ -186,7 +246,10 @@ class PayGift extends Component {
             <View className='more-address' />
           </View>
         ) : (
-          <View className='address-btn' onClick={debounce(this.onMoreAddress, 100)}>
+          <View
+            className='address-btn'
+            onClick={debounce(this.onMoreAddress, 100)}
+          >
             去新增收货地址
           </View>
         )}
@@ -233,7 +296,7 @@ class PayGift extends Component {
               : '无可用优惠券'}
           </View>
         </View>
-        
+
         <View className='pay-gift-footer'>
           <Label className='pay-it' onClick={debounce(this.handlePay, 200)}>
             立即支付

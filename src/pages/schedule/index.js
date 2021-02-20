@@ -6,6 +6,7 @@ import SysNavBar from '@components/SysNavBar'
 import OrderItem from '@components/OrderItem'
 import '../../common/index.scss'
 import './index.scss'
+import { isLogin } from '../../utils/tool'
 
 @connect(({ order }) => ({
   baocheOrders: order.baocheOrders,
@@ -32,6 +33,10 @@ class Home extends PureComponent {
       this.$scope.getTabBar().$component.setState({
         selected: 2
       })
+    }
+
+    if (!isLogin()) {
+      return
     }
 
     const {current} = this.state
@@ -79,6 +84,11 @@ class Home extends PureComponent {
     this.setState({
       current: value
     })
+    
+    if (!isLogin()) {
+      return
+    }
+    
     let scene
     switch (value) {
       case 0:

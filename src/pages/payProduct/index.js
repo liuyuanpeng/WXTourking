@@ -1,5 +1,5 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Image, Label } from '@tarojs/components'
+import { View, Image, Label, ScrollView } from '@tarojs/components'
 import NavBar from '@components/NavBar'
 import { connect } from '@tarojs/redux'
 import '../../common/index.scss'
@@ -16,6 +16,7 @@ import STORAGE from '@constants/storage'
 import QQMapWX from '../utilPages/location/qqmap'
 import dayjs from 'dayjs'
 import { debounce } from 'debounce'
+import { checkLogin, isLogin } from '../../utils/tool'
 
 let qqMapSDK = null
 
@@ -38,19 +39,24 @@ class PayProduct extends Component {
     coupon: ''
   }
 
-  componentDidMount() {
-    const eventChannel = this.$scope.getOpenerEventChannel()
-    eventChannel.on('orderData', data => {
-      this.setState({
-        order: data
-      })
-      const { price } = data
+  componentDidShow() {
+    if (isLogin()) {
+      const { price } = this.state.order
       this.props.dispatch({
         type: 'coupon/getUsableCoupon',
         payload: {
           price: price || 0,
           user_id: Taro.getStorageSync(STORAGE.USER_ID)
         }
+      })
+    }
+  }
+
+  componentDidMount() {
+    const eventChannel = this.$scope.getOpenerEventChannel()
+    eventChannel.on('orderData', data => {
+      this.setState({
+        order: data
       })
     })
     const name = Taro.getStorageSync(STORAGE.ORDER_USER_NAME) || ''
@@ -63,16 +69,18 @@ class PayProduct extends Component {
 
   goToCoupon = e => {
     e.stopPropagation()
-    Taro.navigateTo({
-      url: '../coupon/index?canEdit=true&price=' + this.state.order.price,
-      events: {
-        acceptCoupon: coupon => {
-          this.setState({
-            coupon
-          })
+    if (checkLogin()) {
+      Taro.navigateTo({
+        url: '../coupon/index?canEdit=true&price=' + this.state.order.price,
+        events: {
+          acceptCoupon: coupon => {
+            this.setState({
+              coupon
+            })
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   onMoreAddress = e => {
@@ -105,6 +113,9 @@ class PayProduct extends Component {
 
   handlePay = e => {
     e.stopPropagation()
+    if (!checkLogin()) {
+      return
+    }
     let msg = ''
     const {
       start_place,
@@ -186,6 +197,16 @@ class PayProduct extends Component {
     }
     if (payload.price <= 0) return
 
+    const sourceShopId = Taro.getStorageSync(STORAGE.SOURCE_SHOP_ID)
+    if (sourceShopId) {
+      payload.source_shop_id = sourceShopId
+    }
+
+    const sourceDriverId = Taro.getStorageSync(STORAGE.SOURCE_DRIVER_ID)
+    if (sourceDriverId) {
+      payload.source_driver_id = sourceDriverId
+    }
+
     this.props.dispatch({
       type: 'order/createOrder',
       payload,
@@ -193,20 +214,50 @@ class PayProduct extends Component {
         // 存储手机号和用户名
         Taro.setStorageSync(STORAGE.ORDER_USER_NAME, name)
         Taro.setStorageSync(STORAGE.ORDER_USER_MOBILE, phone)
-        // 拉起支付
 
-        this.props.dispatch({
-          type: 'order/setUserOrder',
-          payload: {
-            order: { ...result },
-            chexing,
-            zuowei,
-            consume,
-            private_consume
-          },
+        Taro.setStorageSync(STORAGE.SOURCE_SHOP_ID, 0)
+        Taro.setStorageSync(STORAGE.SOURCE_DRIVER_ID, 0)
+
+        // 拉起支付
+        Taro.requestPayment({
+          timeStamp: result.wechat_timestamp,
+          nonceStr: result.wechat_nonce_str,
+          package: 'prepay_id=' + result.wechat_order_id,
+          signType: 'MD5',
+          paySign: result.wechat_pay_sign,
           success: () => {
-            Taro.navigateTo({
-              url: '../orderStatus/index?goHome=true'
+            this.props.dispatch({
+              type: 'order/setUserOrder',
+              payload: {
+                // 付款成功修改订单状态
+                order: { ...result, order_status: 'WAIT_ACCEPT' },
+                chexing,
+                zuowei,
+                consume,
+                private_consume
+              },
+              success: () => {
+                Taro.navigateTo({
+                  url: '../orderStatus/index?goHome=true'
+                })
+              }
+            })
+          },
+          fail: () => {
+            this.props.dispatch({
+              type: 'order/setUserOrder',
+              payload: {
+                order: { ...result },
+                chexing,
+                zuowei,
+                consume,
+                private_consume
+              },
+              success: () => {
+                Taro.navigateTo({
+                  url: '../orderStatus/index?goHome=true'
+                })
+              }
             })
           }
         })
@@ -279,6 +330,18 @@ class PayProduct extends Component {
     }
   }
 
+  changeName = name => {
+    this.setState({
+      name
+    })
+  }
+
+  changePhone = phone => {
+    this.setState({
+      phone
+    })
+  }
+
   handleChangeTime = value => {
     this.setState({
       start_time: value
@@ -319,8 +382,14 @@ class PayProduct extends Component {
       coupon
     } = this.state
     const { private_consume = {} } = order
-    const {usableList} = this.props
-    const couponClassName = usableList && usableList.length ? 'coupon-right' : 'coupon-right coupon-right-gray'
+    const { usableList } = this.props
+    const couponClassName =
+      usableList && usableList.length
+        ? 'coupon-right'
+        : 'coupon-right coupon-right-gray'
+    const scrollStyle = {
+      height: `${Taro.$windowHeight - -Taro.$statusBarHeight - 274}rpx`
+    }
     let productImg
     try {
       productImg = private_consume.images
@@ -333,74 +402,84 @@ class PayProduct extends Component {
         style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
       >
         <SysNavBar title='订单支付' />
-        <View className='pay-product-header'>
-          <Image className='header-image' src={productImg} mode='aspectFill' />
-          <View className='header-right'>
-            <View className='header-title'>{private_consume.name}</View>
-            <View className='header-subtitle'>{private_consume.tag}</View>
-            <View className='header-declare'>付款后司机会主动联系您</View>
-            <View className='header-price'>
-              ￥{returnFloat(price)}
+
+        <ScrollView scrollY style={scrollStyle} scrollWithAnimation>
+          <View className='pay-product-header'>
+            <Image
+              className='header-image'
+              src={productImg}
+              mode='aspectFill'
+            />
+            <View className='header-right'>
+              <View className='header-title'>{private_consume.name}</View>
+              <View className='header-subtitle'>{private_consume.tag}</View>
+              <View className='header-declare'>付款后司机会主动联系您</View>
+              <View className='header-price'>￥{returnFloat(price)}</View>
             </View>
           </View>
-        </View>
-        <View className='pay-product-detail'>
-          <View className='detail-item'>
-            <View className='detail-label'>上车地点</View>
-            <LocationInput
-              wrap-class='detail-content'
-              title={start_place.title}
-              placeholder='请选择上车地点'
-              onChange={this.handleLocationChange}
-            />
-            <View className='location-icon' onClick={debounce(this.onLocate, 100)}></View>
+          <View className='pay-product-detail'>
+            <View className='detail-item'>
+              <View className='detail-label'>上车地点</View>
+              <LocationInput
+                wrap-class='detail-content'
+                title={start_place.title}
+                placeholder='请选择上车地点'
+                onChange={this.handleLocationChange}
+              />
+              <View
+                className='location-icon'
+                onClick={debounce(this.onLocate, 100)}
+              ></View>
+            </View>
+            <View className='detail-split' />
+            <View className='detail-item'>
+              <View className='detail-label'>乘车人姓名</View>
+              <AtInput
+                className='detail-input'
+                value={name}
+                placeholder='请输入姓名'
+                onChange={this.changeName}
+              />
+            </View>
+            <View className='detail-split' />
+            <View className='detail-item'>
+              <View className='detail-label'>乘车人手机号</View>
+              <AtInput
+                type='phone'
+                className='detail-input'
+                value={phone}
+                placeholder='请输入手机号'
+                onChange={this.changePhone}
+              />
+            </View>
+            <View className='detail-split' />
+            <View className='detail-item' onClick={this.timeAction}>
+              <View className='detail-label'>用车时间</View>
+              <DateTimePicker
+                wrap-class='detail-content'
+                onOk={this.handleChangeTime}
+                hidePassed
+                initValue={start_time}
+                placeholder='请选择日期'
+              />
+              <View className='time-icon'></View>
+            </View>
           </View>
-          <View className='detail-split' />
-          <View className='detail-item'>
-            <View className='detail-label'>乘车人姓名</View>
-            <AtInput
-              className='detail-input'
-              value={name}
-              placeholder='请输入姓名'
-            />
+          <View className='coupon-container'>
+            <View className='title-label'>优惠券</View>
+            {/* <View className='subtitle-label'>增值税发票不享受优惠</View> */}
+            <View
+              className={couponClassName}
+              onClick={debounce(this.goToCoupon, 100)}
+            >
+              {coupon
+                ? `-${coupon.price}￥`
+                : usableList && usableList.length
+                ? `${usableList.length}张优惠券`
+                : '无可用优惠券'}
+            </View>
           </View>
-          <View className='detail-split' />
-          <View className='detail-item'>
-            <View className='detail-label'>乘车人手机号</View>
-            <AtInput
-              type='phone'
-              className='detail-input'
-              value={phone}
-              placeholder='请输入手机号'
-            />
-          </View>
-          <View className='detail-split' />
-          <View className='detail-item' onClick={this.timeAction}>
-            <View className='detail-label'>用车时间</View>
-            <DateTimePicker
-              wrap-class='detail-content'
-              onOk={this.handleChangeTime}
-              hidePassed
-              initValue={start_time}
-              placeholder='请选择日期'
-            />
-            <View className='time-icon'></View>
-          </View>
-        </View>
-        <View className='coupon-container'>
-          <View className='title-label'>优惠券</View>
-          {/* <View className='subtitle-label'>增值税发票不享受优惠</View> */}
-          <View
-            className={couponClassName}
-            onClick={debounce(this.goToCoupon, 100)}
-          >
-            {coupon
-              ? `-${coupon.price}￥`
-              : usableList && usableList.length
-              ? `${usableList.length}张优惠券`
-              : '无可用优惠券'}
-          </View>
-        </View>
+        </ScrollView>
         <View className='pay-gift-footer'>
           <Label className='pay-it' onClick={debounce(this.handlePay, 200)}>
             立即支付

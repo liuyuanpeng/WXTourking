@@ -1,6 +1,8 @@
 import Taro from '@tarojs/taro'
 import { CoverView, CoverImage } from '@tarojs/components'
 import './index.scss'
+import STORAGE from '@constants/storage'
+import { checkLogin } from '@utils/tool'
 
 class TabBar extends Taro.Component {
   state = {
@@ -38,8 +40,19 @@ class TabBar extends Taro.Component {
   switchTab = item => {
     const url = item.pagePath
     Taro.switchTab({
-      url
+      url,
+      success: () => {
+        if (Taro.getStorageSync(STORAGE.TOKEN)) {
+          return
+        }
+        if (item.text === '我的') {
+          setTimeout(()=>{
+            checkLogin()
+          }, 100)
+        }
+      }
     })
+    
   }
   componentDidMount() {
     this.setState({

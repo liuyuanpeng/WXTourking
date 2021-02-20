@@ -44,7 +44,7 @@ export default modelExtend(commonModel, {
               ...userOrder,
               order: {
                 ...userOrder.order,
-                order_status: 'AUTO'
+                order_status: 'WAIT_ACCEPT'
               }
             }
           }
@@ -59,6 +59,18 @@ export default modelExtend(commonModel, {
         type: 'updateState',
         payload: {
           userOrder: {
+            ...payload
+          }
+        }
+      })
+      success && success()
+    },
+    *updateUserOrder({ payload, success }, { put }) {
+      yield put({
+        type: 'updateState',
+        payload: {
+          userOrder: {
+            ...userOrder,
             ...payload
           }
         }

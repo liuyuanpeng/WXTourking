@@ -46,22 +46,24 @@ class PayProduct extends Component {
     e.stopPropagation()
     const { data, dispatch } = this.props
     const { order } = data
-    dispatch({
-      type: 'order/payOrder',
-      payload: {
-        id: order.id
-      },
+    // 拉起支付
+    Taro.requestPayment({
+      timeStamp: order.wechat_timestamp,
+      nonceStr: order.wechat_nonce_str,
+      package:  'prepay_id=' + order.wechat_order_id,
+      signType: 'MD5',
+      paySign: order.wechat_pay_sign,
       success: () => {
-        Taro.showToast({
-          title: '模拟支付成功',
-          icon: 'success'
+        dispatch({
+          type: 'order/updateUserOrder',
+          payload: {
+            // 付款成功修改订单状态
+            order: { ...order, order_status: 'WAIT_ACCEPT' }
+          }
         })
       },
-      fail: msg => {
-        Taro.showToast({
-          title: msg || '模拟支付失败',
-          icon: 'none'
-        })
+      fail: () => {
+        
       }
     })
   }

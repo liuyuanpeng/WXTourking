@@ -29,6 +29,8 @@ import './index.scss'
 import STORAGE from '../../constants/storage'
 import { debounce } from 'debounce'
 
+let RESULTS = []
+
 @connect(({}) => ({}))
 class Publish extends PureComponent {
   config = {
@@ -118,6 +120,29 @@ class Publish extends PureComponent {
     })
   }
 
+  uploadImages(images, callback) {
+    let IMAGES = images.concat()
+    const image = IMAGES.shift()
+    if (!image) {
+      callback && callback()
+    }
+    Taro.uploadFile({
+      url: HOST + '/v5/file/local/qiniu_wechat_upload?file_key=file',
+      filePath: image.file.path,
+      name: 'file',
+      header: {
+        token: Taro.getStorageSync(STORAGE.TOKEN)
+      },
+      success: res => {
+        const DATA = JSON.parse(res.data)
+        if (DATA.code === 'SUCCESS') {
+          RESULTS.push(DATA.data.path)
+          this.uploadImages(IMAGES, callback)
+        }
+      }
+    })
+  }
+
   handlePublish = e => {
     e.stopPropagation()
 
@@ -146,8 +171,10 @@ class Publish extends PureComponent {
       msg = '请选择视频文件上传'
     } else if (category === 'SHIPIN' && !cover) {
       msg = '请为视频设置一个封面'
-    }
-    else if (category === 'SHIPIN' && (status === 'progress' || status === 'error')) {
+    } else if (
+      category === 'SHIPIN' &&
+      (status === 'progress' || status === 'error')
+    ) {
       msg = '请等待视频文件上传成功'
     }
     if (msg) {
@@ -171,31 +198,16 @@ class Publish extends PureComponent {
     }
     if (category !== 'SHIPIN') {
       if (images && images.length) {
-        const results = []
+        RESULTS = []
         Taro.showLoading({
           title: '上传图片...'
         })
-        images.forEach(image => {
-          Taro.uploadFile({
-            url: HOST + '/v5/file/local/qiniu_wechat_upload?file_key=file',
-            filePath: image.file.path,
-            name: 'file',
-            header: {
-              token: Taro.getStorageSync(STORAGE.TOKEN)
-            },
-            success: res => {
-              const DATA = JSON.parse(res.data)
-              if (DATA.code === 'SUCCESS') {
-                results.push(DATA.data.path)
-                if (results.length === images.length) {
-                  Taro.hideLoading()
-                  // 上传成功,创建表单
-                  payload.images = results.toString()
-                  this.saveDiscovery(payload)
-                }
-              }
-            }
-          })
+
+        this.uploadImages(images, () => {
+          Taro.hideLoading()
+          // 上传成功,创建表单
+          payload.images = RESULTS.toString()
+          this.saveDiscovery(payload)
         })
       } else {
         this.saveDiscovery(payload)
@@ -396,7 +408,10 @@ class Publish extends PureComponent {
               ))}
             </View>
           </View>
-          <View className='publish-btn' onClick={debounce(this.handlePublish, 100)}>
+          <View
+            className='publish-btn'
+            onClick={debounce(this.handlePublish, 100)}
+          >
             立即发布
           </View>
         </ScrollView>

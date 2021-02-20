@@ -12,7 +12,7 @@
 
 
 @mixin image($name) {
-  background-image: url('http://tms.kingtrip.vip/images/' + $name + '.png');
+  background-image: url('http://www.kingtrip.vip/images/' + $name + '.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }

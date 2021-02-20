@@ -43,26 +43,18 @@ export default modelExtend(commonModel, {
         })
 
         const current = yield select(state => state.city.current)
-        if (!current.id) {
-          const cur = res.data.find(item => item.name.indexOf(current.name) >= 0)
-          if (cur) {
-            yield put({
-              type: 'updateState',
-              payload: {
-                current: cur
-              }
-            })
-          } else {
-            yield put({
-              type: 'updateState',
-              payload: {
-                current: res.data[0]
-              }
-            })
-          }
+        let cur = current
+        if (!cur.id) {
+          cur = res.data.find(item => item.name.indexOf(current.name) >= 0)
+          cur = cur || res.data[0]
+          yield put({
+            type: 'updateState',
+            payload: {
+              current: cur
+            }
+          })
         }
-
-        success && success()
+        success && success(cur)
       } else {
         fail && fail(res.message)
       }

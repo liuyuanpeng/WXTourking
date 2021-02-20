@@ -9,6 +9,7 @@ import './index.scss'
 import { connect } from '@tarojs/redux'
 import { AtIcon, AtToast } from 'taro-ui'
 import { debounce } from 'debounce'
+import { checkLogin } from '../../utils/tool'
 
 @connect(({}) => ({}))
 class DiscoveryItem extends Taro.Component {
@@ -26,14 +27,16 @@ class DiscoveryItem extends Taro.Component {
   goToEvaluate = e => {
     e.stopPropagation()
     const { data } = this.props
-    Taro.navigateTo({
-      url: '../../pages/evaluate/index',
-      success: res => {
-        res.eventChannel.emit('acceptEvaluate', {
-          data
-        })
-      }
-    })
+    if (checkLogin()) {
+      Taro.navigateTo({
+        url: '../../pages/evaluate/index',
+        success: res => {
+          res.eventChannel.emit('acceptEvaluate', {
+            data
+          })
+        }
+      })
+    }
   }
 
   gotoDetail = e => {

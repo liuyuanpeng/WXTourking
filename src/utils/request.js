@@ -16,7 +16,7 @@ export default function fetch(opt) {
       if (data.code === "TOKEN_SESSION_NOT_FOUND" || data.code === "AUTHORIZE_HEADER_IS_NULL") {
         Taro.clearStorageSync()
         Taro.navigateTo({
-          url: '../login/index'
+          url: '../../pagesLogin/login/index'
         })
       } else if (data.code !== 'SUCCESS') {
         Taro.showToast({title: data.message, icon: 'none'})
