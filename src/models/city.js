@@ -6,7 +6,8 @@ export default modelExtend(commonModel, {
   namespace: 'city',
   state: {
     list: [],
-    current: { name: '' }
+    current: {name: ''},
+    name: ''
   },
   reducers: {},
   effects: {
@@ -14,7 +15,7 @@ export default modelExtend(commonModel, {
       yield put({
         type: 'updateState',
         payload: {
-          current: { name }
+          name
         }
       })
     },
@@ -42,10 +43,11 @@ export default modelExtend(commonModel, {
           payload: { list: res.data }
         })
 
+        const name = yield select(state => state.city.name)
         const current = yield select(state => state.city.current)
         let cur = current
         if (!cur.id) {
-          cur = res.data.find(item => item.name.indexOf(current.name) >= 0)
+          cur = res.data.find(item => item.name.indexOf(name) >= 0)
           cur = cur || res.data[0]
           yield put({
             type: 'updateState',

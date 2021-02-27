@@ -32,12 +32,7 @@ export default modelExtend(commonModel, {
   },
   reducers: {},
   effects: {
-    *getDiscoveryList({ payload, success, fail }, { select, call, put }) {
-      const currentCity = yield select(state => state.city.current)
-      if (!currentCity || !currentCity.id) {
-        return
-      }
-      const city_id = currentCity.id
+    *getDiscoveryList({ payload, success, fail }, { call, put }) {
       const {
         faxian_category = 'JINGDIAN',
         page_request_data = {
@@ -52,7 +47,6 @@ export default modelExtend(commonModel, {
         }
       } = payload
       const res = yield call(fetchDiscoveryPage, {
-        city_id,
         faxian_category,
         page_request_data
       })
@@ -72,6 +66,7 @@ export default modelExtend(commonModel, {
       const currentCity = yield select(state => state.city.current)
 
       if (!currentCity || !currentCity.id) {
+        fail && fail('获取城市列表失败')
         return
       }
       const res = yield call(saveDiscovery, {

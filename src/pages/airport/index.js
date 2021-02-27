@@ -242,7 +242,7 @@ class JSJPage extends Component {
         subtitle: '7x24小时客服贴心服务'
       },
       { icon: precious_png, title: '价格优选', subtitle: '一口模式拒绝绕路' },
-      { icon: free_waiting_png, title: '免费等待', subtitle: '免费等待60分钟' },
+      { icon: free_waiting_png, title: '免费等待', subtitle: '免费等待30分钟' },
       { icon: safe_png, title: '出行安心', subtitle: '百万保险&爽约包赔' }
     ]
 

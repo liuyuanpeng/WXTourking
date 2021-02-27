@@ -438,8 +438,8 @@ class CarType extends Component {
         title: '费用说明',
         subtitles: [
           {
-            title: '免费等待90分钟',
-            subtitle: '从航班实际降落后开始时间计算，免费等待90分钟'
+            title: '免费等待30分钟',
+            subtitle: '从航班实际降落后开始时间计算，免费等待30分钟'
           }
         ]
       },
@@ -510,7 +510,7 @@ class CarType extends Component {
           value: '￥' + price
         },
         {
-          name: '用车保险',
+          name: '用车保险（已包含）',
           value: '免费'
         },
         {
