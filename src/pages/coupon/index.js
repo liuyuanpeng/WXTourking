@@ -19,6 +19,7 @@ import CouponItem from '@components/CouponItem'
 import dayjs from 'dayjs'
 import STORAGE from '@constants/storage'
 import { debounce } from 'debounce'
+import { isLogin } from '../../utils/tool'
 
 @connect(({ coupon }) => ({
   list: coupon.list,
@@ -101,6 +102,9 @@ class Coupon extends Component {
   }
 
   componentDidMount() {
+    if (!isLogin()) {
+      return
+    }
     const { dispatch } = this.props
     const user_id = Taro.getStorageSync(STORAGE.USER_ID)
     if (!user_id) return

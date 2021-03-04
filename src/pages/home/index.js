@@ -186,7 +186,11 @@ class Home extends Component {
     const publicity = this.$router.params.scene
     if (publicity) {
       const driverIndex = publicity.indexOf('driver')
-      if (driverIndex != -1) {
+      if (publicity === 'coupon') {
+        Taro.navigateTo({
+          url: `../coupon/index`
+        })
+      } else if (driverIndex != -1) {
         // 司机推荐
         Taro.setStorageSync(
           STORAGE.SOURCE_DRIVER_ID,
@@ -241,10 +245,43 @@ class Home extends Component {
                 }
               },
               fail: () => {
-                // this.gotoLogin()
+                Taro.login({
+                  success: res => {
+                    // 尝试获取/更新微信信息
+                    Taro.getUserInfo({
+                      lang: 'zh_CN',
+                      success: response => {
+                        const app = Taro.getApp()
+                        app.globalData.wxInfo = { ...response.userInfo }
+                      }
+                    })
+                    Taro.setStorageSync(STORAGE.USER_CODE, res.code)
+                    this.fetchSession()
+                  }
+                })
               }
             })
           }
+        })
+      }
+    })
+  }
+
+  fetchSession = () => {
+    this.props.dispatch({
+      type: 'user/getSession',
+      success: () => {
+        console.log('获取session成功')
+      },
+      refetch: () => {
+        setTimeout(() => {
+          this.fetchSession()
+        }, 200)
+      },
+      fail: msg => {
+        Taro.showToast({
+          title: msg || '获取session失败，请稍后重试。',
+          icon: 'none'
         })
       }
     })
