@@ -179,16 +179,22 @@
             }
           }
           &-content {
-            position: relative;
             top: -35px;
             font-size: 26px;
             color: #666666;
             line-height: 36px;
+            display: block;
           }
           &-images {
             margin-left: 24px;
             top: -35px;
             position: relative;
+          }
+          &-image {
+            display: block;
+            margin: 0;
+            padding: 0;
+            width: 100%;
           }
         }
         .route-detail-item-border {

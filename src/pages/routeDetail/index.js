@@ -307,19 +307,18 @@ class ProductDetail extends Component {
                     <View className='route-detail-item-title'>
                       {item.title}
                     </View>
-                    {item.images && (
-                      <Swiper autoplay className='route-detail-item-images'>
-                        {item.images.map((image, INDEX) => (
-                          <SwiperItem key={`route-detail-item-image-${INDEX}`}>
-                            <Image
-                              className='route-detail-item-image'
-                              src={image}
-                              mode='widthFix'
-                            />
-                          </SwiperItem>
-                        ))}
-                      </Swiper>
-                    )}
+                    {item.images &&
+                      item.images.length > 1 &&
+                      item.images.map((image, INDEX) =>
+                        INDEX > 0 ? (
+                          <Image
+                            key={`route-detail-item-image-${INDEX}`}
+                            className='route-detail-item-image'
+                            src={image}
+                            mode='widthFix'
+                          />
+                        ) : null
+                      )}
                     {item.content && (
                       <Text className='route-detail-item-content'>
                         {item.content}

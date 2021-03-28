@@ -82,31 +82,31 @@ class ProductDetail extends Component {
   }
 
   onShareAppMessage = () => {
-    const {detail} = this.state
-    const {private_consume} = detail
+    const { detail } = this.state
+    const { private_consume } = detail
     if (!private_consume || !private_consume.id)
-    var shareObj = {
-      title: '旅王出行', // 默认是小程序的名称(可以写slogan等)
-      path: '/pages/product/index?id='+private_consume.id, // 默认是当前页面，必须是以‘/’开头的完整路径
-      imageUrl: '',
-      success: res => {
-        // 转发成功之后的回调
-        if (res.errMsg == 'shareAppMessage:ok') {
-          Taro.showToast({
-            title: '发送成功',
-            icon: 'success'
-          })
+      var shareObj = {
+        title: '旅王出行', // 默认是小程序的名称(可以写slogan等)
+        path: '/pages/product/index?id=' + private_consume.id, // 默认是当前页面，必须是以‘/’开头的完整路径
+        imageUrl: '',
+        success: res => {
+          // 转发成功之后的回调
+          if (res.errMsg == 'shareAppMessage:ok') {
+            Taro.showToast({
+              title: '发送成功',
+              icon: 'success'
+            })
+          }
+        },
+        fail: res => {
+          // 转发失败之后的回调
+          if (res.errMsg == 'shareAppMessage:fail cancel') {
+            // 用户取消转发
+          } else if (res.errMsg == 'shareAppMessage:fail') {
+            // 转发失败，其中 detail message 为详细失败信息
+          }
         }
-      },
-      fail: res => {
-        // 转发失败之后的回调
-        if (res.errMsg == 'shareAppMessage:fail cancel') {
-          // 用户取消转发
-        } else if (res.errMsg == 'shareAppMessage:fail') {
-          // 转发失败，其中 detail message 为详细失败信息
-        }
-      }
-    } // 返回shareObj
+      } // 返回shareObj
     return shareObj
   }
 
@@ -244,19 +244,18 @@ class ProductDetail extends Component {
             介绍
           </View>
           <View className='detail-container'>
-            {pDetail.detailBanners && pDetail.detailBanners.length && (
-              <Swiper autoplay className='detail-swiper'>
-                {pDetail.detailBanners.map((item, index) => (
-                  <SwiperItem key={`detail-banner-${index}`}>
-                    <Image
-                      className='detail-banner'
-                      src={item}
-                      mode='widthFix'
-                    />
-                  </SwiperItem>
-                ))}
-              </Swiper>
-            )}
+            {pDetail.detailBanners &&
+              pDetail.detailBanners.length > 1 &&
+              pDetail.detailBanners.map((item, index) =>
+                index > 0 ? (
+                  <Image
+                    key={`detail-banner-${index}`}
+                    className='detail-banner'
+                    src={item}
+                    mode='widthFix'
+                  />
+                ) : null
+              )}
             <View className='detail-desc'>{pDetail.description || ''}</View>
           </View>
           <View className='i-want-it' onClick={debounce(this.onSubmit, 100)}>
