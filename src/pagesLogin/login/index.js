@@ -22,6 +22,8 @@ class Login extends Component {
           success: response => {
             const app = Taro.getApp()
             app.globalData.wxInfo = { ...response.userInfo }
+            Taro.setStorageSync(STORAGE.NICKNAME, response.userInfo.nickName)
+            Taro.setStorageSync(STORAGE.AVATAR, response.userInfo.avatarUrl)
           }
         })
         Taro.setStorageSync(STORAGE.USER_CODE, res.code)

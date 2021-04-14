@@ -1,6 +1,6 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Image, ScrollView, Label } from '@tarojs/components'
-import NavBar from '@components/NavBar'
+import NavBar from '../../components/NavBar'
 import { AtTabs, AtTabsPane } from 'taro-ui'
 import { connect } from '@tarojs/redux'
 import '../../common/index.scss'
@@ -222,6 +222,10 @@ class Home extends Component {
             })
             Taro.checkSession({
               success: () => {
+                // 统计扫码用户
+                this.props.dispatch({
+                  type: 'user/scanCount'
+                })
                 // 判断是否登录旅王系统
                 if (Taro.getStorageSync(STORAGE.TOKEN)) {
                   // 获取用户信息
@@ -253,6 +257,8 @@ class Home extends Component {
                       success: response => {
                         const app = Taro.getApp()
                         app.globalData.wxInfo = { ...response.userInfo }
+                        Taro.setStorageSync(STORAGE.NICKNAME, response.userInfo.nickName)
+                        Taro.setStorageSync(STORAGE.AVATAR, response.userInfo.avatarUrl)
                       }
                     })
                     Taro.setStorageSync(STORAGE.USER_CODE, res.code)

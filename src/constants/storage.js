@@ -14,7 +14,9 @@ const STORAGE = {
   HISTORY: 'search-history',
   USER_FANLI: 'user-fanli',
   OLD_USER: 'old-user',
-  AD_TIME: 'ad-time'
+  AD_TIME: 'ad-time',
+  AVATAR: 'wx-avatar',
+  NICKNAME: 'wx-nickname'
 }
 
 export default STORAGE

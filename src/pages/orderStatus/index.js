@@ -7,6 +7,7 @@ import { AtModal } from 'taro-ui'
 import { connect } from '@tarojs/redux'
 import SysNavBar from '@components/SysNavBar'
 import { returnFloat } from '@utils/tool'
+import QQMapWX from '../utilPages/location/qqmap'
 import dayjs from 'dayjs'
 import ORDER_STATUS from '@constants/status'
 import { debounce } from 'debounce'
@@ -21,7 +22,11 @@ class PayProduct extends Component {
 
   state = {
     showModal: false,
-    goHome: false
+    goHome: false,
+    isOpened: false,
+    modifyModal: false,
+    modifyResultModal: false,
+    newOrder: {}
   }
 
   componentDidMount() {
@@ -30,7 +35,6 @@ class PayProduct extends Component {
       goHome
     })
   }
-  
 
   showModal = bShow => {
     this.setState({
@@ -39,18 +43,156 @@ class PayProduct extends Component {
   }
 
   handleClose = () => {
-    this.showModal(false)
+    this.setState({
+      showModal: false,
+      isOpened: false,
+      modifyModal: false,
+      modifyResultModal: false
+    })
   }
 
-  handlePay = e => {
+  handleModify = e => {
     e.stopPropagation()
+    this.setState({
+      modifyModal: true
+    })
+  }
+
+  getDistance = params => {
+    let qqMapSDK = new QQMapWX({
+      key: 'JTKBZ-LCG6U-GYOVE-BJMJ5-E3DA5-HTFAJ' // 必填
+    })
+    const { from, to, success } = params
+    qqMapSDK.calculateDistance({
+      mode: 'driving', //可选值：'driving'（驾车）、'walking'（步行），不填默认：'walking',可不填
+      from, //若起点有数据则采用起点坐标，若为空默认当前地址
+      to, //终点坐标
+      success: res => {
+        //成功后的回调
+
+        if (res.status == 0 && res.result.elements.length > 0) {
+          this.kilo = res.result.elements[0].distance
+          ;(this.time = res.result.elements[0].duration),
+            success && success({ kilo: this.kilo, time: this.time })
+        }
+      },
+      fail: function(error) {
+        console.error(error)
+      }
+    })
+  }
+
+  handleModifyTarget = () => {
+    this.handleClose()
+    Taro.navigateTo({
+      url: '../../pages/utilPages/location/index',
+      events: {
+        acceptLocation: location => {
+          console.log('location: ', location)
+          const { data } = this.props
+          const { order } = data
+          const { start_latitude, start_longitude, coupon_price = 0 } = order
+          const { title, latitude, longitude } = location
+          this.getDistance({
+            from: start_latitude + ',' + start_longitude,
+            to: latitude + ',' + longitude,
+            success: ({ kilo, time }) => {
+              const newOrder = {
+                ...order,
+                target_place: title,
+                target_latitude: latitude,
+                target_longitude: longitude,
+                kilo,
+                time
+              }
+              this.props.dispatch({
+                type: 'order/queryNewPrice',
+                payload: {
+                  ...newOrder
+                },
+                success: total_price => {
+                  this.setState({
+                    newOrder: {
+                      ...newOrder,
+                      total_price,
+                      price: total_price - coupon_price
+                    },
+                    modifyResultModal: true
+                  })
+                },
+                fail: msg => {
+                  Taro.showToast({
+                    title: msg || '获取价格失败',
+                    icon: 'none'
+                  })
+                }
+              })
+            }
+          })
+        }
+      }
+    })
+  }
+
+  handleUpdateOrder = () => {
+    // 修改订单
+    this.handleClose()
+    const { newOrder } = this.state
+    if (newOrder.price <= 0) {
+      Taro.showToast({
+        title: '距离过近，请重新选定目的地',
+        icon: 'none'
+      })
+      return
+    }
+    this.props.dispatch({
+      type: 'order/modifyPrice',
+      payload: {
+        ...newOrder
+      },
+      success: () => {
+        Taro.showToast({
+          title: '修改目的地成功,请提醒司机更新导航',
+          icon: 'none'
+        })
+      },
+      fail: msg => {
+        Taro.showToast({
+          title: msg || '修改目的地失败,请稍后重试',
+          icon: 'none'
+        })
+      }
+    })
+  }
+
+  handlePrePay = e => {
+    e.stopPropagation()
+
+    const { data } = this.props
+    const { order } = data
+    if (
+      order.scene === 'JIEJI' ||
+      order.scene === 'SONGJI' ||
+      order.scene === 'JINGDIAN_PRIVATE' ||
+      order.scene === 'MEISHI_PRIVATE'
+    ) {
+      this.setState({
+        isOpened: true
+      })
+    } else {
+      this.handlePay()
+    }
+  }
+
+  handlePay = () => {
+    this.handleClose()
     const { data, dispatch } = this.props
     const { order } = data
     // 拉起支付
     Taro.requestPayment({
       timeStamp: order.wechat_timestamp,
       nonceStr: order.wechat_nonce_str,
-      package:  'prepay_id=' + order.wechat_order_id,
+      package: 'prepay_id=' + order.wechat_order_id,
       signType: 'MD5',
       paySign: order.wechat_pay_sign,
       success: () => {
@@ -62,9 +204,7 @@ class PayProduct extends Component {
           }
         })
       },
-      fail: () => {
-        
-      }
+      fail: () => {}
     })
   }
 
@@ -100,7 +240,14 @@ class PayProduct extends Component {
   render() {
     const { data } = this.props
     const { order, private_consume, chexing, zuowei } = data
-    const { showModal, goHome } = this.state
+    const {
+      showModal,
+      goHome,
+      isOpened,
+      modifyModal,
+      modifyResultModal,
+      newOrder
+    } = this.state
     if (!order) return null
     let productImg
     try {
@@ -125,10 +272,17 @@ class PayProduct extends Component {
       receive_name,
       receive_mobile,
       count,
-      coupon_price
+      coupon_price,
+      has_pay
     } = order
 
     const orderStatusDesc = ORDER_STATUS[order_status]
+
+    const isAfterpay =
+      scene === 'JIEJI' ||
+      scene === 'SONGJI' ||
+      scene === 'JINGDIAN_PRIVATE' ||
+      scene === 'MEISHI_PRIVATE'
 
     const isChartered =
       scene === 'JIEJI' || scene === 'SONGJI' || scene === 'DAY_PRIVATE'
@@ -155,7 +309,10 @@ class PayProduct extends Component {
     ]
 
     return (
-      <View className='pay-product' style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}>
+      <View
+        className='pay-product'
+        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+      >
         <SysNavBar title='确认订单' goHome={goHome} />
         {!isChartered && (
           <View className='pay-product-header'>
@@ -218,9 +375,25 @@ class PayProduct extends Component {
             </View>
           </View>
         )}
-        {orderStatusDesc === '待付款' && (
-          <View className='pay-product-pay-btn' onClick={debounce(this.handlePay, 100)}>
+        {orderStatusDesc !== '已取消' && !has_pay && (
+          <View
+            className='pay-product-pay-btn'
+            onClick={debounce(this.handlePrePay, 100)}
+          >
             继续支付
+          </View>
+        )}
+        {isAfterpay && orderStatusDesc !== '已取消' && !has_pay && (
+          <View
+            className='pay-product-pay-btn'
+            style={{
+              background: 'none',
+              color: '#fd7d59',
+              textDecoration: 'underline'
+            }}
+            onClick={debounce(this.handleModify, 100)}
+          >
+            修改目的地
           </View>
         )}
         {!isChartered && !isGift && (
@@ -287,7 +460,9 @@ class PayProduct extends Component {
         {orderStatusDesc === '待付款' && (
           <View className='pay-product-coupon'>
             <View className='pay-product-coupon-title'>优惠券</View>
-        <View className='pay-product-coupon-right'>已优惠{coupon_price || 0}元</View>
+            <View className='pay-product-coupon-right'>
+              已优惠{coupon_price || 0}元
+            </View>
           </View>
         )}
         {/* 发票 */}
@@ -311,6 +486,36 @@ class PayProduct extends Component {
           onCancel={this.handleClose}
           onConfirm={this.handleConfirm}
           content='确定取消该订单吗？'
+        />
+        <AtModal
+          isOpened={isOpened}
+          title='支付提醒'
+          cancelText='否'
+          confirmText='是'
+          onClose={this.handleClose}
+          onCancel={this.handleClose}
+          onConfirm={this.handlePay}
+          content='完成支付后，您将不再能够修改目的地，是否确认支付？'
+        />
+        <AtModal
+          isOpened={modifyModal}
+          title='修改目的地提醒'
+          cancelText='否'
+          confirmText='是'
+          onClose={this.handleClose}
+          onCancel={this.handleClose}
+          onConfirm={this.handleModifyTarget}
+          content='修改目的地前请与司机师傅商量达成一致，避免不必要的麻烦，商量好了吗？'
+        />
+        <AtModal
+          isOpened={modifyResultModal}
+          title='修改目的地提醒'
+          cancelText='否'
+          confirmText='是'
+          onClose={this.handleClose}
+          onCancel={this.handleClose}
+          onConfirm={this.handleUpdateOrder}
+          content={`修改目的地后价格从${price}元变为${newOrder.price}元，确认修改吗？`}
         />
       </View>
     )

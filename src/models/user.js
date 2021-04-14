@@ -8,6 +8,7 @@ import {
 } from '../services/user'
 import Taro from '@tarojs/taro'
 import STORAGE from '@constants/storage'
+import { fetchScanCount } from '../services/api'
 
 export default modelExtend(commonModel, {
   namespace: 'user',
@@ -26,6 +27,24 @@ export default modelExtend(commonModel, {
         fail && fail(res.message)
       }
     },
+
+    *scanCount(_, {call}) {
+      // 统计扫码商家
+      const source_shop_id = Taro.getStorageSync(STORAGE.SOURCE_SHOP_ID)
+      const open_id = Taro.getStorageSync(STORAGE.OPEN_ID)
+      const user_wxname = Taro.getStorageSync(STORAGE.NICKNAME)
+      const user_wxavatar = Taro.getStorageSync(STORAGE.AVATAR)
+
+      if (source_shop_id && open_id && user_wxavatar && user_wxname) {
+        yield call(fetchScanCount, {
+          source_shop_id,
+          open_id,
+          user_wxavatar,
+          user_wxname
+        })
+      }
+    },
+
     *getSession({ success, fail, refetch }, { call }) {
       const res = yield call(
         fetchSession,
@@ -34,9 +53,25 @@ export default modelExtend(commonModel, {
       if (res.code === 'SUCCESS' && res.data) {
         try {
           const result = JSON.parse(res.data)
+          if (!result.session_key || !result.openid) {
+            return
+          }
           Taro.setStorageSync(STORAGE.SESSION_KEY, result.session_key)
           Taro.setStorageSync(STORAGE.OPEN_ID, result.openid)
           success && success(res.data)
+
+          // 统计扫码商家
+          const source_shop_id = Taro.getStorageSync(STORAGE.SOURCE_SHOP_ID)
+          const user_wxname = Taro.getStorageSync(STORAGE.NICKNAME)
+          const user_wxavatar = Taro.getStorageSync(STORAGE.AVATAR)
+          if (source_shop_id && user_wxavatar && user_wxname) {
+            yield call(fetchScanCount, {
+              source_shop_id,
+              open_id: result.openid,
+              user_wxavatar,
+              user_wxname
+            })
+          }
         } catch (error) {
           console.log(error)
         }

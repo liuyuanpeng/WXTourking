@@ -70,7 +70,7 @@ class OrderItem extends Taro.Component {
       console.log(error)
     }
     return (
-      <View className='order-item'>
+      <View className='order-item' onClick={debounce(this.goToDetail, 100)}>
         <Image
           className='order-item-icon'
           src={type === '伴手礼' ? giftPng : carPng}
@@ -87,7 +87,7 @@ class OrderItem extends Taro.Component {
             <View className='order-normal-title'>{`${order.start_place}-${
               order.target_place ? order.target_place : '无'
             }`}</View>
-            {order.days && (
+            {order.days && type==='按天包车' && (
               <View className='order-normal-text'>{`包车天数:${order.days}天`}</View>
             )}
             <View className='order-normal-text'>{`用车时间:${dayjs(
@@ -124,7 +124,7 @@ class OrderItem extends Taro.Component {
                     评价
                   </View>
                 )}
-              {ORDER_STATUS[order.order_status] === '待付款' && (
+              {ORDER_STATUS[order.order_status] !== '已取消' && !order.has_pay && (
                 <View className='order-btn-red' onClick={debounce(this.goToDetail, 100)}>
                   去付款
                 </View>
@@ -142,7 +142,7 @@ class OrderItem extends Taro.Component {
               <View className='order-template-title'>
                 {private_consume ? private_consume.name : ''}
               </View>
-              {private_consume && private_consume.days > 0 && (
+              {private_consume && private_consume.days > 1 && (
                 <View className='order-template-text'>{`包车天数${private_consume.days}天`}</View>
               )}
               {private_consume && private_consume.count > 0 && (
@@ -201,7 +201,7 @@ class OrderItem extends Taro.Component {
                     查看物流编号
                   </View>
                 )}
-              {ORDER_STATUS[order.order_status] === '待付款' && (
+              {ORDER_STATUS[order.order_status] !== '已取消' && !order.has_pay && (
                 <View className='order-btn-red' onClick={debounce(this.goToDetail, 100)}>
                   去付款
                 </View>

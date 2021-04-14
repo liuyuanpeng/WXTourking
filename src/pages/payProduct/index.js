@@ -217,50 +217,93 @@ class PayProduct extends Component {
 
         Taro.setStorageSync(STORAGE.SOURCE_SHOP_ID, 0)
         Taro.setStorageSync(STORAGE.SOURCE_DRIVER_ID, 0)
-
-        // 拉起支付
-        Taro.requestPayment({
-          timeStamp: result.wechat_timestamp,
-          nonceStr: result.wechat_nonce_str,
-          package: 'prepay_id=' + result.wechat_order_id,
-          signType: 'MD5',
-          paySign: result.wechat_pay_sign,
-          success: () => {
-            this.props.dispatch({
-              type: 'order/setUserOrder',
-              payload: {
-                // 付款成功修改订单状态
-                order: { ...result, order_status: 'WAIT_ACCEPT' },
-                chexing,
-                zuowei,
-                consume,
-                private_consume
-              },
-              success: () => {
-                Taro.navigateTo({
-                  url: '../orderStatus/index?goHome=true'
-                })
-              }
-            })
-          },
-          fail: () => {
-            this.props.dispatch({
-              type: 'order/setUserOrder',
-              payload: {
-                order: { ...result },
-                chexing,
-                zuowei,
-                consume,
-                private_consume
-              },
-              success: () => {
-                Taro.navigateTo({
-                  url: '../orderStatus/index?goHome=true'
-                })
-              }
-            })
-          }
-        })
+        if (scene === 'JINGDIAN_PRIVATE' || scene === 'MEISHI_PRIVATE') {
+          this.props.dispatch({
+            type: 'order/confirmUserOrder',
+            payload: {
+              id: result.id
+            },
+            success: () => {
+              this.props.dispatch({
+                type: 'order/setUserOrder',
+                payload: {
+                  // 付款成功修改订单状态
+                  order: { ...result, order_status: 'WAIT_ACCEPT' },
+                  chexing,
+                  zuowei,
+                  consume,
+                  private_consume
+                },
+                success: () => {
+                  Taro.navigateTo({
+                    url: '../orderStatus/index?goHome=true'
+                  })
+                },
+                fail: () => {
+                  this.props.dispatch({
+                    type: 'order/setUserOrder',
+                    payload: {
+                      order: { ...result },
+                      chexing,
+                      zuowei,
+                      consume,
+                      private_consume
+                    },
+                    success: () => {
+                      Taro.navigateTo({
+                        url: '../orderStatus/index?goHome=true'
+                      })
+                    }
+                  })
+                }
+              })
+            }
+          })
+        } else {
+          // 拉起支付
+          Taro.requestPayment({
+            timeStamp: result.wechat_timestamp,
+            nonceStr: result.wechat_nonce_str,
+            package: 'prepay_id=' + result.wechat_order_id,
+            signType: 'MD5',
+            paySign: result.wechat_pay_sign,
+            success: () => {
+              this.props.dispatch({
+                type: 'order/setUserOrder',
+                payload: {
+                  // 付款成功修改订单状态
+                  order: { ...result, order_status: 'WAIT_ACCEPT' },
+                  chexing,
+                  zuowei,
+                  consume,
+                  private_consume
+                },
+                success: () => {
+                  Taro.navigateTo({
+                    url: '../orderStatus/index?goHome=true'
+                  })
+                }
+              })
+            },
+            fail: () => {
+              this.props.dispatch({
+                type: 'order/setUserOrder',
+                payload: {
+                  order: { ...result },
+                  chexing,
+                  zuowei,
+                  consume,
+                  private_consume
+                },
+                success: () => {
+                  Taro.navigateTo({
+                    url: '../orderStatus/index?goHome=true'
+                  })
+                }
+              })
+            }
+          })
+        }
       },
       fail: message => {
         Taro.showToast({
@@ -482,7 +525,7 @@ class PayProduct extends Component {
         </ScrollView>
         <View className='pay-gift-footer'>
           <Label className='pay-it' onClick={debounce(this.handlePay, 200)}>
-            立即支付
+            立即预约
           </Label>
           <Label className='total-footer'>{`￥${returnFloat(
             price - (coupon ? coupon.price : 0)

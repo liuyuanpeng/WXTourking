@@ -44,10 +44,16 @@ export const HOME_INFO = `${host}/travel/consume/service`
 export const GET_PRICE = `${host}/travel/price/count`
 
 // 下单
-export const CREATE_ORDER =  `${host}/travel/order/create`
+export const CREATE_ORDER = `${host}/travel/order/create`
+
+// 确认订单
+export const CONFIRM_ORDER = `${host}/travel/order/user_confirm`
+
+// 修改订单金额
+export const MODIFY_PRICE = `${host}/travel/order/update_user_price`
 
 // 模拟支付
-export const PAY =  `${host}/travel/order/check_user_pay`
+export const PAY = `${host}/travel/order/check_user_pay`
 
 // 常用地址
 export const GET_ADDRESS_PAGE = `${host}/travel/address/page`
@@ -62,19 +68,19 @@ export const GET_TRIP_PAGE = `${host}/travel/order/user/page`
 export const GET_ORDER_BILL_PAGE = `${host}/travel/order/user/bill_page`
 
 // 获取订单详情
-export const GET_ORDER_DETAIL =  `${host}/travel/order/get`
+export const GET_ORDER_DETAIL = `${host}/travel/order/get`
 
 // 获取退款金额
 export const GET_REFUND = `${host}/travel/refund/refund_count`
 
 // 取消订单
-export const CANCEL_ORDER =  `${host}/travel/order/user_cancel`
+export const CANCEL_ORDER = `${host}/travel/order/user_cancel`
 
 // 立即支付
 export const WAIT_PAY = `${host}/travel/order/wait_pay`
 
 // 评价司机
-export const EVALUATE =  `${host}/travel/driver/evaluate`
+export const EVALUATE = `${host}/travel/driver/evaluate`
 
 // 获取首页大图
 export const GET_COVERS = `${host}/travel/lunbo/list`
@@ -101,7 +107,7 @@ export const DELETE_USER_ADDRESS = `${host}/travel/user_dizhi/ADDRESS_ID/delete`
 export const GET_USER_BILL_HEADER = `${host}/travel/user_fapiao/list`
 
 // 新增/编辑发票抬头
-export const SAVE_USER_BILL_HEADER =  `${host}/travel/user_fapiao/save`
+export const SAVE_USER_BILL_HEADER = `${host}/travel/user_fapiao/save`
 
 // 删除发票抬头
 export const DELETE_USER_BILL_HEADER = `${host}/travel/user_fapiao/HEAD_ID/delete`
@@ -137,7 +143,7 @@ export const DISCOVERY_PAGE = `${host}/travel/faxian/page`
 export const DISCOVERY_SAVE = `${host}/travel/faxian/save`
 
 // 发现-我的点赞
-export const DISCOVERY_LICK_PAGE =  `${host}/travel/faxian_zan/page`
+export const DISCOVERY_LICK_PAGE = `${host}/travel/faxian_zan/page`
 
 // 发现-点赞
 export const DISCOVERY_LIKE = `${host}/travel/faxian_zan/save`
@@ -146,7 +152,7 @@ export const DISCOVERY_LIKE = `${host}/travel/faxian_zan/save`
 export const DISCOVERY_UNLICK = `${host}/travel/faxian_zan/{id}/delete`
 
 // 发现-我的评价
-export const DISCOVERY_COMMENT_PAGE =  `${host}/travel/faxian_evaluate/page`
+export const DISCOVERY_COMMENT_PAGE = `${host}/travel/faxian_evaluate/page`
 
 // 发现-评价
 export const DISCOVERY_COMMENT = `${host}/travel/faxian_evaluate/save`
@@ -158,7 +164,7 @@ export const DISCOVERY_FAVOR = `${host}/travel/faxian_collect/save`
 export const DISCOVERY_UNFAVOR = `${host}/travel/faxian_collect/{id}/delete`
 
 // 发现-我的收藏
-export const DISCOVERY_FAVOR_PAGE =  `${host}/travel/faxian_collect/page`
+export const DISCOVERY_FAVOR_PAGE = `${host}/travel/faxian_collect/page`
 
 // 获取发票列表
 export const GET_BILL_PAGE = `${host}/travel/bill/page`
@@ -169,4 +175,5 @@ export const GET_BILL_PRICE = `${host}/travel/bill/total_price`
 // 开具发票
 export const CREATE_BILL = `${host}/travel/bill/create`
 
-
+// 统计扫码用户
+export const SCAN_COUNT = `${host}/travel/visit/save`

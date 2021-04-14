@@ -61,6 +61,12 @@ class Home extends PureComponent {
     })
   }
 
+  onGetUserInfo = result => {
+    const {nickName, avatarUrl} = result.detail.userInfo
+    Taro.setStorageSync(STORAGE.NICKNAME, nickName)
+    Taro.setStorageSync(STORAGE.AVATAR, avatarUrl)
+  }
+
   render() {
     const { userInfo } = this.props
     const mineList = [

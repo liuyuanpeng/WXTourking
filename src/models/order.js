@@ -6,8 +6,11 @@ import {
   fetchOrderDetail,
   fetchPrice,
   createOrder,
+  confirmOrder,
   cancelOrder,
-  payOrder
+  payOrder,
+  queryConsumeList,
+  modifyPrice
 } from '../services/order'
 import Taro from '@tarojs/taro'
 import STORAGE from '@constants/storage'
@@ -54,6 +57,34 @@ export default modelExtend(commonModel, {
         fail && fail(res.message)
       }
     },
+    *modifyPrice({payload, success, fail}, {call, put, select}) {
+      const res = yield call(modifyPrice, payload)
+      if (res.code === 'SUCCESS') {
+        const userOrder = yield select(state=>state.order.userOrder)
+        yield put({
+          type: 'updateState',
+          payload: {
+            userOrder: {
+              ...userOrder,
+              order: {
+                ...res.data
+              }
+            }
+          }
+        })
+        success && success()
+      } else {
+        fail && fail(res.message)
+      }
+    },
+    *confirmUserOrder({ payload, success, fail }, { call }) {
+      const res = yield call(confirmOrder, payload.id)
+      if (res.code === 'SUCCESS') {
+        success && success(res.data)
+      } else {
+        fail && fail(res.message)
+      }
+    },
     *setUserOrder({ payload, success }, { put }) {
       yield put({
         type: 'updateState',
@@ -65,12 +96,50 @@ export default modelExtend(commonModel, {
       })
       success && success()
     },
+    *queryNewPrice({ payload, success, fail }, { call }) {
+      const { kilo, time, scene, city_id, chexing_id, start_time } = payload
+      const consume = yield call(queryConsumeList, { scene, city_id })
+      if (
+        consume.code !== 'SUCCESS' ||
+        !consume.data ||
+        !consume.data[0] ||
+        !consume.data[0].car_levels ||
+        !consume.data[0].car_levels.length
+      ) {
+        fail && fail('获取用车服务失败!')
+        return
+      }
+      const carLevel = consume.data[0].car_levels.find(
+        item => item.chexing.id === chexing_id
+      )
+      if (!carLevel) {
+        fail && fail('没有对应的用车服务!')
+        return
+      }
+      const { price_strategy_id } = carLevel
+
+      const getPriceParam = {
+        kilo,
+        time,
+        price_strategy_id
+      }
+      if (start_time) {
+        getPriceParam.start_time = start_time
+      }
+
+      const priceRes = yield call(fetchPrice, getPriceParam)
+
+      if (priceRes.code !== 'SUCCESS') {
+        fail && fail(priceRes.msg || '获取价格失败')
+        return
+      }
+      success && success(priceRes.data)
+    },
     *updateUserOrder({ payload, success }, { put }) {
       yield put({
         type: 'updateState',
         payload: {
           userOrder: {
-            ...userOrder,
             ...payload
           }
         }

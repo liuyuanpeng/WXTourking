@@ -28,7 +28,8 @@ import {
   DISCOVERY_PAGE,
   DISCOVERY_SAVE,
   DISCOVERY_UNFAVOR,
-  DISCOVERY_UNLICK
+  DISCOVERY_UNLICK,
+  SCAN_COUNT
 } from '@constants/api'
 import qs from 'query-string'
 import { COUPON_OBTAIN_CHECK, CREATE_BILL, DELETE_USER_BILL_HEADER, GET_BILL_PAGE, GET_BILL_PRICE, GET_USER_BILL_HEADER, SAVE_USER_BILL_HEADER } from '../constants/api'
@@ -362,5 +363,13 @@ export function fetchBillPrice() {
   return fetch({
     url: GET_BILL_PRICE,
     method: 'get'
+  })
+}
+
+export function fetchScanCount(payload) {
+  return fetch({
+    url: SCAN_COUNT,
+    method: 'post',
+    payload
   })
 }
