@@ -200,7 +200,7 @@ class PayProduct extends Component {
           type: 'order/updateUserOrder',
           payload: {
             // 付款成功修改订单状态
-            order: { ...order, order_status: 'WAIT_ACCEPT' }
+            order: { ...order, order_status: 'WAIT_ACCEPT', has_pay: true }
           }
         })
       },

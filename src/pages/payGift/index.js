@@ -185,7 +185,7 @@ class PayGift extends Component {
               type: 'order/setUserOrder',
               payload: {
                 // 付款成功修改订单状态
-                order: { ...result, order_status: 'WAIT_ACCEPT' },
+                order: { ...result, order_status: 'WAIT_ACCEPT', has_pay: true },
                 private_consume: data
               },
               success: () => {
