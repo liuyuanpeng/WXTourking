@@ -87,7 +87,7 @@ class OrderItem extends Taro.Component {
             <View className='order-normal-title'>{`${order.start_place}-${
               order.target_place ? order.target_place : '无'
             }`}</View>
-            {order.days && type==='按天包车' && (
+            {order.days && type === '按天包车' && (
               <View className='order-normal-text'>{`包车天数:${order.days}天`}</View>
             )}
             <View className='order-normal-text'>{`用车时间:${dayjs(
@@ -96,17 +96,18 @@ class OrderItem extends Taro.Component {
             <View className='order-normal-text'>
               {`车型:${chexing.name || ''}${zuowei.name || ''}`}
             </View>
-            {((order.order_status === 'ON_THE_WAY' ||
-              order.order_status === 'ACCEPTED')&&type!=='伴手礼') && (
-              <View>
-                <View className='order-normal-text'>{`司机:${order.driver_user_name ||
-                  ''}`}</View>
-                <View className='order-normal-text'>{`司机电话:${order.driver_mobile ||
-                  ''}`}</View>
-                <View className='order-normal-text'>{`车牌号:${order.driver_car_no ||
-                  ''}`}</View>
-              </View>
-            )}
+            {(order.order_status === 'ON_THE_WAY' ||
+              order.order_status === 'ACCEPTED') &&
+              type !== '伴手礼' && (
+                <View>
+                  <View className='order-normal-text'>{`司机:${order.driver_user_name ||
+                    ''}`}</View>
+                  <View className='order-normal-text'>{`司机电话:${order.driver_mobile ||
+                    ''}`}</View>
+                  <View className='order-normal-text'>{`车牌号:${order.driver_car_no ||
+                    ''}`}</View>
+                </View>
+              )}
             <View className='order-price'>
               合计
               <Label className='order-price-total'>{`￥ ${order.price}`}</Label>
@@ -114,18 +115,35 @@ class OrderItem extends Taro.Component {
             <View className='order-buttons'>
               {(ORDER_STATUS[order.order_status] === '待出行' ||
                 ORDER_STATUS[order.order_status] === '待付款') && (
-                <View className='order-btn' onClick={debounce(this.goToDetail, 100)}>
+                <View
+                  className='order-btn'
+                  onClick={debounce(this.goToDetail, 100)}
+                >
                   取消订单
                 </View>
               )}
               {ORDER_STATUS[order.order_status] === '已完成' &&
                 !order.evaluate && (
-                  <View className='order-btn-red' onClick={debounce(this.goToEvaluate, 100)}>
+                  <View
+                    className='order-btn-red'
+                    onClick={debounce(this.goToEvaluate, 100)}
+                  >
                     评价
                   </View>
                 )}
               {ORDER_STATUS[order.order_status] !== '已取消' && !order.has_pay && (
-                <View className='order-btn-red' onClick={debounce(this.goToDetail, 100)}>
+                <View
+                  className='order-btn-red'
+                  onClick={debounce(this.goToDetail, 100)}
+                >
+                  去付款
+                </View>
+              )}
+              {order.wechat_fee_order_id && (
+                <View
+                  className='order-btn-red'
+                  onClick={debounce(this.goToDetail, 100)}
+                >
                   去付款
                 </View>
               )}
@@ -178,13 +196,19 @@ class OrderItem extends Taro.Component {
             <View className='order-buttons'>
               {ORDER_STATUS[order.order_status] === '已完成' &&
                 !order.evaluate && (
-                  <View className='order-btn-red' onClick={debounce(this.goToEvaluate, 100)}>
+                  <View
+                    className='order-btn-red'
+                    onClick={debounce(this.goToEvaluate, 100)}
+                  >
                     评价
                   </View>
                 )}
               {(ORDER_STATUS[order.order_status] === '待出行' ||
                 ORDER_STATUS[order.order_status] === '待付款') && (
-                <View className='order-btn' onClick={debounce(this.goToDetail, 100)}>
+                <View
+                  className='order-btn'
+                  onClick={debounce(this.goToDetail, 100)}
+                >
                   取消订单
                 </View>
               )}
@@ -202,7 +226,18 @@ class OrderItem extends Taro.Component {
                   </View>
                 )}
               {ORDER_STATUS[order.order_status] !== '已取消' && !order.has_pay && (
-                <View className='order-btn-red' onClick={debounce(this.goToDetail, 100)}>
+                <View
+                  className='order-btn-red'
+                  onClick={debounce(this.goToDetail, 100)}
+                >
+                  去付款
+                </View>
+              )}
+              {order.wechat_fee_order_id && (
+                <View
+                  className='order-btn-red'
+                  onClick={debounce(this.goToDetail, 100)}
+                >
                   去付款
                 </View>
               )}

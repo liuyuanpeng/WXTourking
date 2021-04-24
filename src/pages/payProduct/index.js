@@ -5,7 +5,7 @@ import { connect } from '@tarojs/redux'
 import '../../common/index.scss'
 import './index.scss'
 
-import { AtDivider, AtNavBar, AtInputNumber, AtInput } from 'taro-ui'
+import { AtDivider, AtNavBar, AtInputNumber, AtInput, AtModal } from 'taro-ui'
 import CommentItem from '@components/CommentItem'
 import SysNavBar from '@components/SysNavBar'
 import { returnFloat } from '@utils/tool'
@@ -36,7 +36,8 @@ class PayProduct extends Component {
     phone: '',
     start_time: dayjs().add(5, 'm'),
     price: 0,
-    coupon: ''
+    coupon: '',
+    showTip: false
   }
 
   componentDidShow() {
@@ -306,6 +307,12 @@ class PayProduct extends Component {
         }
       },
       fail: message => {
+        if (message === 'no_pay') {
+          this.setState({
+            showTip: true
+          })
+          return
+        }
         Taro.showToast({
           title: message || '创建订单失败',
           icon: 'none'
@@ -414,6 +421,20 @@ class PayProduct extends Component {
     }
   }
 
+  gotoSchedule = () => {
+    this.handleClose()
+    Taro.setStorageSync(STORAGE.SWITCH_INDEX, 3)
+    Taro.switchTab({
+      url: '../schedule/index'
+    })
+  }
+
+  handleClose = () => {
+    this.setState({
+      showTip: false
+    })
+  }
+
   render() {
     const {
       start_place = '厦门市思明区',
@@ -422,7 +443,8 @@ class PayProduct extends Component {
       start_time,
       price,
       order,
-      coupon
+      coupon,
+      showTip
     } = this.state
     const { private_consume = {} } = order
     const { usableList } = this.props
@@ -532,6 +554,16 @@ class PayProduct extends Component {
           )}`}</Label>
           <Label className='sum-text'>合计：</Label>
         </View>
+        <AtModal
+          isOpened={showTip}
+          title='下单失败'
+          cancelText='取消'
+          confirmText='去支付'
+          onClose={this.handleClose}
+          onCancel={this.handleClose}
+          onConfirm={this.gotoSchedule}
+          content='您还有未支付的订单，请支付完成后重试。去支付？'
+        />
       </View>
     )
   }

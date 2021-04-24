@@ -18,7 +18,7 @@ import BillItem from '@components/BillItem'
 import CheckBox from '@components/CheckBox'
 import PopView from '@components/PopView'
 import dayjs from 'dayjs'
-import { AtInput } from 'taro-ui'
+import { AtInput, AtModal } from 'taro-ui'
 import STORAGE from '@constants/storage'
 import LocationInput from '@components/LocationInput'
 import DateTimePicker from '@components/DateTimePicker'
@@ -43,7 +43,8 @@ class CarType extends Component {
     order: {},
     startPlace: { title: '' },
     startTime: dayjs().add(5, 'm'),
-    coupon: ''
+    coupon: '',
+    showTip: false
   }
 
   componentDidShow() {
@@ -356,6 +357,12 @@ class CarType extends Component {
         }
       },
       fail: message => {
+        if (message === 'no_pay') {
+          this.setState({
+            showTip: true
+          })
+          return
+        }
         Taro.showToast({
           title: message || '创建订单失败',
           icon: 'none'
@@ -417,6 +424,20 @@ class CarType extends Component {
     )
   }
 
+  gotoSchedule = () => {
+    this.handleClose()
+    Taro.setStorageSync(STORAGE.SWITCH_INDEX, 3)
+    Taro.switchTab({
+      url: '../schedule/index'
+    })
+  }
+
+  handleClose = () => {
+    this.setState({
+      showTip: false
+    })
+  }
+
   render() {
     const {
       detailVisible,
@@ -427,7 +448,8 @@ class CarType extends Component {
       order,
       startPlace,
       startTime,
-      coupon
+      coupon,
+      showTip
     } = this.state
 
     const {
@@ -814,6 +836,16 @@ class CarType extends Component {
             </View>
           </ScrollView>
         </PopView>
+        <AtModal
+          isOpened={showTip}
+          title='下单失败'
+          cancelText='取消'
+          confirmText='去支付'
+          onClose={this.handleClose}
+          onCancel={this.handleClose}
+          onConfirm={this.gotoSchedule}
+          content='您还有未支付的订单，请支付完成后重试。去支付？'
+        />
       </View>
     )
   }

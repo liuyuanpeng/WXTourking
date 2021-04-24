@@ -184,27 +184,79 @@ class PayProduct extends Component {
     }
   }
 
+  handlePayFee = e => {
+    e.stopPropagation()
+    const { data, dispatch } = this.props
+    const { order } = data
+    dispatch({
+      type: 'order/payOrderFee',
+      payload: {
+        orderId: order.id
+      },
+      success: wechat => {
+        // 拉起支付
+        Taro.requestPayment({
+          timeStamp: wechat.wechat_fee_timestamp,
+          nonceStr: wechat.wechat_fee_nonce_str,
+          package: 'prepay_id=' + wechat.wechat_fee_order_id,
+          signType: 'MD5',
+          paySign: wechat.wechat_fee_pay_sign,
+          success: () => {
+            dispatch({
+              type: 'order/updateUserOrder',
+              payload: {
+                // 付款成功修改订单状态
+                order: { ...order, has_pay: true }
+              }
+            })
+          },
+          fail: () => {}
+        })
+      },
+      fail: () => {
+        Taro.showToast({
+          title: '获取微信账单失败,请稍后重试',
+          icon: 'none'
+        })
+      }
+    })
+  }
+
   handlePay = () => {
     this.handleClose()
     const { data, dispatch } = this.props
     const { order } = data
-    // 拉起支付
-    Taro.requestPayment({
-      timeStamp: order.wechat_timestamp,
-      nonceStr: order.wechat_nonce_str,
-      package: 'prepay_id=' + order.wechat_order_id,
-      signType: 'MD5',
-      paySign: order.wechat_pay_sign,
-      success: () => {
-        dispatch({
-          type: 'order/updateUserOrder',
-          payload: {
-            // 付款成功修改订单状态
-            order: { ...order, order_status: 'WAIT_ACCEPT', has_pay: true }
-          }
+    dispatch({
+      type: 'order/payOrder',
+      payload: {
+        orderId: order.id
+      },
+      success: wechat => {
+        // 拉起支付
+        Taro.requestPayment({
+          timeStamp: wechat.wechat_timestamp,
+          nonceStr: wechat.wechat_nonce_str,
+          package: 'prepay_id=' + wechat.wechat_order_id,
+          signType: 'MD5',
+          paySign: wechat.wechat_pay_sign,
+          success: () => {
+            dispatch({
+              type: 'order/updateUserOrder',
+              payload: {
+                // 付款成功修改订单状态
+                order: { ...order, order_status: 'WAIT_ACCEPT', has_pay: true }
+              }
+            })
+          },
+          fail: () => {}
         })
       },
-      fail: () => {}
+      fail: () => {
+        Taro.showToast({
+          title: '获取微信账单失败,请稍后重试',
+          icon: 'none'
+        })
+      }
     })
   }
 
@@ -261,6 +313,7 @@ class PayProduct extends Component {
       scene,
       order_status,
       price,
+      refund_fee,
       username,
       mobile,
       id,
@@ -273,7 +326,9 @@ class PayProduct extends Component {
       receive_mobile,
       count,
       coupon_price,
-      has_pay
+      has_pay,
+      wechat_fee_order_id,
+      driver_user_id
     } = order
 
     const orderStatusDesc = ORDER_STATUS[order_status]
@@ -355,9 +410,16 @@ class PayProduct extends Component {
                     )}前确认车辆信息`}
               </View>
             )}
-            <View className='pay-product-header-ex-price'>
-              ￥{returnFloat(price)}
-            </View>
+            {!wechat_fee_order_id && (
+              <View className='pay-product-header-ex-price'>
+                ￥{returnFloat(price)}
+              </View>
+            )}
+            {wechat_fee_order_id && (
+              <View className='pay-product-header-ex-price'>
+                违约金: ￥{returnFloat(refund_fee)}
+              </View>
+            )}
             <View className='pay-product-header-ex-title'>
               {chexing.name || ''}
               {zuowei.name || ''}
@@ -381,6 +443,14 @@ class PayProduct extends Component {
             onClick={debounce(this.handlePrePay, 100)}
           >
             继续支付
+          </View>
+        )}
+        {orderStatusDesc === '已取消' && !has_pay && wechat_fee_order_id && (
+          <View
+            className='pay-product-pay-btn'
+            onClick={debounce(this.handlePayFee, 100)}
+          >
+            支付违约金
           </View>
         )}
         {isAfterpay && orderStatusDesc !== '已取消' && !has_pay && (
@@ -472,7 +542,9 @@ class PayProduct extends Component {
             <View className='pay-product-bill-right'>去开发票</View>
           </View>
         )}
-        {(orderStatusDesc === '待出行' || orderStatusDesc === '待付款') && (
+        {(orderStatusDesc === '待出行' ||
+          orderStatusDesc === '待付款' ||
+          orderStatusDesc === '待出行') && (
           <View className='pay-product-cancel-btn' onClick={this.handleCancel}>
             取消订单
           </View>
@@ -485,7 +557,11 @@ class PayProduct extends Component {
           onClose={this.handleClose}
           onCancel={this.handleClose}
           onConfirm={this.handleConfirm}
-          content='确定取消该订单吗？'
+          content={
+            driver_user_id
+              ? '取消该订单可能会产生违约金，'
+              : '' + '确定取消该订单吗？'
+          }
         />
         <AtModal
           isOpened={isOpened}

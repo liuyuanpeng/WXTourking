@@ -1,7 +1,7 @@
 const path = require('path')
 
 const config = {
-  projectName: 'Tourking',
+  projectName: 'WXTourking',
   date: '2020-4-24',
   designWidth: 750,
   deviceRatio: {
@@ -45,6 +45,7 @@ const config = {
     '@utils': path.resolve(__dirname, '..', 'src/utils')
   },
   mini: {
+    appOutput: false,
     postcss: {
       pxtransform: {
         enable: true,

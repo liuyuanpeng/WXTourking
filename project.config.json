@@ -1,14 +1,44 @@
 {
-  "miniprogramRoot": "./dist",
+  "miniprogramRoot": "dist/",
   "projectname": "WXTourking",
   "description": "旅王出行",
   "appid": "wx7b18e1845642939f",
   "setting": {
     "urlCheck": true,
     "es6": false,
+    "enhance": false,
     "postcss": false,
+    "preloadBackgroundData": false,
     "minified": false,
-    "useCompilerModule": true
+    "newFeature": false,
+    "coverView": true,
+    "nodeModules": false,
+    "autoAudits": false,
+    "showShadowRootInWxmlPanel": true,
+    "scopeDataCheck": false,
+    "uglifyFileName": false,
+    "checkInvalidKey": true,
+    "checkSiteMap": false,
+    "uploadWithSourceMap": true,
+    "compileHotReLoad": false,
+    "useMultiFrameRuntime": true,
+    "useApiHook": true,
+    "useApiHostProcess": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "enableEngineNative": false,
+    "bundle": false,
+    "useIsolateContext": true,
+    "useCompilerModule": true,
+    "userConfirmedUseCompilerModuleSwitch": false,
+    "userConfirmedBundleSwitch": false,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true
   },
-  "compileType": "miniprogram"
+  "compileType": "miniprogram",
+  "condition": {}
 }

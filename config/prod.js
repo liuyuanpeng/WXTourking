@@ -1,4 +1,4 @@
-// const HOST = '"https://apis.kingtrip.vip"'
+// const HOST = '"https://tms.kingtrip.vip"'
 const HOST = '"https://apis.kingtrip.vip"'
 const IMAGE_HOST = '"http://www.kingtrip.vip"'
 

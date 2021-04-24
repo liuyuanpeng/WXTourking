@@ -9,7 +9,10 @@ import {
   CANCEL_ORDER,
   GET_CONSUME_LIST,
   GET_ORDER_BILL_PAGE,
-  MODIFY_PRICE
+  MODIFY_PRICE,
+  GET_FEE_ORDER,
+  WAIT_PAY,
+  WAIT_PAY_FEE
 } from '@constants/api'
 import qs from 'query-string'
 
@@ -111,5 +114,23 @@ export function fetchOrderDetail(payload) {
   return fetch({
     url: `${GET_ORDER_DETAIL}?${qs.stringify(payload)}`,
     payload
+  })
+}
+
+export function queryFeeOrder() {
+  return fetch({
+    url: `${GET_FEE_ORDER}`
+  })
+}
+
+export function queryPay(orderId) {
+  return fetch({
+    url: `${WAIT_PAY}?order_id=${orderId}`
+  })
+}
+
+export function queryPayFee(orderId) {
+  return fetch({
+    url: `${WAIT_PAY_FEE}?order_id=${orderId}`
   })
 }

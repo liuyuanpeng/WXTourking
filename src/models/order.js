@@ -10,7 +10,10 @@ import {
   cancelOrder,
   payOrder,
   queryConsumeList,
-  modifyPrice
+  modifyPrice,
+  queryFeeOrder,
+  queryPay,
+  queryPayFee
 } from '../services/order'
 import Taro from '@tarojs/taro'
 import STORAGE from '@constants/storage'
@@ -32,7 +35,8 @@ export default modelExtend(commonModel, {
     jiejiOrders: { page: 0, size: SIZE, data_list: [] },
     xianluOrders: { page: 0, size: SIZE, data_list: [] },
     billOrders: { page: 0, size: SIZE, data_list: [] },
-    finishBillOrders: { page: 0, size: SIZE, data_list: [] }
+    finishBillOrders: { page: 0, size: SIZE, data_list: [] },
+    payOrders: []
   },
   reducers: {},
   effects: {
@@ -57,10 +61,26 @@ export default modelExtend(commonModel, {
         fail && fail(res.message)
       }
     },
-    *modifyPrice({payload, success, fail}, {call, put, select}) {
+    *payOrder({ payload, success, fail }, { call }) {
+      const res = yield call(queryPay, payload.orderId)
+      if (res.code === 'SUCCESS') {
+        success && success(res.data)
+      } else {
+        fail && fail(res.message)
+      }
+    },
+    *payOrderFee({ payload, success, fail }, { call }) {
+      const res = yield call(queryPayFee, payload.orderId)
+      if (res.code === 'SUCCESS') {
+        success && success(res.data)
+      } else {
+        fail && fail(res.message)
+      }
+    },
+    *modifyPrice({ payload, success, fail }, { call, put, select }) {
       const res = yield call(modifyPrice, payload)
       if (res.code === 'SUCCESS') {
-        const userOrder = yield select(state=>state.order.userOrder)
+        const userOrder = yield select(state => state.order.userOrder)
         yield put({
           type: 'updateState',
           payload: {
@@ -168,6 +188,23 @@ export default modelExtend(commonModel, {
       }
     },
     *createOrder({ payload, success, fail }, { call }) {
+      const { scene } = payload
+      if (
+        scene === 'JIEJI' ||
+        scene === 'SONGJI' ||
+        scene === 'JINGDIAN_PRIVATE' ||
+        scene === 'MEISHI_PRIVATE'
+      ) {
+        const feeOrder = yield call(queryFeeOrder)
+        if (
+          feeOrder.code === 'SUCCESS' &&
+          feeOrder.data &&
+          feeOrder.data.length
+        ) {
+          fail && fail('no_pay')
+          return
+        }
+      }
       const res = yield call(createOrder, payload)
       if (res.code === 'SUCCESS') {
         success && success(res.data)
@@ -268,6 +305,15 @@ export default modelExtend(commonModel, {
         body
       })
       if (res.code === 'SUCCESS') {
+        // 过滤其他已取消
+        const resultOrders = res.data.data_list.filter(item=>{
+          if (item.order.order_status.indexOf('CANCEL') < 0) {
+            return true
+          } else if (item.order.wechat_fee_order_id) {
+            return true
+          }
+          return false
+        })
         yield put({
           type: 'updateState',
           payload: {
@@ -275,8 +321,8 @@ export default modelExtend(commonModel, {
               page: res.data.page,
               size: res.data.size,
               data_list: more
-                ? waitForPayOrders.data.concat(res.data.data_list)
-                : res.data.data_list
+                ? resultOrders.data.concat(resultOrders)
+                : resultOrders
             }
           }
         })
@@ -473,6 +519,20 @@ export default modelExtend(commonModel, {
                 ? xianluOrders.data.concat(res.data.data_list)
                 : res.data.data_list
             }
+          }
+        })
+        success && success()
+      } else {
+        fail && fail(res.message)
+      }
+    },
+    *getPAY({ success, fail }, { call, put }) {
+      const res = yield call(queryFeeOrder)
+      if (res.code === 'SUCCESS') {
+        yield put({
+          type: 'updateState',
+          payload: {
+            payOrders: res.data
           }
         })
         success && success()

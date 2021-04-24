@@ -182,7 +182,7 @@ class Home extends Component {
     })
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const publicity = this.$router.params.scene
     if (publicity) {
       const driverIndex = publicity.indexOf('driver')
@@ -196,9 +196,11 @@ class Home extends Component {
           STORAGE.SOURCE_DRIVER_ID,
           publicity.substring(driverIndex + 7)
         )
+        this.gotoAirport()
       } else {
         if (publicity) {
           Taro.setStorageSync(STORAGE.SOURCE_SHOP_ID, publicity)
+          this.gotoAirport()
         }
       }
     }
@@ -353,6 +355,16 @@ class Home extends Component {
     Taro.navigateTo({
       url: `../moreProduct/index?type=gift`
     })
+  }
+
+  gotoAirport = () => {
+    setTimeout(()=>{
+      Taro.showToast({
+        title: 'navigate...',
+        icon: 'none'
+      })
+      this.gotoHref('airport')
+    }, 500)
   }
 
   gotoHref = href => {

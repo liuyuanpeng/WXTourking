@@ -79,6 +79,9 @@ export const CANCEL_ORDER = `${host}/travel/order/user_cancel`
 // 立即支付
 export const WAIT_PAY = `${host}/travel/order/wait_pay`
 
+// 立即支付
+export const WAIT_PAY_FEE = `${host}/travel/order/wait_pay_for_fee`
+
 // 评价司机
 export const EVALUATE = `${host}/travel/driver/evaluate`
 
@@ -177,3 +180,6 @@ export const CREATE_BILL = `${host}/travel/bill/create`
 
 // 统计扫码用户
 export const SCAN_COUNT = `${host}/travel/visit/save`
+
+// 获取欠费订单
+export const GET_FEE_ORDER = `${host}/travel/order/user_fee_order`
