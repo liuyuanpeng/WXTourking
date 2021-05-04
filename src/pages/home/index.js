@@ -211,7 +211,7 @@ class Home extends Component {
           publicity.substring(driverIndex + 7)
         )
         // 跳转接送机下单页面
-        this.gotoAirport()
+        // this.gotoAirport()
       } else {
         if (publicity) {
           Taro.setStorageSync(STORAGE.SOURCE_SHOP_ID, publicity)
@@ -220,7 +220,7 @@ class Home extends Component {
             type: 'user/scanCount',
           })
           // 跳转接送机下单页面
-          this.gotoAirport()
+          // this.gotoAirport()
         }
       }
     }
