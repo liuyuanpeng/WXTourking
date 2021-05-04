@@ -1,6 +1,7 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Image, Label, Swiper, ScrollView } from '@tarojs/components'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 // import '../../common/index.scss'
 import './index.scss'
 
@@ -22,7 +23,9 @@ import CouponItem from '@components/CouponItem'
 import STORAGE from '../../constants/storage'
 import dayjs from 'dayjs'
 
-@connect(({}) => ({}))
+@connect(({order}) => ({
+  data: order.userOrder
+}))
 class Evaluate extends Component {
   config = {
     navigationBarTitleText: '发表评价'
@@ -32,22 +35,12 @@ class Evaluate extends Component {
     rate: 5,
     content: '',
     images: [],
-    data: {},
     showToast: false,
     toast: {
       duration: 3000,
       hasMask: false,
       text: ''
     }
-  }
-
-  componentDidMount() {
-    const eventChannel = this.$scope.getOpenerEventChannel()
-    eventChannel.on('acceptEvaluate', ({ data }) => {
-      this.setState({
-        data
-      })
-    })
   }
 
   handleRate = value => {
@@ -69,9 +62,9 @@ class Evaluate extends Component {
   }
 
   progressEvaluate = image => {
-    const { content, rate, data } = this.state
+    const { content, rate } = this.state
+    const { dispatch, data } = this.props
     const { private_consume, order } = data
-    const { dispatch } = this.props
     const payload = {
       content,
       driver_user_id: order.driver_user_id,
@@ -161,7 +154,9 @@ class Evaluate extends Component {
   }
 
   render() {
-    const { rate, content, images, data, showToast, toast } = this.state
+    const {data} = this.props
+
+    const { rate, content, images, showToast, toast } = this.state
 
     const { chexing = {}, zuowei = {}, private_consume = {}, order = {} } = data
 
@@ -179,14 +174,14 @@ class Evaluate extends Component {
       <View
         className='evaluate-page'
         style={{
-          top: 88 + Taro.$statusBarHeight + 'rpx',
-          height: Taro.$windowHeight - 88 - Taro.$statusBarHeight + 'rpx'
+          top: 88 + window.$statusBarHeight + 'rpx',
+          height: window.$screenHeight - 88 - window.$statusBarHeight + 'rpx'
         }}
       >
         <SysNavBar title='发表评论' />
         <AtToast isOpened={showToast} {...toast}></AtToast>
         <View className='evaluate-header'>
-          {private_consume && private_consume.id ? (
+          {private_consume && !!private_consume.id ? (
             <View className='evaluate-header-normal'>
               <Image
                 className='evaluate-header-image'

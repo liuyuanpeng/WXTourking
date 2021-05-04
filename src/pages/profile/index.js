@@ -1,4 +1,5 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import {
   View,
   Image,
@@ -8,7 +9,7 @@ import {
   ScrollView
 } from '@tarojs/components'
 import NavBar from '@components/NavBar'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 // import '../../common/index.scss'
 import './index.scss'
 
@@ -18,6 +19,7 @@ import SysNavBar from '@components/SysNavBar'
 import { returnFloat } from '@utils/tool'
 import ProfileItem from '@components/ProfileItem'
 import TPickerView from '@components/TPickerView'
+import STORAGE from '@constants/storage'
 
 @connect(({ user }) => ({
   userInfo: user
@@ -68,11 +70,9 @@ class Profile extends Component {
 
   render() {
     const { visible, active } = this.state
-    const app = Taro.getApp()
-    const { wxInfo } = app.globalData
-    const avatarUrl = wxInfo.avatarUrl
-    const nickName = wxInfo.nickName
-    const wxGender = wxInfo.gender
+    const avatarUrl = Taro.getStorageSync(STORAGE.WX_AVATAR)
+    const nickName = Taro.getStorageSync(STORAGE.WX_NICKNAME)
+    const wxGender = 0
 
     const { userInfo } = this.props
     const { name, gender, location, remark } = userInfo
@@ -140,12 +140,12 @@ class Profile extends Component {
     return (
       <View
         className='profile-page'
-        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+        style={{ top: 88 + window.$statusBarHeight + 'rpx' }}
       >
         <SysNavBar title='我的资料' />
         <View className='profile-header'>
           <View className='profile-header-title'>个人头像</View>
-          {avatarUrl && (
+          {!!avatarUrl && (
             <Image
               className='profile-header-image'
               mode='aspectFill'

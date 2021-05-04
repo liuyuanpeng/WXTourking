@@ -1,23 +1,27 @@
 import Taro from '@tarojs/taro'
+import React from 'react'
 import { View } from '@tarojs/components'
 
 import './index.scss'
 
-class CountDown extends Taro.Component {
+class CountDown extends React.Component {
   static defaultProps = {
     counts: 60,
     format: '',
-    onTimeUp: null
+    onTimeUp: null,
+    wrapClass: ''
+  }
+
+  state = {
+    currentCount: 0
   }
 
   constructor(props) {
+    super(props)
     this.state = {
-      // eslint-disable-next-line taro/duplicate-name-of-state-and-props
-      currentCount: props.counts || 0
+      currentCount:  props.counts || 0
     }
   }
-
-  static externalClasses = ['wrap-class']
 
   componentDidMount() {
     this.timer = setInterval(() => {
@@ -41,9 +45,10 @@ class CountDown extends Taro.Component {
   }
 
   render() {
-    const { currentCount, format } = this.props
+    const {currentCount} = this.state
+    const { format, wrapClass } = this.props
     return (
-     <View className='wrap-class'>
+     <View className={wrapClass}>
        {`${currentCount}${format}`}
      </View>
       )

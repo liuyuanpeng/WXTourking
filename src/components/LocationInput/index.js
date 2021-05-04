@@ -1,20 +1,20 @@
 import Taro from '@tarojs/taro'
+import React from 'react'
 import { View } from '@tarojs/components'
 
 
 import './index.scss'
 import { debounce } from 'debounce'
 
-class LocationInput extends Taro.Component {
+class LocationInput extends React.Component {
   static defaultProps = {
     title: '',
     latitude: '',
     longitude: '',
     placeholder: '',
-    onChange: null
+    onChange: null,
+    externalClass: ''
   }
-
-  static externalClasses = ['wrap-class']
 
   handleClick=e=>{
     e.stopPropagation();
@@ -32,9 +32,9 @@ class LocationInput extends Taro.Component {
   }
 
   render() {
-    const { title, placeholder } = this.props
+    const { title, placeholder, externalClass } = this.props
     return (
-      <View className='wrap-class' onClick={debounce(this.handleClick, 100)}>
+      <View className={externalClass} onClick={debounce(this.handleClick, 100)}>
         <View className={`address ${title?'':'placeholder'}`}>{title || placeholder}</View>
       </View>
     )

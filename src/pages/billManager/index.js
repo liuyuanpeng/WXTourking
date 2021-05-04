@@ -1,7 +1,8 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Image, Label, Swiper, ScrollView } from '@tarojs/components'
 import NavBar from '@components/NavBar'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 // import '../../common/index.scss'
 import './index.scss'
 
@@ -78,13 +79,13 @@ class BillManager extends Component {
 
   render() {
     const {total_price, data} = this.props
-    const contentStyle = {height: `${Taro.$windowHeight - 348}rpx`}
-    const scrollStyle = {height: `${Taro.$windowHeight - 712}rpx`}
+    const contentStyle = {height: `${window.$screenHeight - 348}rpx`}
+    const scrollStyle = {height: `${window.$screenHeight - 712}rpx`}
 
     return (
       <View
         className='bill-manager'
-        // style={{ top: Taro.$statusBarHeight + 'rpx' }}
+        // style={{ top: window.$statusBarHeight + 'rpx' }}
       >
         <SysNavBar title='发票管理' transparent />
         <View className='bill-manager-header'>

@@ -1,7 +1,8 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Image, Label, ScrollView, SwiperItem } from '@tarojs/components'
 import NavBar from '@components/NavBar'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 import '../../common/index.scss'
 import './index.scss'
 
@@ -22,7 +23,7 @@ class Address extends Component {
   state = {}
 
   componentWillMount() {
-    if (this.$router.params.mode === 'select') {
+    if (Taro.getCurrentInstance().router.params.mode === 'select') {
       this.selectMode = true
     }
     this.getData()
@@ -69,7 +70,7 @@ class Address extends Component {
   render() {
     const {data} = this.props
     return (
-      <View className='address-page' style={{top: 88 + Taro.$statusBarHeight + 'rpx'}}>
+      <View className='address-page' style={{top: 88 + window.$statusBarHeight + 'rpx'}}>
         <SysNavBar title='我的地址' />
         {data.map((item, index) => (
           <View className='address-item' key={`address-item-${index}`} onClick={this.onSelect.bind(this, item)}>

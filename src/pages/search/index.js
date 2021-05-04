@@ -1,4 +1,5 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import {
   View,
   Image,
@@ -8,7 +9,7 @@ import {
   ScrollView
 } from '@tarojs/components'
 import NavBar from '@components/NavBar'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 // import '../../common/index.scss'
 import './index.scss'
 
@@ -106,11 +107,11 @@ class Search extends Component {
     return (
       <View
         className='search-page'
-        style={{ top: `${Taro.$statusBarHeight + 184}rpx` }}
+        style={{ top: `${window.$statusBarHeight + 204}rpx` }}
       >
         <NavBar opacity={1} title='搜索' showBack />
-        {result && result.length && (
-          <View className='search-result' style={{height: (Taro.$windowHeight - Taro.$statusBarHeight - 204) + 'px'}}>
+        {(result && result.length) ? (
+          <View className='search-result' style={{height: (window.$screenHeight - window.$statusBarHeight - 204) + 'rpx'}}>
             {result.map((item) => (
               <ProductItem
                 onClick={debounce(this.handleProduct.bind(this, item), 100)}
@@ -133,8 +134,8 @@ class Search extends Component {
               />
             ))}
           </View>
-        )}
-        {histories.length && <View className='tag-title'>历史搜索</View>}
+        ) : null}
+        {histories.length ? <View className='tag-title'>历史搜索</View> : null}
         {histories.map((item, index) => (
           <AtTag
             onClick={debounce(this.onSearch.bind(this, item), 100)}

@@ -1,7 +1,8 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Image, Label, Swiper, ScrollView } from '@tarojs/components'
 
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 // import '../../common/index.scss'
 import './index.scss'
 
@@ -38,7 +39,7 @@ class MyBalance extends Component {
     
 
     return (
-      <View className='my-balance-page' style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}>
+      <View className='my-balance-page' style={{ top: 88 + window.$statusBarHeight + 'rpx' }}>
         <SysNavBar title='我的余额' />
         <View className='my-balance-icon' />
         <View className='my-balance-label'>我的余额</View>

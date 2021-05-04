@@ -25,7 +25,7 @@ export function checkLogin() {
     return true
   } else {
     Taro.navigateTo({
-      url: '../../pagesLogin/login/index'
+      url: '../login/index'
     })
     return false
   }

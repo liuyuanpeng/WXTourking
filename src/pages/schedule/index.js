@@ -1,5 +1,6 @@
-import Taro, { PureComponent } from '@tarojs/taro'
-import { connect } from '@tarojs/redux'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { View, ScrollView, Button } from '@tarojs/components'
 import {
   AtTabs,
@@ -9,10 +10,10 @@ import {
   AtModalContent,
   AtModalAction
 } from 'taro-ui'
-import SysNavBar from '@components/SysNavBar'
-import OrderItem from '@components/OrderItem'
 import '../../common/index.scss'
 import './index.scss'
+import SysNavBar from '@components/SysNavBar'
+import OrderItem from '@components/OrderItem'
 import { isLogin } from '../../utils/tool'
 import STORAGE from '../../constants/storage'
 
@@ -22,7 +23,7 @@ import STORAGE from '../../constants/storage'
   xianluOrders: order.xianluOrders,
   payOrders: order.payOrders
 }))
-class Home extends PureComponent {
+class Home extends Component {
   config = {
     navigationBarTitleText: '行程'
   }
@@ -34,16 +35,6 @@ class Home extends PureComponent {
   }
 
   componentDidShow() {
-    if (
-      Taro.getEnv() === Taro.ENV_TYPE.WEAPP &&
-      typeof this.$scope.getTabBar === 'function' &&
-      this.$scope.getTabBar()
-    ) {
-      this.$scope.getTabBar().$component.setState({
-        selected: 2
-      })
-    }
-
     if (!isLogin()) {
       return
     }
@@ -52,8 +43,8 @@ class Home extends PureComponent {
     current >= 0 && this.setState({
       current
     })
-    current = this.state.current
-    Taro.setStorageSync(STORAGE.SWITCH_INDEX, -1)
+    current = this.state.current || 0
+    Taro.setStorageSync(STORAGE.SWITCH_INDEX, 0)
     let scene
     switch (current) {
       case 0:
@@ -145,7 +136,7 @@ class Home extends PureComponent {
     ]
 
     const scrollStyle = {
-      height: `${Taro.$windowHeight - Taro.$statusBarHeight - 88 - 88 - 100}rpx`
+      height: `${window.$windowHeight - window.$statusBarHeight - 88 - 88}rpx`
     }
 
     const { current, showModal, modalMsg } = this.state
@@ -153,7 +144,7 @@ class Home extends PureComponent {
     return (
       <View
         className='schedule-page'
-        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+        style={{ top: 88 + window.$statusBarHeight + 'rpx' }}
       >
         <SysNavBar title='行程' hideBack />
         <View className='schedule-tabs'>

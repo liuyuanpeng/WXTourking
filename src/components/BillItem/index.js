@@ -1,15 +1,17 @@
 import Taro from '@tarojs/taro'
+import React from 'react'
 import { View, Image, Label } from '@tarojs/components'
 import dayjs from 'dayjs'
 import CheckBox from '../CheckBox'
 import ORDER_TYPE from '@constants/types'
 
 import './index.scss'
+import styles from './index.module.scss'
 
 const carPng = IMAGE_HOST + '/images/car.png'
 const giftPng = IMAGE_HOST + '/images/gift.png'
 
-class BillItem extends Taro.Component {
+class BillItem extends React.Component {
   static defaultProps = {
     chexing: {},
     zuowei: {},
@@ -17,16 +19,23 @@ class BillItem extends Taro.Component {
     private_consume: {},
     canCheck: false,
     checked: false,
-    onCheck: null
+    onCheck: null,
   }
 
-  onChange = checked => {
-    const {onCheck} = this.props
+  onChange = (checked) => {
+    const { onCheck } = this.props
     onCheck && onCheck(checked)
   }
 
   render() {
-    const { chexing, zuowei, order, private_consume, canCheck, checked } = this.props
+    const {
+      chexing,
+      zuowei,
+      order,
+      private_consume,
+      canCheck,
+      checked,
+    } = this.props
     const type = ORDER_TYPE[order.scene]
     let image
     if (private_consume && private_consume.images) {
@@ -34,65 +43,82 @@ class BillItem extends Taro.Component {
     }
     return (
       <View className='bill-item'>
-        {canCheck && <CheckBox wrap-class='bill-item-check' onChange={this.onChange} checked={checked} />}
+        {canCheck ? (
+          <CheckBox
+            wrapClass={styles.billItemCheck}
+            onChange={this.onChange}
+            checked={checked}
+          />
+        ) : null}
         <View className={canCheck ? 'bill-item-right' : ''}>
-        <Image
-          className='bill-item-icon'
-          src={type === '伴手礼' ? giftPng : carPng}
-          mode='aspectFill'
-        />
-        <View className='bill-item-type-text'>{type}</View>
-    <View className='bill-item-status-text'>{canCheck ? '可开具' : '已开具'}</View>
-        {!private_consume || !private_consume.id ? (
-          <View className='bill-normal'>
-            <View className='bill-normal-title'>{`${order.start_place}-${order.target_place}`}</View>
-            {type==='按天包车' && (
-              <View className='bill-normal-text'>{`包车天数: ${order.day || 0}天`}</View>
-            )}
-            <View className='bill-normal-text'>{`用车时间:${dayjs(
-              order.start_time
-            ).format('YYYY-MM-DD')}`}</View>
-            <View className='bill-normal-text'>
-              {`车型:${chexing.name}${zuowei.name}座`}
-            </View>
-            <View className='bill-price'>
-              {canCheck ? '合计' : '发票金额'}
-              <Label className='bill-price-total'>{`￥ ${order.price}`}</Label>
-            </View>
+          <Image
+            className='bill-item-icon'
+            src={type === '伴手礼' ? giftPng : carPng}
+            mode='aspectFill'
+          />
+          <View className='bill-item-type-text'>{type}</View>
+          <View className='bill-item-status-text'>
+            {canCheck ? '可开具' : '已开具'}
           </View>
-        ) : (
-          <View className='bill-template'>
-            <Image
-              className='bill-template-image'
-              src={image}
-              mode='aspectFill'
-            />
-            <View className='bill-template-detail'>
-              <View className='bill-template-title'>
-                {private_consume.name}
+          {!private_consume || !private_consume.id ? (
+            <View className='bill-normal'>
+              <View className='bill-normal-title'>{`${order.start_place}-${order.target_place}`}</View>
+              {type === '按天包车' ? (
+                <View className='bill-normal-text'>{`包车天数: ${order.day ||
+                  0}天`}</View>
+              ) : null}
+              <View className='bill-normal-text'>{`用车时间:${dayjs(
+                order.start_time
+              ).format('YYYY-MM-DD')}`}</View>
+              <View className='bill-normal-text'>
+                {`车型:${chexing ? chexing.name : ''}${zuowei? zuowei.name : ''}座`}
               </View>
-              {type === '按天包车' && (
-                <View className='bill-template-text'>{`包车天数: ${order.day || 0}天`}</View>
-              )}
-              {type==='伴手礼' && (
-                <View className='bill-template-text'>{`商品数量: x${order.count || 1}`}</View>
-              )}
-              <View className='bill-template-text'>
-                {type === '伴手礼' ? `下单时间: ${dayjs(order.create_time).format('YYYY-MM-DD')}` : `用车时间: ${dayjs(order.start_time).format('YYYY-MM-DD')}`}
-                {``}
+              <View className='bill-price'>
+                {canCheck ? '合计' : '发票金额'}
+                <Label className='bill-price-total'>{`￥ ${order.price}`}</Label>
               </View>
-              {type !== '伴手礼' && (
-              <View className='bill-template-text'>{`车型: ${chexing.name || ''}${zuowei.name|| ''}座`}</View>
-            )}
             </View>
-            
-            <View className='bill-price'>
-              
-            {canCheck ? '合计' : '发票金额'}
-              <Label className='bill-price-total'>{`￥ ${order.price}`}</Label>
+          ) : (
+            <View className='bill-template'>
+              <Image
+                className='bill-template-image'
+                src={image}
+                mode='aspectFill'
+              />
+              <View className='bill-template-detail'>
+                <View className='bill-template-title'>
+                  {private_consume ? private_consume.name : ''}
+                </View>
+                {type === '按天包车' ? (
+                  <View className='bill-template-text'>{`包车天数: ${order.day ||
+                    0}天`}</View>
+                ) : null}
+                {type === '伴手礼' ? (
+                  <View className='bill-template-text'>{`商品数量: x${order.count ||
+                    1}`}</View>
+                ) : null}
+                <View className='bill-template-text'>
+                  {type === '伴手礼'
+                    ? `下单时间: ${dayjs(order.create_time).format(
+                        'YYYY-MM-DD'
+                      )}`
+                    : `用车时间: ${dayjs(order.start_time).format(
+                        'YYYY-MM-DD'
+                      )}`}
+                  {``}
+                </View>
+                {type !== '伴手礼' && chexing ? (
+                  <View className='bill-template-text'>{`车型: ${chexing ? chexing.name :
+                    ''}${zuowei ? zuowei.name : ''}座`}</View>
+                ) : null}
+              </View>
+
+              <View className='bill-price'>
+                {canCheck ? '合计' : '发票金额'}
+                <Label className='bill-price-total'>{`￥ ${order.price}`}</Label>
+              </View>
             </View>
-          </View>
-        )}
+          )}
         </View>
       </View>
     )

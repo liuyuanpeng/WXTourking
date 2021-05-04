@@ -1,4 +1,5 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import {
   View,
   Image,
@@ -7,7 +8,7 @@ import {
   SwiperItem,
   ScrollView
 } from '@tarojs/components'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 import './index.scss'
 
 const safe_png = IMAGE_HOST + '/images/safe.png'
@@ -59,11 +60,11 @@ class Comments extends Component {
     const {comments=[]} = this.props
     
     const scrollStyle = {
-      height: `${Taro.$windowHeight - Taro.$statusBarHeight - 88}rpx`
+      height: `${window.$screenHeight - window.$statusBarHeight - 88}rpx`
     }
 
     return (
-      <View className='comments-page' style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}>
+      <View className='comments-page' style={{ top: 88 + window.$statusBarHeight + 'rpx' }}>
         <SysNavBar title='全部评论' />
         {/* <View className='tags-container'>
           {tagList.map((item, index)=>(

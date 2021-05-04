@@ -1,9 +1,10 @@
 import Taro from '@tarojs/taro'
+import React from 'react'
 import { View } from '@tarojs/components'
 
 import './index.scss'
 
-class ModalView extends Taro.Component {
+class ModalView extends React.Component {
   static defaultProps = {
     visible: false,
     onClose: null

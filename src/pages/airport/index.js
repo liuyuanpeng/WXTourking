@@ -1,8 +1,10 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Image, ScrollView } from '@tarojs/components'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 // import '../../common/index.scss'
 import './index.scss'
+import styles from './index.module.scss'
 
 const service_assurance_png = IMAGE_HOST + '/images/service_assurance.png'
 const precious_png = IMAGE_HOST + '/images/precious.png'
@@ -12,11 +14,11 @@ const safe_png = IMAGE_HOST + '/images/safe.png'
 import { AtInput } from 'taro-ui'
 import SysNavBar from '@components/SysNavBar'
 import { returnFloat } from '@utils/tool'
-import SwitchButton from '@components/SwitchButton'
-import dayjs from 'dayjs'
-import LocationInput from '@components/LocationInput'
-import DateTimePicker from '@components/DateTimePicker'
 import CheckBox from '@components/CheckBox'
+import SwitchButton from '@components/SwitchButton'
+import DateTimePicker from '@components/DateTimePicker'
+import LocationInput from '@components/LocationInput'
+import dayjs from 'dayjs'
 
 import QQMapWX from '../utilPages/location/qqmap'
 import { debounce } from 'debounce'
@@ -24,11 +26,11 @@ import { debounce } from 'debounce'
 let qqMapSDK = null
 
 @connect(({ city }) => ({
-  currentCity: city.current
+  currentCity: city.current,
 }))
 class JSJPage extends Component {
   config = {
-    navigationBarTitleText: '接送机'
+    navigationBarTitleText: '接送机',
   }
 
   state = {
@@ -40,12 +42,12 @@ class JSJPage extends Component {
     backCheck: false,
     start_place_back: { title: '' },
     target_place_back: { title: '' },
-    start_time_back: dayjs().add(5, 'm')
+    start_time_back: dayjs().add(5, 'm'),
   }
 
-  handleTypeChange = value => {
+  handleTypeChange = (value) => {
     this.setState({
-      isSJ: value
+      isSJ: value,
     })
   }
 
@@ -53,9 +55,9 @@ class JSJPage extends Component {
 
   componentDidMount() {}
 
-  handleStartPlace = location => {
+  handleStartPlace = (location) => {
     this.setState({
-      start_place: location
+      start_place: location,
     })
     const { target_place } = this.state
     if (
@@ -66,16 +68,16 @@ class JSJPage extends Component {
     ) {
       this.getDistance({
         from: location.latitude + ',' + location.longitude,
-        to: target_place.latitude + ',' + target_place.longitude
+        to: target_place.latitude + ',' + target_place.longitude,
       })
     }
   }
 
-  handleTargetPlace = location => {
+  handleTargetPlace = (location) => {
     this.setState({
-      target_place: location
+      target_place: location,
     })
-    const {start_place} = this.state
+    const { start_place } = this.state
     if (
       location.latitude &&
       location.longitude &&
@@ -84,54 +86,54 @@ class JSJPage extends Component {
     ) {
       this.getDistance({
         from: start_place.latitude + ',' + start_place.longitude,
-        to: location.latitude + ',' + location.longitude
+        to: location.latitude + ',' + location.longitude,
       })
     }
   }
 
-  handleStartPlaceBack = location => {
+  handleStartPlaceBack = (location) => {
     this.setState({
-      start_place_back: location
+      start_place_back: location,
     })
   }
 
-  handleTargetPlaceBack = location => {
+  handleTargetPlaceBack = (location) => {
     this.setState({
-      target_place_back: location
+      target_place_back: location,
     })
   }
 
-  handleStartTime = time => {
+  handleStartTime = (time) => {
     this.setState({
-      start_time: time
+      start_time: time,
     })
   }
 
-  handleStartTimeBack = time => {
+  handleStartTimeBack = (time) => {
     this.setState({
-      start_time_back: time
+      start_time_back: time,
     })
   }
 
-  handleFlyChange = value => {
+  handleFlyChange = (value) => {
     this.setState({
-      fly: value
+      fly: value,
     })
   }
 
-  handleBackCheck = bCheck => {
+  handleBackCheck = (bCheck) => {
     this.setState({
-      backCheck: bCheck
+      backCheck: bCheck,
     })
   }
 
-  handleOrder = e => {
+  handleOrder = (e) => {
     e.stopPropagation()
   }
 
-  getDistance = params => {
+  getDistance = (params) => {
     qqMapSDK = new QQMapWX({
-      key: 'JTKBZ-LCG6U-GYOVE-BJMJ5-E3DA5-HTFAJ' // 必填
+      key: 'JTKBZ-LCG6U-GYOVE-BJMJ5-E3DA5-HTFAJ', // 必填
     })
     const { from, to } = params
     qqMapSDK.calculateDistance({
@@ -148,11 +150,11 @@ class JSJPage extends Component {
       },
       fail: function(error) {
         console.error(error)
-      }
+      },
     })
   }
 
-  handleOK = e => {
+  handleOK = (e) => {
     e.stopPropagation()
     const {
       backCheck,
@@ -163,7 +165,7 @@ class JSJPage extends Component {
       target_place_back,
       start_time,
       start_time_back,
-      fly
+      fly,
     } = this.state
     let msg
     if (!start_place.title) {
@@ -184,7 +186,7 @@ class JSJPage extends Component {
     if (msg) {
       Taro.showToast({
         title: msg,
-        icon: 'none'
+        icon: 'none',
       })
       return
     }
@@ -195,13 +197,13 @@ class JSJPage extends Component {
       payload: {
         params: {
           scene: isSJ ? 'SONGJI' : 'JIEJI',
-          city_id: currentCity.id
-        }
+          city_id: currentCity.id,
+        },
       },
       success: () => {
         Taro.navigateTo({
           url: '../carType/index',
-          success: res => {
+          success: (res) => {
             res.eventChannel.emit('acceptData', {
               start_place,
               target_place,
@@ -209,17 +211,17 @@ class JSJPage extends Component {
               fly: isSJ ? '' : fly,
               scene: isSJ ? 'SONGJI' : 'JIEJI',
               kilo: this.distance,
-              time: this.duration
+              time: this.duration,
             })
-          }
+          },
         })
       },
       fail: () => {
         Taro.showToast({
           title: '获取用车服务失败',
-          icon: 'none'
+          icon: 'none',
         })
-      }
+      },
     })
   }
 
@@ -233,21 +235,21 @@ class JSJPage extends Component {
       start_place_back,
       target_place_back,
       start_time_back,
-      backCheck
+      backCheck,
     } = this.state
     const ensures = [
       {
         icon: service_assurance_png,
         title: '服务保障',
-        subtitle: '7x24小时客服贴心服务'
+        subtitle: '7x24小时客服贴心服务',
       },
       { icon: precious_png, title: '价格优选', subtitle: '一口模式拒绝绕路' },
       { icon: free_waiting_png, title: '免费等待', subtitle: '免费等待30分钟' },
-      { icon: safe_png, title: '出行安心', subtitle: '百万保险&爽约包赔' }
+      { icon: safe_png, title: '出行安心', subtitle: '百万保险&爽约包赔' },
     ]
 
     const scrollStyle = {
-      height: `${Taro.$windowHeight - 434}rpx`
+      height: `${window.$screenHeight - 334}rpx`,
     }
 
     return (
@@ -255,11 +257,7 @@ class JSJPage extends Component {
         <SysNavBar title='' transparent />
         <View className='JSJ-page-bkg' />
         <View className='JSJ-page-container'>
-          <SwitchButton
-            wrap-class='switch-btn'
-            isRight={isSJ}
-            onChange={this.handleTypeChange}
-          />
+          <SwitchButton isRight={isSJ} onChange={this.handleTypeChange} />
           <ScrollView
             className='scroll-view'
             scrollY
@@ -272,7 +270,7 @@ class JSJPage extends Component {
                   {isSJ ? '上车地点' : '机场/火车站'}
                 </View>
                 <LocationInput
-                  wrap-class='JSJ-content-item-value'
+                  externalClass={styles.JSJ_content_item_value}
                   title={start_place.title}
                   onChange={this.handleStartPlace}
                   placeholder='请选择上车地点'
@@ -281,7 +279,7 @@ class JSJPage extends Component {
               <View className='JSJ-content-item'>
                 <View className='JSJ-content-item-label'>送达地点</View>
                 <LocationInput
-                  wrap-class='JSJ-content-item-value'
+                  externalClass={styles.JSJ_content_item_value}
                   title={target_place.title}
                   onChange={this.handleTargetPlace}
                   placeholder='请选择下车地点'
@@ -290,9 +288,7 @@ class JSJPage extends Component {
               <View className='JSJ-content-item'>
                 <View className='JSJ-content-item-label'>用车时间</View>
                 <DateTimePicker
-                  wrap-class='JSJ-content-item-value'
-                  selected-item-day-extern='JSJ-content-item-time-day'
-                  selected-item-week-extern='JSJ-content-item-week-day'
+                  wrapClass={styles.JSJ_content_item_value}
                   onOk={this.handleStartTime}
                   initValue={start_time}
                   hidePassed
@@ -307,6 +303,7 @@ class JSJPage extends Component {
                       className='JSJ-content-item-value'
                       onChange={this.handleFlyChange}
                       value={fly}
+                      name='JSJ-content-item-input-fly'
                       placeholder='请填写航班号'
                     />
                   </View>
@@ -323,7 +320,7 @@ class JSJPage extends Component {
                       <View className='JSJ-content-item'>
                         <View className='JSJ-content-item-label'>上车地点</View>
                         <LocationInput
-                          wrap-class='JSJ-content-item-value'
+                          externalClass={styles.JSJ_content_item_value}
                           title={start_place_back.title}
                           onChange={this.handleStartPlaceBack}
                           placeholder='请选择上车地点'
@@ -332,7 +329,7 @@ class JSJPage extends Component {
                       <View className='JSJ-content-item'>
                         <View className='JSJ-content-item-label'>送达地点</View>
                         <LocationInput
-                          wrap-class='JSJ-content-item-value'
+                          externalClass={styles.JSJ_content_item_value}
                           title={target_place_back.title}
                           onChange={this.handleStartPlaceBack}
                           placeholder='请选择下车地点'
@@ -341,7 +338,7 @@ class JSJPage extends Component {
                       <View className='JSJ-content-item'>
                         <View className='JSJ-content-item-label'>用车时间</View>
                         <DateTimePicker
-                          wrap-class='JSJ-content-item-value'
+                          wrapClass={styles.JSJ_content_item_value}
                           selected-item-day-extern='JSJ-content-item-time-day'
                           selected-item-week-extern='JSJ-content-item-week-day'
                           onOk={this.handleStartTimeBack}
@@ -354,7 +351,10 @@ class JSJPage extends Component {
                   )}
                 </View>
               )}
-              <View className='JSJ-content-button' onClick={debounce(this.handleOK, 100)}>
+              <View
+                className='JSJ-content-button'
+                onClick={debounce(this.handleOK, 100)}
+              >
                 立即预约
               </View>
               <View className='JSJ-content-ensure'>

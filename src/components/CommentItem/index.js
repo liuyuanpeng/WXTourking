@@ -1,11 +1,12 @@
 import Taro from '@tarojs/taro'
+import React from 'react'
 import { View, Image } from '@tarojs/components'
 
 import './index.scss'
 import { AtRate, AtIcon } from 'taro-ui'
 import dayjs from 'dayjs'
 
-class CommentItem extends Taro.Component {
+class CommentItem extends React.Component {
   static defaultProps = {
     name: '',
     stars: 0,
@@ -29,12 +30,12 @@ class CommentItem extends Taro.Component {
         </View>
         <View className='comment-header'>
           <View className='name'>{name}</View>
-          {stars && <AtRate size={11} className='stars' value={stars} />}
+          {stars ? <AtRate size={11} className='stars' value={stars} /> : null}
         </View>
 
         <View className='comment'>{comment}</View>
         <View className='images'>
-          {images &&
+          {images ?
             images.map((item, index) => (
               <Image
                 className='image'
@@ -42,7 +43,7 @@ class CommentItem extends Taro.Component {
                 src={item}
                 mode='aspectFill'
               />
-            ))}
+            )) : null}
         </View>
         <View className='tail' />
       </View>

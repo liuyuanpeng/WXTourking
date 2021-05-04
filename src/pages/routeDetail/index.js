@@ -1,4 +1,5 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import {
   View,
   Image,
@@ -7,13 +8,13 @@ import {
   SwiperItem,
   Text
 } from '@tarojs/components'
-import SysNavBar from '@components/SysNavBar'
-import { connect } from '@tarojs/redux'
 import '../../common/index.scss'
+import CommentItem from '@components/CommentItem'
+import SysNavBar from '@components/SysNavBar'
+import { connect } from 'react-redux'
 import './index.scss'
 
 import { AtDivider, AtTabs } from 'taro-ui'
-import CommentItem from '@components/CommentItem'
 import { debounce } from 'debounce'
 
 @connect(({ city, evaluate }) => ({
@@ -39,7 +40,7 @@ class ProductDetail extends Component {
   }
 
   componentDidMount() {
-    const id = this.$router.params.id
+    const id = Taro.getCurrentInstance().router.params.id
     if (id) {
       this.props.dispatch({
         type: 'product/getProduct',
@@ -70,7 +71,7 @@ class ProductDetail extends Component {
       })
       return
     }
-    const eventChannel = this.$scope.getOpenerEventChannel()
+    const eventChannel = Taro.getCurrentInstance().page.getOpenerEventChannel()
     eventChannel.on('roadData', detail => {
       this.setState({
         detail
@@ -192,7 +193,7 @@ class ProductDetail extends Component {
     const { detail } = this.state
     const { private_consume = {}, roads = [], car_levels = [] } = detail
     const carLevel = car_levels[0] || {}
-    const { chexing, zuowei } = carLevel
+    const { chexing={}, zuowei={} } = carLevel
     let banner
     let banners
     try {

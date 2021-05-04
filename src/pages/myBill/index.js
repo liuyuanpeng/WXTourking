@@ -1,9 +1,11 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Image, Label, Swiper, ScrollView } from '@tarojs/components'
 import NavBar from '@components/NavBar'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 // import '../../common/index.scss'
 import './index.scss'
+import styles from './index.module.scss'
 
 import {
   AtCheckbox,
@@ -52,7 +54,7 @@ class MyBill extends Component {
   }
 
   componentDidMount() {
-    const current = parseInt(this.$router.params.index || 0)
+    const current = parseInt(Taro.getCurrentInstance().router.params.index || 0)
     this.setState({
       current
     })
@@ -147,8 +149,8 @@ class MyBill extends Component {
     const { billOrders, finishBillOrders } = this.props
 
     const scrollStyle = {
-      height: `${Taro.$windowHeight -
-        Taro.$statusBarHeight -
+      height: `${window.$screenHeight -
+        window.$statusBarHeight -
         88 -
         88 -
         140 -
@@ -156,13 +158,13 @@ class MyBill extends Component {
     }
 
     const scrollStyle2 = {
-      height: `${Taro.$windowHeight - Taro.$statusBarHeight - 88 - 88}rpx`
+      height: `${window.$screenHeight - window.$statusBarHeight - 88 - 88}rpx`
     }
 
     return (
       <View
         className='all-bill-page'
-        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+        style={{ top: 88 + window.$statusBarHeight + 'rpx' }}
       >
         <SysNavBar title='我的发票' />
         <View className='all-bill-tabs'>
@@ -185,7 +187,7 @@ class MyBill extends Component {
                   )
                 })}
               </ScrollView>
-              {checks.length && (
+              {checks.length > 0 && (
                 <View className='bill-tip'>
                   共选择
                   <Label className='bill-tip-yellow'>{checks.length}</Label>
@@ -195,7 +197,7 @@ class MyBill extends Component {
               )}
               <View className='bill-bottom'>
                 <CheckBox
-                  wrap-class='bill-all-check'
+                  wrapClass={styles.billAllCheck}
                   checked={allCheck}
                   onChange={this.onAllCheck}
                   title='本页全选'

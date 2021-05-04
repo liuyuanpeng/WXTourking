@@ -1,15 +1,17 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import {
   View,
   Label,
   Text,
   ScrollView,
   Image,
-  Button
+  Button,
 } from '@tarojs/components'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 // import '../../common/index.scss'
 import './index.scss'
+import styles from './index.module.scss'
 
 import CommentItem from '@components/CommentItem'
 import SysNavBar from '@components/SysNavBar'
@@ -20,18 +22,18 @@ import PopView from '@components/PopView'
 import dayjs from 'dayjs'
 import { AtInput, AtModal } from 'taro-ui'
 import STORAGE from '@constants/storage'
-import LocationInput from '@components/LocationInput'
 import DateTimePicker from '@components/DateTimePicker'
+import LocationInput from '@components/LocationInput'
 import { debounce } from 'debounce'
 import { checkLogin, isLogin } from '../../utils/tool'
 
 @connect(({ city, coupon }) => ({
   currentCity: city.current,
-  usableList: coupon.usableList
+  usableList: coupon.usableList,
 }))
 class CarType extends Component {
   config = {
-    navigationBarTitleText: '填写订单'
+    navigationBarTitleText: '填写订单',
   }
 
   state = {
@@ -44,7 +46,7 @@ class CarType extends Component {
     startPlace: { title: '' },
     startTime: dayjs().add(5, 'm'),
     coupon: '',
-    showTip: false
+    showTip: false,
   }
 
   componentDidShow() {
@@ -55,17 +57,17 @@ class CarType extends Component {
         type: 'coupon/getUsableCoupon',
         payload: {
           price: price || 0,
-          user_id: Taro.getStorageSync(STORAGE.USER_ID)
-        }
+          user_id: Taro.getStorageSync(STORAGE.USER_ID),
+        },
       })
     }
   }
 
   componentDidMount() {
-    const eventChannel = this.$scope.getOpenerEventChannel()
-    eventChannel.on('orderData', data => {
+    const eventChannel = Taro.getCurrentInstance().page.getOpenerEventChannel()
+    eventChannel.on('orderData', (data) => {
       this.setState({
-        order: data
+        order: data,
       })
     })
 
@@ -76,72 +78,72 @@ class CarType extends Component {
     this.setState({
       name,
       phoneNum,
-      phoneNumBackup
+      phoneNumBackup,
     })
   }
 
-  handleOK = e => {
+  handleOK = (e) => {
     e.stopPropagation()
   }
 
   showScheduleDetail = (visible = true) => {
     this.setState({
-      visible
+      visible,
     })
   }
 
-  onChangeName = name => {
+  onChangeName = (name) => {
     this.setState({
-      name
+      name,
     })
   }
 
-  onChangePhone = phone => {
+  onChangePhone = (phone) => {
     this.setState({
-      phoneNum: phone
+      phoneNum: phone,
     })
   }
 
-  onChangePhoneBackup = phone => {
+  onChangePhoneBackup = (phone) => {
     this.setState({
-      phoneNumBackup: phone
+      phoneNumBackup: phone,
     })
   }
 
-  goToCoupon = e => {
+  goToCoupon = (e) => {
     e.stopPropagation()
     if (checkLogin()) {
       Taro.navigateTo({
         url: '../coupon/index?canEdit=true&price=' + this.state.order.price,
         events: {
-          acceptCoupon: coupon => {
+          acceptCoupon: (coupon) => {
             this.setState({
-              coupon
+              coupon,
             })
-          }
-        }
+          },
+        },
       })
     }
   }
 
-  handleChat = e => {
+  handleChat = (e) => {
     e.stopPropagation()
   }
 
-  handlePhone = e => {
+  handlePhone = (e) => {
     e.stopPropagation()
     Taro.makePhoneCall({
-      phoneNumber: '0592-5550907'
+      phoneNumber: '0592-5550907',
     })
   }
 
   showDetail = (detailVisible = true) => {
     this.setState({
-      detailVisible
+      detailVisible,
     })
   }
 
-  handlePay = e => {
+  handlePay = (e) => {
     e.stopPropagation()
     if (!checkLogin()) {
       return
@@ -153,7 +155,7 @@ class CarType extends Component {
       order,
       startPlace,
       startTime,
-      coupon
+      coupon,
     } = this.state
 
     const { currentCity } = this.props
@@ -172,7 +174,7 @@ class CarType extends Component {
       consume = {},
       price,
       days = 1,
-      private_consume = {}
+      private_consume = {},
     } = order
     let msg = ''
     const regex = /^(13|14|15|16|17|18|19)\d{9}$/
@@ -195,7 +197,7 @@ class CarType extends Component {
     if (msg) {
       Taro.showToast({
         title: msg,
-        icon: 'none'
+        icon: 'none',
       })
       return
     }
@@ -228,7 +230,7 @@ class CarType extends Component {
       order_source: 'USER',
       consume_id: consume.id || '',
       username: name || '',
-      private_consume_id: private_consume.id || ''
+      private_consume_id: private_consume.id || '',
     }
     if (scene === 'ROAD_PRIVATE') {
       payload.start_time = startTime.valueOf()
@@ -258,7 +260,7 @@ class CarType extends Component {
     this.props.dispatch({
       type: 'order/createOrder',
       payload,
-      success: result => {
+      success: (result) => {
         // 存储手机号和用户名
         Taro.setStorageSync(STORAGE.ORDER_USER_NAME, name)
         Taro.setStorageSync(STORAGE.ORDER_USER_MOBILE, phoneNum)
@@ -271,7 +273,7 @@ class CarType extends Component {
           this.props.dispatch({
             type: 'order/confirmUserOrder',
             payload: {
-              id: result.id
+              id: result.id,
             },
             success: () => {
               this.props.dispatch({
@@ -282,11 +284,11 @@ class CarType extends Component {
                   chexing,
                   zuowei,
                   consume,
-                  private_consume
+                  private_consume,
                 },
                 success: () => {
                   Taro.navigateTo({
-                    url: '../orderStatus/index?goHome=true'
+                    url: '../orderStatus/index?goHome=true',
                   })
                 },
                 fail: () => {
@@ -297,18 +299,17 @@ class CarType extends Component {
                       chexing,
                       zuowei,
                       consume,
-                      private_consume
+                      private_consume,
                     },
                     success: () => {
                       Taro.navigateTo({
-                        url: '../orderStatus/index?goHome=true'
+                        url: '../orderStatus/index?goHome=true',
                       })
-                    }
+                    },
                   })
-                }
+                },
               })
-            }
-
+            },
           })
         } else {
           // 拉起支付
@@ -323,17 +324,21 @@ class CarType extends Component {
                 type: 'order/setUserOrder',
                 payload: {
                   // 付款成功修改订单状态
-                  order: { ...result, order_status: 'WAIT_ACCEPT', has_pay: true },
+                  order: {
+                    ...result,
+                    order_status: 'WAIT_ACCEPT',
+                    has_pay: true,
+                  },
                   chexing,
                   zuowei,
                   consume,
-                  private_consume
+                  private_consume,
                 },
                 success: () => {
                   Taro.navigateTo({
-                    url: '../orderStatus/index?goHome=true'
+                    url: '../orderStatus/index?goHome=true',
                   })
-                }
+                },
               })
             },
             fail: () => {
@@ -344,42 +349,42 @@ class CarType extends Component {
                   chexing,
                   zuowei,
                   consume,
-                  private_consume
+                  private_consume,
                 },
                 success: () => {
                   Taro.navigateTo({
-                    url: '../orderStatus/index?goHome=true'
+                    url: '../orderStatus/index?goHome=true',
                   })
-                }
+                },
               })
-            }
+            },
           })
         }
       },
-      fail: message => {
+      fail: (message) => {
         if (message === 'no_pay') {
           this.setState({
-            showTip: true
+            showTip: true,
           })
           return
         }
         Taro.showToast({
           title: message || '创建订单失败',
-          icon: 'none'
+          icon: 'none',
         })
-      }
+      },
     })
   }
 
-  handleLocationChange = location => {
+  handleLocationChange = (location) => {
     this.setState({
-      startPlace: location
+      startPlace: location,
     })
   }
 
-  handleChangeTime = value => {
+  handleChangeTime = (value) => {
     this.setState({
-      startTime: value
+      startTime: value,
     })
   }
 
@@ -392,7 +397,7 @@ class CarType extends Component {
             key={`route-detail-item-${index}`}
           >
             <View className='route-detail-item-title'>{item.title}</View>
-            {item.subtitle && (
+            {!!item.subtitle && (
               <Text className='route-detail-item-subtitle'>
                 {item.subtitle}
               </Text>
@@ -407,7 +412,7 @@ class CarType extends Component {
                     <Label className='route-detail-item-subtitles-title'>
                       {subtitle.title}
                     </Label>
-                    {subtitle.tip && (
+                    {!!subtitle.tip && (
                       <Label className='route-detail-item-subtitles-tip'>
                         {subtitle.tip}
                       </Label>
@@ -428,13 +433,13 @@ class CarType extends Component {
     this.handleClose()
     Taro.setStorageSync(STORAGE.SWITCH_INDEX, 3)
     Taro.switchTab({
-      url: '../schedule/index'
+      url: '../schedule/index',
     })
   }
 
   handleClose = () => {
     this.setState({
-      showTip: false
+      showTip: false,
     })
   }
 
@@ -449,7 +454,7 @@ class CarType extends Component {
       startPlace,
       startTime,
       coupon,
-      showTip
+      showTip,
     } = this.state
 
     const {
@@ -459,7 +464,7 @@ class CarType extends Component {
       zuowei = {},
       price = 0,
       private_consume = {},
-      scene
+      scene,
     } = order
 
     let productImg
@@ -478,26 +483,27 @@ class CarType extends Component {
       {
         title: '平台保障',
         subtitle:
-          '您在旅行过程中遇到任何问题都可以联系客服进行解决，旅王平台会全程监控车导师傅的服务情况，为您完成服务后才会将订单款项支付给车导师傅。旅王出行希望能给您带来最纯粹的当地体验和最安全的出行服务。'
+          '您在旅行过程中遇到任何问题都可以联系客服进行解决，旅王平台会全程监控车导师傅的服务情况，为您完成服务后才会将订单款项支付给车导师傅。旅王出行希望能给您带来最纯粹的当地体验和最安全的出行服务。',
       },
       {
         title: '费用说明',
-        subtitle: '包含车费、高速费、车导工资，不包含门票费用、早午餐自理'
+        subtitle: '包含车费、高速费、车导工资，不包含门票费用、早午餐自理',
       },
       {
         title: '取消规则',
         subtitle:
-          '订单支付后到出行前24小时取消免费。如因不可抗力原因（包括自然灾害、社会时间、航班取消等非人为因素）造成订单取消或者旅王出行车导师傅不能服务时，取消免费。订单支付后到出行前12小时取消 收取违约金30%，订单支付后到出行前6小时取消 收取违约金50%，出行前6小时取消收取违约金100%'
+          '订单支付后到出行前24小时取消免费。如因不可抗力原因（包括自然灾害、社会时间、航班取消等非人为因素）造成订单取消或者旅王出行车导师傅不能服务时，取消免费。订单支付后到出行前12小时取消 收取违约金30%，订单支付后到出行前6小时取消 收取违约金50%，出行前6小时取消收取违约金100%',
       },
       {
         title: '更改规则',
         subtitle:
-          '订单支付后，只可修改联系人姓名和联系方式。如果需要更改服务时间、人数、车型、包车方式等信息，您需要取消原订单后重新下单支付，重新下单价格可能会出现浮动（价格受节假日和急单预定时间等因素影响）。'
+          '订单支付后，只可修改联系人姓名和联系方式。如果需要更改服务时间、人数、车型、包车方式等信息，您需要取消原订单后重新下单支付，重新下单价格可能会出现浮动（价格受节假日和急单预定时间等因素影响）。',
       },
       {
         title: '电子发票',
-        subtitle: '订单完成后，可联系客服申请电子发票，每个订单仅可开一次发票。'
-      }
+        subtitle:
+          '订单完成后，可联系客服申请电子发票，每个订单仅可开一次发票。',
+      },
     ]
 
     const scheduleDetail = [
@@ -506,24 +512,24 @@ class CarType extends Component {
         subtitles: [
           {
             title: '免费等待30分钟',
-            subtitle: '从航班实际降落后开始时间计算，免费等待30分钟'
-          }
-        ]
+            subtitle: '从航班实际降落后开始时间计算，免费等待30分钟',
+          },
+        ],
       },
       {
         title: '取消规则',
         subtitle:
-          '北京时间02月01日14时15分前可免费取消，之后将收取100订单实付金额'
+          '北京时间02月01日14时15分前可免费取消，之后将收取100订单实付金额',
       },
       {
         title: '更改规则',
         subtitle:
-          '订单支付后，只可修改联系人姓名和联系方式\r\n如果需要更改服务时间、人数、车型、包车方式等信息的话，您需要取消订单后重新下单支付，重新下单价格可能会出现浮动（价格受汇率、节假日和急单预定时间等因素影响）\r\n如因不可抗力原因造成订单更改，且原订单当地人不能服务时，可免费取消订单；不可抗力包含自然灾害、社会事件、航班取消（仅限接机）出入境政策变更等'
+          '订单支付后，只可修改联系人姓名和联系方式\r\n如果需要更改服务时间、人数、车型、包车方式等信息的话，您需要取消订单后重新下单支付，重新下单价格可能会出现浮动（价格受汇率、节假日和急单预定时间等因素影响）\r\n如因不可抗力原因造成订单更改，且原订单当地人不能服务时，可免费取消订单；不可抗力包含自然灾害、社会事件、航班取消（仅限接机）出入境政策变更等',
       },
       {
         title: '纸质发票',
-        subtitle: '订单完成后，可联系客服申请纸质发票，每个订单仅可开一次发票'
-      }
+        subtitle: '订单完成后，可联系客服申请纸质发票，每个订单仅可开一次发票',
+      },
     ]
 
     const routeDetail = [
@@ -532,9 +538,9 @@ class CarType extends Component {
         subtitles: [
           {
             title: '包车须知',
-            subtitle: '当日限10小时300公里'
-          }
-        ]
+            subtitle: '当日限10小时300公里',
+          },
+        ],
       },
       {
         title: '费用包含',
@@ -542,9 +548,9 @@ class CarType extends Component {
           {
             title: '· 用车基础服务费',
             subtitle:
-              '当地人服务费、车辆服务费、小费、油费、过路费、高速费、停车费、进城费、空驶费、接送机夜间费、包车餐补、跨天包车住宿补贴'
-          }
-        ]
+              '当地人服务费、车辆服务费、小费、油费、过路费、高速费、停车费、进城费、空驶费、接送机夜间费、包车餐补、跨天包车住宿补贴',
+          },
+        ],
       },
       {
         title: '费用不含',
@@ -552,54 +558,54 @@ class CarType extends Component {
           {
             title: '· 包车时长费 ',
             subtitle: '超时等待费按照30分钟为一档收取(不满30分钟按30分钟计算)',
-            tip: '￥150/30分钟'
+            tip: '￥150/30分钟',
           },
           {
             title: '· 包车公里费 ',
             subtitle:
               '当日服务小时与里程仅当天有效，不累计到第二天，当地人可按照标准收取超时费和超公里费。(一 天内超时费和超公里费同时生效时，费用不累加，只按照费用高的一项收取)',
-            tip: '￥2/公里'
+            tip: '￥2/公里',
           },
           {
             title: '· 包车夜间服务费 ',
             subtitle:
               '常规服务时间段为当地时间08:00- 22:00， 如需在常规服务时间段外服务，用户需按照标准向当地人支付夜间服务费',
-            tip: '￥200/天'
-          }
-        ]
-      }
+            tip: '￥200/天',
+          },
+        ],
+      },
     ]
 
     const priceDetail = {
       detailList: [
         {
           name: '用车费用',
-          value: '￥' + price
+          value: '￥' + price,
         },
         {
           name: '用车保险（已包含）',
-          value: '免费'
+          value: '免费',
         },
         {
           name: '合计',
           value: '￥' + price,
-          total: true
-        }
+          total: true,
+        },
       ],
       intro:
-        scene === 'JIEJI' || scene === 'SONGJI' ? scheduleDetail : routeDetail
+        scene === 'JIEJI' || scene === 'SONGJI' ? scheduleDetail : routeDetail,
     }
 
     const scrollStyle = {
-      height: `${Taro.$windowHeight - 424 - 194}rpx`
+      height: `${window.$screenHeight - 424 - 140}rpx`,
     }
 
     const scrollStylePop = {
-      height: `${Taro.$windowHeight - 400}rpx`
+      height: `${window.$screenHeight - 400}rpx`,
     }
 
     const couponClassName =
-      usableList && usableList.length
+      !!usableList && usableList.length
         ? 'coupon-right'
         : 'coupon-right coupon-right-gray'
 
@@ -674,6 +680,7 @@ class CarType extends Component {
               <View className='phones-item-label'>姓名</View>
               <AtInput
                 className='phones-item-input'
+                name='phones-item-input-name'
                 placeholder='请输入您的姓名'
                 value={name}
                 onChange={this.onChangeName}
@@ -685,7 +692,7 @@ class CarType extends Component {
                 <View className='phones-item'>
                   <View className='phones-item-label'>选择上车地点</View>
                   <LocationInput
-                    wrap-class='phones-item-input'
+                    externalClass={styles.phonesItemInput}
                     title={startPlace.title}
                     placeholder='请选择上车地点'
                     onChange={this.handleLocationChange}
@@ -695,7 +702,7 @@ class CarType extends Component {
                 <View className='phones-item'>
                   <View className='phones-item-label'>用车时间</View>
                   <DateTimePicker
-                    wrap-class='phones-item-input'
+                    wrapClass={styles.phonesItemInput}
                     onOk={this.handleChangeTime}
                     hidePassed
                     initValue={startTime}
@@ -710,6 +717,7 @@ class CarType extends Component {
               <AtInput
                 type='phone'
                 className='phones-item-input'
+                name='phones-item-input-phoneNum'
                 placeholder='请输入您的手机号'
                 value={phoneNum}
                 onChange={this.onChangePhone}
@@ -723,6 +731,7 @@ class CarType extends Component {
                   <AtInput
                     type='phone'
                     className='phones-item-input'
+                    name='phones-item-input-phoneNumBackup'
                     placeholder='您的同行人手机号'
                     value={phoneNumBackup}
                     onChange={this.onChangePhoneBackup}
@@ -738,7 +747,7 @@ class CarType extends Component {
               className={couponClassName}
               onClick={debounce(this.goToCoupon, 100)}
             >
-              {coupon
+              {!!coupon
                 ? `-${coupon.price}￥`
                 : usableList && usableList.length
                 ? `${usableList.length}张优惠券`

@@ -32,15 +32,15 @@ export default modelExtend(commonModel, {
       // 统计扫码商家
       const source_shop_id = Taro.getStorageSync(STORAGE.SOURCE_SHOP_ID)
       const open_id = Taro.getStorageSync(STORAGE.OPEN_ID)
-      const user_wxname = Taro.getStorageSync(STORAGE.NICKNAME)
-      const user_wxavatar = Taro.getStorageSync(STORAGE.AVATAR)
+      const user_wxname = Taro.getStorageSync(STORAGE.WX_NICKNAME)
+      const user_wxavatar = Taro.getStorageSync(STORAGE.WX_AVATAR)
 
-      if (source_shop_id && open_id && user_wxavatar && user_wxname) {
+      if (source_shop_id && open_id ) {
         yield call(fetchScanCount, {
           source_shop_id,
           open_id,
-          user_wxavatar,
-          user_wxname
+          user_wxavatar: user_wxavatar || '',
+          user_wxname: user_wxname || ''
         })
       }
     },
@@ -62,14 +62,14 @@ export default modelExtend(commonModel, {
 
           // 统计扫码商家
           const source_shop_id = Taro.getStorageSync(STORAGE.SOURCE_SHOP_ID)
-          const user_wxname = Taro.getStorageSync(STORAGE.NICKNAME)
-          const user_wxavatar = Taro.getStorageSync(STORAGE.AVATAR)
-          if (source_shop_id && user_wxavatar && user_wxname) {
+          const user_wxname = Taro.getStorageSync(STORAGE.WX_NICKNAME)
+          const user_wxavatar = Taro.getStorageSync(STORAGE.WX_AVATAR)
+          if (source_shop_id && result.open_id) {
             yield call(fetchScanCount, {
               source_shop_id,
               open_id: result.openid,
-              user_wxavatar,
-              user_wxname
+              user_wxavatar: user_wxavatar || '',
+              user_wxname: user_wxname || ''
             })
           }
         } catch (error) {
@@ -86,8 +86,6 @@ export default modelExtend(commonModel, {
         user_id: Taro.getStorageSync(STORAGE.USER_ID)
       })
       if (res.code === 'SUCCESS') {
-        const app = Taro.getApp()
-        app.globalData.userInfo = res.data.user
         // USER_ID消失 暂时这里保存 原因待查
         Taro.setStorageSync(STORAGE.USER_ID, res.data.user.id)
         yield put({
@@ -108,8 +106,6 @@ export default modelExtend(commonModel, {
       }
       const res = yield call(updateUserInfo, params)
       if (res.code === 'SUCCESS') {
-        const app = Taro.getApp()
-        app.globalData.userInfo = res.data.user
         yield put({
           type: 'updateState',
           payload: { ...res.data.user }

@@ -1,11 +1,12 @@
 import Taro from '@tarojs/taro'
+import React from 'react'
 import { View, Image, Label } from '@tarojs/components'
 import dayjs from 'dayjs'
 
 import './index.scss'
 import { debounce } from 'debounce'
 
-class FavorItem extends Taro.Component {
+class FavorItem extends React.Component {
   gotoDetail = e => {
     e.stopPropagation()
     Taro.navigateTo({

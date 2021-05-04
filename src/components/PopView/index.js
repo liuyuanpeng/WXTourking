@@ -1,9 +1,10 @@
 import Taro from '@tarojs/taro'
+import React from 'react'
 import { View } from '@tarojs/components'
 
 import './index.scss'
 
-class PopView extends Taro.Component {
+class PopView extends React.Component {
   static defaultProps = {
     visible: false,
     title: '',

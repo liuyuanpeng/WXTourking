@@ -17,16 +17,15 @@ export default modelExtend(commonModel, {
       const {captcha} = payload
       const data = yield select(state=>state.login)
       const {username, captcha_session_id} = data
-      const app = Taro.getApp()
+      const wxName = Taro.getStorageSync(STORAGE.WX_NICKNAME)
       const res = yield call(fetchLogin, {
         captcha_session_id,
         captcha,
         mobile: username,
-        username: app.globalData.wxInfo.nickName || '微信用户',
+        username: wxName || '微信用户',
         open_id: Taro.getStorageSync(STORAGE.OPEN_ID)
       })
       if (res.code === 'SUCCESS') {
-        app.globalData.userInfo= res.data.user
         Taro.setStorageSync(STORAGE.TOKEN, res.data.token_session.token)
         Taro.setStorageSync(STORAGE.USER_ID, res.data.user.id)
         yield put({

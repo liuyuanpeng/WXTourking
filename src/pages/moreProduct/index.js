@@ -1,4 +1,5 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import {
   View,
   Image,
@@ -8,7 +9,7 @@ import {
   ScrollView
 } from '@tarojs/components'
 import NavBar from '@components/NavBar'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 // import '../../common/index.scss'
 import './index.scss'
 
@@ -42,7 +43,7 @@ class MoreProduct extends Component {
   }
 
   componentDidMount() {
-    const type = this.$router.params.type
+    const type = Taro.getCurrentInstance().router.params.type
     this.setState({
       current: type === 'gift' ? 2 : type === 'food' ? 1 : 0
     })
@@ -87,13 +88,13 @@ class MoreProduct extends Component {
     const { JINGDIAN, MEISHI, BANSHOU, currentCity = { name: '' } } = this.props
 
     const scrollStyle = {
-      height: `${Taro.$windowHeight - Taro.$statusBarHeight - 88 - 88}rpx`
+      height: `${window.$screenHeight - window.$statusBarHeight - 88 - 88}rpx`
     }
 
     return (
       <View
         className='more-product-page'
-        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+        style={{ top: 88 + window.$statusBarHeight + 'rpx' }}
       >
         <SysNavBar title='' />
         <View className='more-product-tabs'>

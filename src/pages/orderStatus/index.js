@@ -1,16 +1,19 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Image, Label, ScrollView } from '@tarojs/components'
 import '../../common/index.scss'
 import './index.scss'
 
 import { AtModal } from 'taro-ui'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 import SysNavBar from '@components/SysNavBar'
 import { returnFloat } from '@utils/tool'
 import QQMapWX from '../utilPages/location/qqmap'
 import dayjs from 'dayjs'
 import ORDER_STATUS from '@constants/status'
 import { debounce } from 'debounce'
+
+const okPng = IMAGE_HOST + '/images/ok_check.png'
 
 @connect(({ order }) => ({
   data: order.userOrder
@@ -30,7 +33,7 @@ class PayProduct extends Component {
   }
 
   componentDidMount() {
-    const goHome = !!this.$router.params.goHome
+    const goHome = !!Taro.getCurrentInstance().router.params.goHome
     this.setState({
       goHome
     })
@@ -85,10 +88,9 @@ class PayProduct extends Component {
   handleModifyTarget = () => {
     this.handleClose()
     Taro.navigateTo({
-      url: '../../pages/utilPages/location/index',
+      url: '../utilPages/location/index',
       events: {
         acceptLocation: location => {
-          console.log('location: ', location)
           const { data } = this.props
           const { order } = data
           const { start_latitude, start_longitude, coupon_price = 0 } = order
@@ -184,10 +186,26 @@ class PayProduct extends Component {
     }
   }
 
+  gotoBill = e => {
+    e.stopPropagation()
+    Taro.navigateTo({
+      url: '../billManager/index'
+    })
+  }
+
   handlePayFee = e => {
     e.stopPropagation()
     const { data, dispatch } = this.props
     const { order } = data
+
+    dispatch({
+      type: 'order/payOrderFake',
+      payload: {
+        id: order.id
+      }
+    })
+    return
+
     dispatch({
       type: 'order/payOrderFee',
       payload: {
@@ -226,6 +244,13 @@ class PayProduct extends Component {
     this.handleClose()
     const { data, dispatch } = this.props
     const { order } = data
+    dispatch({
+      type: 'order/payOrderFake',
+      payload: {
+        id: order.id
+      }
+    })
+    return
     dispatch({
       type: 'order/payOrder',
       payload: {
@@ -366,12 +391,27 @@ class PayProduct extends Component {
     return (
       <View
         className='pay-product'
-        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+        style={{ top: 88 + window.$statusBarHeight + 'rpx' }}
       >
         <SysNavBar title='确认订单' goHome={goHome} />
+        {((isAfterpay && orderStatusDesc === '待付款') ||
+          orderStatusDesc === '待出行') && (
+          <View className='pay-product-header-content'>
+            <Image
+              src={okPng}
+              mode='aspectFill'
+              className='pay-product-header-content-image'
+            />
+            <View className='pay-product-header-content-title'>预约成功</View>
+            <View className='pay-product-header-content-subtitle'>{`我们会在${dayjs(
+              start_time
+            ).format('MM月DD日 HH:mm')}前确认车辆信息`}</View>
+          </View>
+        )}
         {!isChartered && (
           <View className='pay-product-header'>
             {!isGift &&
+              !isAfterpay &&
               (orderStatusDesc === '待付款' ||
                 orderStatusDesc === '待出行') && (
                 <View className='pay-product-tip'>
@@ -401,7 +441,8 @@ class PayProduct extends Component {
         )}
         {isChartered && (
           <View className='pay-product-header-ex'>
-            {(orderStatusDesc === '待付款' || orderStatusDesc === '待出行') && (
+            {((!isAfterpay && orderStatusDesc === '待付款') ||
+              orderStatusDesc === '待出行') && (
               <View className='pay-product-tip'>
                 {orderStatusDesc === '待付款'
                   ? '您的订单尚未完成支付，请重新支付'
@@ -415,7 +456,7 @@ class PayProduct extends Component {
                 ￥{returnFloat(price)}
               </View>
             )}
-            {wechat_fee_order_id && (
+            {!has_pay && wechat_fee_order_id && (
               <View className='pay-product-header-ex-price'>
                 违约金: ￥{returnFloat(refund_fee)}
               </View>
@@ -539,7 +580,9 @@ class PayProduct extends Component {
         {orderStatusDesc === '已完成' && (
           <View className='pay-product-bill'>
             <View className='pay-product-bill-title'>发票</View>
-            <View className='pay-product-bill-right'>去开发票</View>
+            <View className='pay-product-bill-right' onClick={this.gotoBill}>
+              去开发票
+            </View>
           </View>
         )}
         {(orderStatusDesc === '待出行' ||

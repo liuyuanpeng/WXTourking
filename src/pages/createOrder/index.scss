@@ -194,13 +194,6 @@
           line-height: 40px;
           font-size: 28px;
         }
-        &-input {
-          margin-top: 18px;
-          height: 48px;
-          font-size: 34px;
-          line-height: 48px;
-          margin-bottom: 12px;
-        }
       }
       &-split-line {
         height: 0;
@@ -354,6 +347,7 @@
     height: 140px;
     width: 100%;
     background-color: white;
+    z-index: 9;
     .price {
       height: 50px;
       line-height: 50px;

@@ -1,51 +1,37 @@
-const path = require('path')
+let path = require("path")
+
 
 const config = {
-  projectName: 'WXTourking',
-  date: '2020-4-24',
+  projectName: 'spoken',
+  date: '2020-9-9',
   designWidth: 750,
   deviceRatio: {
-    '640': 2.34 / 2,
-    '750': 1,
-    '828': 1.81 / 2
+    640: 2.34 / 2,
+    750: 1,
+    828: 1.81 / 2
   },
   sourceRoot: 'src',
-  outputRoot: 'dist',
-  babel: {
-    sourceMap: true,
-    presets: [
-      [
-        'env',
-        {
-          modules: false
-        }
-      ]
-    ],
-    plugins: [
-      'transform-decorators-legacy',
-      'transform-class-properties',
-      'transform-object-rest-spread',
-      [
-        'transform-runtime',
-        {
-          helpers: false,
-          polyfill: false,
-          regenerator: true,
-          moduleName: 'babel-runtime'
-        }
-      ]
-    ]
-  },
+  outputRoot: `dist/${process.env.TARO_ENV}`,
   plugins: [],
   defineConstants: {},
   alias: {
     '@components': path.resolve(__dirname, '..', 'src/components'),
+    '@utils': path.resolve(__dirname, '..', 'src/utils'),
+    '@pages': path.resolve(__dirname, '..', 'src/pages'),
+    '@models': path.resolve(__dirname, '..', 'src/models'),
+    '@static': path.resolve(__dirname, '..', 'src/static'),
+    '@service': path.resolve(__dirname, '..', 'src/service'),
+    '@/types': path.resolve(__dirname, '..', 'src/@types'),
     '@constants': path.resolve(__dirname, '..', 'src/constants'),
-    '@services': path.resolve(__dirname, '..', 'src/services'),
-    '@utils': path.resolve(__dirname, '..', 'src/utils')
   },
+  copy: {
+    patterns: [
+      { from: 'src/static/images/', to: `dist/${process.env.TARO_ENV}/static/images/` }
+    ],
+    options: {}
+  },
+  framework: 'react',
   mini: {
-    appOutput: false,
     postcss: {
       pxtransform: {
         enable: true,
@@ -54,7 +40,7 @@ const config = {
       url: {
         enable: true,
         config: {
-          limit: 10240 // 设定转换尺寸上限
+          limit: 1024 // 设定转换尺寸上限
         }
       },
       cssModules: {
@@ -64,18 +50,20 @@ const config = {
           generateScopedName: '[name]__[local]___[hash:base64:5]'
         }
       }
-    }
+    },
+
   },
   h5: {
     publicPath: '/',
     staticDirectory: 'static',
-    esnextModules: ['taro-ui'],
+    devServer: {
+      port: 8090,
+      useLocalIp: false
+    },
     postcss: {
       autoprefixer: {
         enable: true,
-        config: {
-          browsers: ['last 3 versions', 'Android >= 4.1', 'ios >= 8']
-        }
+        config: {}
       },
       cssModules: {
         enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true
@@ -85,12 +73,16 @@ const config = {
         }
       }
     }
+  },
+  // 配置sass
+  sass: {
+    resource: path.resolve(__dirname, '..', 'src/static/css/variable.scss')
   }
-}
+};
 
-module.exports = function(merge) {
+module.exports = function (merge) {
   if (process.env.NODE_ENV === 'development') {
-    return merge({}, config, require('./dev'))
+    return merge({}, config, require('./dev'));
   }
-  return merge({}, config, require('./prod'))
-}
+  return merge({}, config, require('./prod'));
+};

@@ -1,7 +1,8 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Input, Label, ScrollView, SwiperItem } from '@tarojs/components'
 import NavBar from '@components/NavBar'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 import '../../common/index.scss'
 import './index.scss'
 
@@ -26,7 +27,7 @@ class SaveAddress extends Component {
   }
 
   componentDidMount() {
-    const eventChannel = this.$scope.getOpenerEventChannel()
+    const eventChannel = Taro.getCurrentInstance().page.getOpenerEventChannel()
     eventChannel.on('addressData', data => {
       this.setState({
         ...data
@@ -34,7 +35,7 @@ class SaveAddress extends Component {
     })
 
     const {data} = this.props
-    if (!data || data.length === 0) {
+    if (!data || data.length <= 1) {
       this.setState({
         set_default: true
       })
@@ -157,13 +158,14 @@ class SaveAddress extends Component {
       bFirst = true
     }
     return (
-      <View className='save-address-page' style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}>
+      <View className='save-address-page' style={{ top: 88 + window.$statusBarHeight + 'rpx' }}>
         <SysNavBar title={`${id ? '编辑' : '新增'}收货地址`} />
         {formItems.map((item, index) => (
           <View className='form-item' key={`form-item-${index}`}>
             <Label className='label-name'>{item.name}</Label>
             <AtInput
               className='form-input'
+              name={`form-input-${item.name}`}
               value={item.value}
               placeholder={item.placeholder}
               maxLength={item.maxLength || 100}

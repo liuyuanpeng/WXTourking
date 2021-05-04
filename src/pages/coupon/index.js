@@ -1,7 +1,8 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Image, Label, Swiper, ScrollView } from '@tarojs/components'
 import NavBar from '@components/NavBar'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 // import '../../common/index.scss'
 import './index.scss'
 
@@ -115,10 +116,10 @@ class Coupon extends Component {
         user_id
       }
     })
-    if (this.$router.params.canEdit && this.$router.params.price) {
+    if (Taro.getCurrentInstance().router.params.canEdit && Taro.getCurrentInstance().router.params.price) {
       this.setState({
         canEdit: true,
-        price: parseFloat(this.$router.params.price)
+        price: parseFloat(Taro.getCurrentInstance().router.params.price)
       })
     }
   }
@@ -148,7 +149,7 @@ class Coupon extends Component {
   }
 
   onSelect(coupon) {
-    const eventChannel = this.$scope.getOpenerEventChannel()
+    const eventChannel = Taro.getCurrentInstance().page.getOpenerEventChannel()
     eventChannel.emit('acceptCoupon', { ...coupon })
     Taro.navigateBack()
   }
@@ -165,13 +166,13 @@ class Coupon extends Component {
     const { list, usedList, overdueList, usableList } = this.props
 
     const scrollStyle = {
-      height: `${Taro.$windowHeight - Taro.$statusBarHeight - 276}rpx`
+      height: `${window.$screenHeight - window.$statusBarHeight - 276}rpx`
     }
 
     return (
       <View
         className='all-coupon-page'
-        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+        style={{ top: 88 + window.$statusBarHeight + 'rpx' }}
       >
         <SysNavBar title='我的优惠券' />
         <View className='all-coupon-tabs'>

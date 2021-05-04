@@ -1,5 +1,6 @@
-import Taro, { PureComponent } from '@tarojs/taro'
-import { connect } from '@tarojs/redux'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { View, ScrollView, Button } from '@tarojs/components'
 import {
   AtTabs,
@@ -9,10 +10,10 @@ import {
   AtModalContent,
   AtModalAction
 } from 'taro-ui'
-import SysNavBar from '@components/SysNavBar'
-import DiscoveryItem from '@components/DiscoveryItem'
 import '../../common/index.scss'
 import './index.scss'
+import SysNavBar from '@components/SysNavBar'
+import DiscoveryItem from '@components/DiscoveryItem'
 import { debounce } from 'debounce'
 import STORAGE from '@constants/storage'
 import { checkLogin } from '@utils/tool'
@@ -30,7 +31,7 @@ const DISCOVERY_TYPES = {
   listSHIPIN: discovery.listSHIPIN,
   listGONGLUE: discovery.listGONGLUE
 }))
-class Discovery extends PureComponent {
+class Discovery extends Component {
   config = {
     navigationBarTitleText: '发现'
   }
@@ -42,16 +43,6 @@ class Discovery extends PureComponent {
   }
 
   componentDidShow() {
-    if (
-      Taro.getEnv() === Taro.ENV_TYPE.WEAPP &&
-      typeof this.$scope.getTabBar === 'function' &&
-      this.$scope.getTabBar()
-    ) {
-      this.$scope.getTabBar().$component.setState({
-        selected: 1
-      })
-    }
-
     const { current } = this.state
     let scene
     switch (current) {
@@ -154,7 +145,7 @@ class Discovery extends PureComponent {
     ]
 
     const scrollStyle = {
-      height: `${Taro.$windowHeight - Taro.$statusBarHeight - 88 - 88 - 100}rpx`
+      height: `${window.$windowHeight - window.$statusBarHeight - 88 - 88}rpx`
     }
 
     const { current, showModal, modalMsg } = this.state
@@ -162,7 +153,7 @@ class Discovery extends PureComponent {
     return (
       <View
         className='discovery-page'
-        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+        style={{ top: 88 + window.$statusBarHeight + 'rpx' }}
       >
         <SysNavBar title='发现' hideBack />
         <View className='discovery-tabs'>

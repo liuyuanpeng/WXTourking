@@ -1,4 +1,5 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import {
   View,
   Image,
@@ -8,7 +9,7 @@ import {
   ScrollView
 } from '@tarojs/components'
 import NavBar from '@components/NavBar'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 // import '../../common/index.scss'
 import './index.scss'
 
@@ -101,13 +102,13 @@ class AllLikes extends Component {
     const {listLikeJINGDIAN, listLikeMEISHI, listLikeSHIPIN, listLikeGONGLUE} = this.props
     
     const scrollStyle = {
-      height: `${Taro.$windowHeight - 85 - 88 - Taro.$statusBarHeight}rpx`
+      height: `${window.$screenHeight - 85 - 88 - window.$statusBarHeight}rpx`
     }
 
     return (
       <View
         className='all-like-page'
-        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+        style={{ top: 88 + window.$statusBarHeight + 'rpx' }}
       >
         <SysNavBar title='我的点赞' />
         <View className='all-like-tabs'>

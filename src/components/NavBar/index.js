@@ -1,7 +1,8 @@
 import Taro from '@tarojs/taro'
+import React from 'react'
 import { View } from '@tarojs/components'
 import { AtSearchBar } from 'taro-ui'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 import './index.scss'
 import STORAGE from '../../constants/storage'
 import search from '../../models/search'
@@ -23,7 +24,7 @@ import { debounce } from 'debounce'
   cityList: city.list,
   currentCity: city.current
 }))
-class Navbar extends Taro.Component {
+class Navbar extends React.Component {
   static defaultProps = {
     opacity: 0,
     title: '旅王出行',
@@ -97,7 +98,7 @@ class Navbar extends Taro.Component {
     })
     const history = Taro.getStorageSync(STORAGE.HISTORY)
     const histories = history && history.length ? history.split(',') : []
-    if (searchText && histories.indexOf(searchText) === -1) {
+    if (!!searchText && histories.indexOf(searchText) === -1) {
       histories.unshift(searchText)
       Taro.setStorageSync(STORAGE.HISTORY, histories.toString())
     }
@@ -130,22 +131,22 @@ class Navbar extends Taro.Component {
         className='bar'
         style={
           showSearch
-            ? { height: Taro.$statusBarHeight + 204 + 'rpx' }
-            : { height: Taro.$statusBarHeight + 134 + 'rpx' }
+            ? { height: window.$statusBarHeight + 204 + 'rpx' }
+            : { height: window.$statusBarHeight + 134 + 'rpx' }
         }
       >
         <View className='back' style={{ opacity: opacity || 0 }} />
         {showBack && (
           <View
             className='back-btn'
-            style={{ marginTop: Taro.$statusBarHeight + 32 + 'rpx' }}
+            style={{ marginTop: window.$statusBarHeight + 32 + 'rpx' }}
             onClick={this.onBack}
           />
         )}
         <View
           className='title'
           style={{
-            marginTop: Taro.$statusBarHeight + 38 + 'rpx',
+            marginTop: window.$statusBarHeight + 38 + 'rpx',
             ...titleStyle
           }}
         >

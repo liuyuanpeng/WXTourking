@@ -1,14 +1,15 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import {
   View,
   Image,
   Label,
   Swiper,
   SwiperItem,
-  ScrollView
+  ScrollView,
 } from '@tarojs/components'
 import SysNavBar from '@components/SysNavBar'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 import { debounce } from 'debounce'
 // import '../../common/index.scss'
 import './index.scss'
@@ -20,7 +21,7 @@ import {
   AtTabs,
   AtTabsPane,
   AtIcon,
-  AtInput
+  AtInput,
 } from 'taro-ui'
 import QQMapWX from './qqmap'
 
@@ -29,7 +30,7 @@ let qqMapSDK = null
 @connect(({ location, city }) => ({
   airports: location.airports,
   trains: location.trains,
-  currentCity: city.current
+  currentCity: city.current,
 }))
 class Location extends Component {
   config = {}
@@ -41,38 +42,37 @@ class Location extends Component {
     suggestion: [],
     scrollTop: 0,
     toScrollView: false,
-    nearby: [
-    ]
+    nearby: [],
   }
 
   componentDidMount() {
     const { dispatch, currentCity } = this.props
 
     dispatch({
-      type: 'location/getLocationList'
+      type: 'location/getLocationList',
     })
 
     qqMapSDK = new QQMapWX({
-      key: 'JTKBZ-LCG6U-GYOVE-BJMJ5-E3DA5-HTFAJ' // 必填
+      key: 'JTKBZ-LCG6U-GYOVE-BJMJ5-E3DA5-HTFAJ', // 必填
     })
 
     qqMapSDK.search({
       keyword: '酒店',
       region: currentCity.name,
-      success: res => {
+      success: (res) => {
         const nearby = []
-        res.data.map(item => {
+        res.data.map((item) => {
           nearby.push({
             title: item.title,
             address: item.address,
             longitude: item.location.lng,
-            latitude: item.location.lat
+            latitude: item.location.lat,
           })
         })
         this.setState({
-          nearby
+          nearby,
         })
-      }
+      },
     })
 
     // Taro.createSelectorQuery()
@@ -83,46 +83,46 @@ class Location extends Component {
     //   .exec()
   }
 
-  handleSelectCity = e => {
+  handleSelectCity = (e) => {
     e.stopPropagation()
   }
 
-  handleKeyword = value => {
+  handleKeyword = (value) => {
     this.getSuggestion(value)
     this.setState({
-      keyword: value
+      keyword: value,
     })
   }
 
-  getSuggestion = keyword => {
+  getSuggestion = (keyword) => {
     const { currentCity } = this.props
     qqMapSDK.getSuggestion({
       keyword: keyword || '',
       region: currentCity.name,
-      success: res => {
+      success: (res) => {
         const sug = []
-        res.data.map(item => {
+        res.data.map((item) => {
           sug.push({
             title: item.title,
             address: item.address,
             latitude: item.location.lat,
-            longitude: item.location.lng
+            longitude: item.location.lng,
           })
         })
         this.setState({
-          suggestion: sug
+          suggestion: sug,
         })
       },
-      fail: error => {
+      fail: (error) => {
         console.log(error)
-      }
+      },
     })
   }
 
   handleClick = (value, e) => {
     e.stopPropagation()
     this.setState({
-      current: value
+      current: value,
     })
     let viewName = false
     switch (value) {
@@ -141,7 +141,7 @@ class Location extends Component {
         break
     }
     this.setState({
-      toScrollView: viewName
+      toScrollView: viewName,
     })
   }
 
@@ -149,20 +149,20 @@ class Location extends Component {
     const { current } = this.state
     if (value !== current) {
       this.setState({
-        current: value
+        current: value,
       })
     }
   }
 
-  onScroll = e => {
+  onScroll = (e) => {
     e.stopPropagation()
     Taro.createSelectorQuery()
       .select('#airports')
-      .boundingClientRect(airport => {
+      .boundingClientRect((airport) => {
         if (airport.top - this.originTop <= 0) {
           Taro.createSelectorQuery()
             .select('#trains')
-            .boundingClientRect(train => {
+            .boundingClientRect((train) => {
               if (train.top - this.originTop <= 0) {
                 this.setTabs(2)
               } else {
@@ -178,14 +178,14 @@ class Location extends Component {
   }
 
   setValue(data) {
-    const eventChannel = this.$scope.getOpenerEventChannel()
+    const eventChannel = Taro.getCurrentInstance().page.getOpenerEventChannel()
     if (data.id) {
       eventChannel.emit('acceptLocation', {
         title: data.name,
         address: data.detail,
         latitude: data.latitude,
-        longitude: data.longitude
-       })
+        longitude: data.longitude,
+      })
     } else {
       eventChannel.emit('acceptLocation', { ...data })
     }
@@ -200,7 +200,7 @@ class Location extends Component {
       current,
       scrollTop,
       toScrollView,
-      nearby
+      nearby,
     } = this.state
 
     const { currentCity, airports, trains } = this.props
@@ -208,22 +208,26 @@ class Location extends Component {
     const tabList = [{ title: '周边' }, { title: '机场' }, { title: '火车站' }]
 
     const scrollStyle = {
-      height: `${Taro.$windowHeight -
-        Taro.$statusBarHeight -
+      height: `${window.$screenHeight -
+        window.$statusBarHeight -
         88 -
         88 -
         70 -
-        44}rpx`
+        44}rpx`,
     }
 
     const scrollStyle2 = {
-      height: `${Taro.$windowHeight - Taro.$statusBarHeight - 88 - 70 - 44}rpx`
+      height: `${window.$screenHeight -
+        window.$statusBarHeight -
+        88 -
+        70 -
+        44}rpx`,
     }
 
     return (
       <View
         className='location-page'
-        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+        style={{ top: 88 + window.$statusBarHeight + 'rpx' }}
       >
         <SysNavBar title={title || '确认乘车地点'} />
         <View className='location-search-bar'>
@@ -239,6 +243,7 @@ class Location extends Component {
           />
           <AtInput
             className='location-search-bar-input'
+            name='location-search-bar-input-keyword'
             placeholder='请输入地址'
             value={keyword}
             onFocus={this.showList}
@@ -246,7 +251,7 @@ class Location extends Component {
             onChange={debounce(this.handleKeyword, 100)}
           />
         </View>
-        {keyword ? (
+        {!!keyword ? (
           <ScrollView scrollY style={scrollStyle2}>
             {suggestion.map((item, index) => (
               <View
@@ -264,65 +269,64 @@ class Location extends Component {
             ))}
           </ScrollView>
         ) : (
-          <View>
-            <AtTabs
-              current={current}
-              tabList={tabList}
-              onClick={this.handleClick}
-            />
+          <AtTabs
+            current={current}
+            tabList={tabList}
+            onClick={this.handleClick}
+          >
             <AtTabsPane current={this.state.current} index={0}>
               <ScrollView scrollY style={scrollStyle}>
-              {nearby.map((item, index) => (
-                <View
-                  className='suggestion-item'
-                  key={`suggestion-item-${index}`}
-                  onClick={() => {
-                    this.setValue(item)
-                  }}
-                >
-                  {index > 0 && <View className='split-line' />}
-                  <Label className='location-icon' />
-                  <Label className='location-title'>{item.title}</Label>
-                  <View className='location-address'>{item.address}</View>
-                </View>
-              ))}
+                {nearby.map((item, index) => (
+                  <View
+                    className='suggestion-item'
+                    key={`suggestion-item-${index}`}
+                    onClick={() => {
+                      this.setValue(item)
+                    }}
+                  >
+                    {index > 0 && <View className='split-line' />}
+                    <Label className='location-icon' />
+                    <Label className='location-title'>{item.title}</Label>
+                    <View className='location-address'>{item.address}</View>
+                  </View>
+                ))}
               </ScrollView>
             </AtTabsPane>
             <AtTabsPane current={this.state.current} index={1}>
               <ScrollView scrollY style={scrollStyle}>
-              {airports.map((item, index) => (
-                <View
-                  className='airport-item'
-                  key={`airport-item-${index}`}
-                  onClick={() => {
-                    this.setValue(item)
-                  }}
-                >
-                  {index > 0 && <View className='split-line' />}
-                  <Label className='airport-icon' />
-                  <Label className='airport-title'>{item.name}</Label>
-                </View>
-              ))}
+                {airports.map((item, index) => (
+                  <View
+                    className='airport-item'
+                    key={`airport-item-${index}`}
+                    onClick={() => {
+                      this.setValue(item)
+                    }}
+                  >
+                    {index > 0 && <View className='split-line' />}
+                    <Label className='airport-icon' />
+                    <Label className='airport-title'>{item.name}</Label>
+                  </View>
+                ))}
               </ScrollView>
             </AtTabsPane>
             <AtTabsPane current={this.state.current} index={2}>
               <ScrollView scrollY style={scrollStyle}>
-              {trains.map((item, index) => (
-                <View
-                  className='train-item'
-                  key={`train-item-${index}`}
-                  onClick={() => {
-                    this.setValue(item)
-                  }}
-                >
-                  {index > 0 && <View className='split-line' />}
-                  <Label className='train-icon' />
-                  <Label className='train-title'>{item.name}</Label>
-                </View>
-              ))}
+                {trains.map((item, index) => (
+                  <View
+                    className='train-item'
+                    key={`train-item-${index}`}
+                    onClick={() => {
+                      this.setValue(item)
+                    }}
+                  >
+                    {index > 0 && <View className='split-line' />}
+                    <Label className='train-icon' />
+                    <Label className='train-title'>{item.name}</Label>
+                  </View>
+                ))}
               </ScrollView>
             </AtTabsPane>
-           </View>
+          </AtTabs>
         )}
       </View>
     )

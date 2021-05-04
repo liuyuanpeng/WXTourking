@@ -1,10 +1,11 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import {
   View,
   Button,
   ScrollView
 } from '@tarojs/components'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 // import '../../common/index.scss'
 import './index.scss'
 
@@ -92,12 +93,12 @@ class AllOrders extends Component {
   componentWillMount() {}
 
   componentDidShow() {
-    let current = this.$router.params.index
+    let current = Taro.getCurrentInstance().router.params.index
     if (current >= 0) {
       this.setState({
         current: parseInt(current)
       })
-      this.$router.params = {}
+      Taro.getCurrentInstance().router.params = {}
     } else {
       current = this.state.current
     }
@@ -127,14 +128,14 @@ class AllOrders extends Component {
     } = this.props
 
     const scrollStyle = {
-      height: `${Taro.$windowHeight - 85 - 88 - Taro.$statusBarHeight}rpx`
+      height: `${window.$screenHeight - 85 - 88 - window.$statusBarHeight}rpx`
     }
 
     const {current, showModal, modalMsg} = this.state
     return (
       <View
         className='all-order-page'
-        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+        style={{ top: 88 + window.$statusBarHeight + 'rpx' }}
       >
         <SysNavBar title='全部订单' />
         <View className='all-order-tabs'>

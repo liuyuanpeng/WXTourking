@@ -1,16 +1,18 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import {
   View,
   Image,
   Label,
   Swiper,
   ScrollView,
-  Input
+  Input,
 } from '@tarojs/components'
 import NavBar from '@components/NavBar'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 // import '../../common/index.scss'
 import './index.scss'
+import styles from './index.module.scss'
 
 import {
   AtCheckbox,
@@ -19,7 +21,7 @@ import {
   AtTabs,
   AtTabsPane,
   AtInput,
-  AtSwitch
+  AtSwitch,
 } from 'taro-ui'
 import CommentItem from '@components/CommentItem'
 import SysNavBar from '@components/SysNavBar'
@@ -29,11 +31,11 @@ import CheckBox from '@components/CheckBox'
 
 @connect(({ header }) => ({
   data: header.list,
-  defaultHeader: header.defaultHeader
+  defaultHeader: header.defaultHeader,
 }))
 class BillHead extends Component {
   config = {
-    navigationBarTitleText: '开具发票'
+    navigationBarTitleText: '开具发票',
   }
 
   state = {
@@ -45,41 +47,50 @@ class BillHead extends Component {
     telphone: '',
     bank: '',
     card: '',
-    set_default: false
+    set_default: false,
   }
 
   componentDidMount() {
-    const eventChannel = this.$scope.getOpenerEventChannel()
-    eventChannel.on('headerData', data => {
+    const eventChannel = Taro.getCurrentInstance().page.getOpenerEventChannel()
+    eventChannel.on('headerData', (data) => {
       this.setState({
-        ...data
+        ...data,
       })
     })
 
-    const {data} = this.props
-    if (!data || data.length === 0) {
+    const { data } = this.props
+    if (!data || data.length <= 1) {
       this.setState({
-        set_default: true
+        set_default: true,
       })
     }
   }
 
   handleCheck = (isCompony) => {
     this.setState({
-      type: isCompony ? 1 : 0
+      type: isCompony ? 1 : 0,
     })
   }
-
   handleChange = (key, value) => {
     const newState = {}
     newState[key] = value
     this.setState(newState)
   }
 
-  handleSave = e => {
+  handleSave = (e) => {
     e.stopPropagation()
-    const {dispatch} = this.props
-    const {id, name, type, num = '', address = '', telphone = '', bank = '', card = '', set_default} = this.state
+    const { dispatch } = this.props
+    const {
+      id,
+      name,
+      type,
+      num = '',
+      address = '',
+      telphone = '',
+      bank = '',
+      card = '',
+      set_default,
+    } = this.state
     let msg = ''
     if (!name) {
       msg = type ? '请输入公司名称' : '请输入抬头名称'
@@ -89,7 +100,7 @@ class BillHead extends Component {
     if (msg) {
       Taro.showToast({
         title: msg,
-        icon: 'none'
+        icon: 'none',
       })
       return
     }
@@ -101,63 +112,76 @@ class BillHead extends Component {
       bank,
       card,
       address,
-      set_default
+      set_default,
     }
-    if (id) {payload.id = id}
+    if (id) {
+      payload.id = id
+    }
     dispatch({
       type: 'header/saveUserBillHeader',
       payload,
       success: () => {
         Taro.showToast({
           title: '成功保存发票抬头',
-          icon: 'none'
+          icon: 'none',
         })
         Taro.navigateBack()
       },
-      fail: message => {
+      fail: (message) => {
         Taro.showToast({
-          title: message || '发票抬头保存失败'
+          title: message || '发票抬头保存失败',
         })
-      }
+      },
     })
   }
 
-  handleDelete = e => {
+  handleDelete = (e) => {
     e.stopPropagation()
-    const {dispatch} = this.props
-    const {id} = this.state
+    const { dispatch } = this.props
+    const { id } = this.state
     if (id) {
       dispatch({
         type: 'header/deleteUserBillHeader',
         payload: {
-          id
+          id,
         },
         success: () => {
           Taro.navigateBack()
         },
-        fail: msg => {
+        fail: (msg) => {
           Taro.showToast({
             title: msg || '删除发票抬头失败',
-            icon: 'none'
+            icon: 'none',
           })
-        }
+        },
       })
     }
   }
 
-  handleSwitch = value => {
+  handleSwitch = (value) => {
     this.setState({
-      set_default: value
+      set_default: value,
     })
   }
-  
+
   render() {
-    const { id, type, name, num, address, bank, card, telphone, set_default  } = this.state
-    const {data} = this.props
+    const {
+      id,
+      type,
+      name,
+      num,
+      address,
+      bank,
+      card,
+      telphone,
+      set_default,
+    } = this.state
+    const { data } = this.props
     let bFirst = false
     if (!data || data.length === 0) {
       bFirst = true
     }
+
     const ITEMS = [
       {
         name: 'num',
@@ -191,23 +215,23 @@ class BillHead extends Component {
       <View
         className='bill-head'
         style={{
-          top: 88 + Taro.$statusBarHeight + 'rpx',
-          height: Taro.$windowHeight - 88 - Taro.$statusBarHeight + 'rpx'
+          top: 88 + window.$statusBarHeight + 'rpx',
+          height: window.$screenHeight - 88 - window.$statusBarHeight + 'rpx',
         }}
       >
         <SysNavBar title='发票抬头' />
         <View className='bill-head-item'>
-        <View className='bill-head-item-split' />
+          <View className='bill-head-item-split' />
           <View className='bill-head-item-label-required'>抬头类型</View>
           <View className='bill-head-item-content'>
             <CheckBox
-              wrap-class='bill-head-item-content-check'
+              wrapClass={styles.billHeadItemContentCheck}
               checked={type === 1}
               onChange={this.handleCheck.bind(this, true)}
               title='企业'
             />
             <CheckBox
-              wrap-class='bill-head-item-content-check'
+              wrapClass={styles.billHeadItemContentCheck}
               checked={type === 0}
               onChange={this.handleCheck.bind(this, false)}
               title='个人/非企业'
@@ -223,13 +247,14 @@ class BillHead extends Component {
             <AtInput
               type='text'
               value={name}
+              name='bill-header-input-name'
               placeholder={`请输入${type ? '公司名称' : '抬头名称'}(必填)`}
               className='bill-head-item-content-input'
               onChange={this.handleChange.bind(this, 'name')}
             />
           </View>
         </View>
-        {type &&
+        {!!type &&
           ITEMS.map(item => (
             <View className='bill-head-item' key={item.name}>
               <View className='bill-head-item-split' />
@@ -243,6 +268,7 @@ class BillHead extends Component {
               <View className='bill-head-item-content'>
                 <AtInput
                   type='text'
+                  name={`bill-header-input-${item.name}`}
                   value={item.value}
                   placeholder={`请输入${item.label}${
                     item.required ? '(必填)' : ''
@@ -253,6 +279,7 @@ class BillHead extends Component {
               </View>
             </View>
           ))}
+
         <View className='form-item'>
           <Label className='label-name-ex'>设为默认</Label>
           <AtSwitch

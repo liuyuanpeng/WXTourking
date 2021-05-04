@@ -1,4 +1,5 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import {
   View,
   Image,
@@ -8,7 +9,7 @@ import {
   Input
 } from '@tarojs/components'
 import NavBar from '@components/NavBar'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 // import '../../common/index.scss'
 import './index.scss'
 
@@ -45,7 +46,7 @@ class CreateBill extends Component {
   }
 
   componentDidMount() {
-    const eventChannel = this.$scope.getOpenerEventChannel()
+    const eventChannel = Taro.getCurrentInstance().page.getOpenerEventChannel()
     eventChannel.on('acceptBillData', ({ ids, price }) => {
       this.ids = ids
       this.setState({
@@ -135,13 +136,13 @@ class CreateBill extends Component {
       <View
         className='create-bill'
         style={{
-          top: 88 + Taro.$statusBarHeight + 'rpx',
-          height: Taro.$windowHeight - 88 - Taro.$statusBarHeight + 'rpx'
+          top: 88 + window.$statusBarHeight + 'rpx',
+          height: window.$screenHeight - 88 - window.$statusBarHeight + 'rpx'
         }}
       >
         <SysNavBar title='开具发票' />
         <View className='create-bill-label'>发票详情</View>
-        {header && header.id ? (
+        {!!header && header.id ? (
           <View className='bill-head-item' onClick={debounce(this.onMoreHeader, 100)}>
             <View className='bill-head-item-title'>
               {header.name}
@@ -155,7 +156,7 @@ class CreateBill extends Component {
           <View className='create-bill-btn' onClick={debounce(this.onMoreHeader, 100)}>去新增发票抬头</View>
         )}
         <View className='create-bill-label'>邮寄地址</View>
-        {address && address.id ? (
+        {!!address && address.id ? (
           <View className='address' onClick={debounce(this.onMoreAddress, 100)}>
             <View className='address-icon' />
             <View className='address-details'>

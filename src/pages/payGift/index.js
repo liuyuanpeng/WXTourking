@@ -1,7 +1,8 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Image, Label, Swiper, SwiperItem } from '@tarojs/components'
 import NavBar from '@components/NavBar'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 import '../../common/index.scss'
 import './index.scss'
 
@@ -69,7 +70,7 @@ class PayGift extends Component {
   }
 
   componentDidMount() {
-    const eventChannel = this.$scope.getOpenerEventChannel()
+    const eventChannel = Taro.getCurrentInstance().page.getOpenerEventChannel()
     eventChannel.on('giftData', data => {
       this.setState({
         data
@@ -226,16 +227,16 @@ class PayGift extends Component {
     } catch (error) {}
 
     const couponClassName =
-      usableList && usableList.length
+      !!usableList && usableList.length
         ? 'coupon-right'
         : 'coupon-right coupon-right-gray'
     return (
       <View
         className='pay-gift'
-        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+        style={{ top: 88 + window.$statusBarHeight + 'rpx' }}
       >
         <SysNavBar title='订单支付' />
-        {address && address.id ? (
+        {!!address && address.id ? (
           <View className='address' onClick={debounce(this.onMoreAddress, 100)}>
             <View className='address-icon' />
             <View className='address-details'>
@@ -260,7 +261,7 @@ class PayGift extends Component {
             <View className='gift-subtitle'>{data.tag}</View>
             <View className='gift-transport'>付款后三天内发货</View>
             <View className='gift-price'>
-              ￥{data.price}{' '}
+              ￥{data.price}
               <View className='gift-count-minus'>{`×${count}`}</View>
             </View>
           </View>
@@ -289,7 +290,7 @@ class PayGift extends Component {
             className={couponClassName}
             onClick={debounce(this.goToCoupon, 100)}
           >
-            {coupon
+            {!!coupon
               ? `-${coupon.price}￥`
               : usableList && usableList.length
               ? `${usableList.length}张优惠券`

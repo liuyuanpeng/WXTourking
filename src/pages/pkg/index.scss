@@ -46,6 +46,7 @@
     background: white;
     display: flex;
     box-sizing: border-box;
+    justify-content: space-evenly;
     &-item {
       width: 240px;
       height: 60px;

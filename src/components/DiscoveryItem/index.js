@@ -1,4 +1,5 @@
 import Taro from '@tarojs/taro'
+import React from 'react'
 import { View, Image, Label } from '@tarojs/components'
 import dayjs from 'dayjs'
 import ORDER_STATUS from '@constants/status'
@@ -6,13 +7,13 @@ import ORDER_TYPE from '@constants/types'
 
 import './index.scss'
 
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 import { AtIcon, AtToast } from 'taro-ui'
 import { debounce } from 'debounce'
 import { checkLogin } from '../../utils/tool'
 
 @connect(({}) => ({}))
-class DiscoveryItem extends Taro.Component {
+class DiscoveryItem extends React.Component {
   static defaultProps = {
     data: {},
     showModalMsg: null
@@ -22,21 +23,6 @@ class DiscoveryItem extends Taro.Component {
     e.stopPropagation()
     const { showModalMsg } = this.props
     showModalMsg && showModalMsg(express_number)
-  }
-
-  goToEvaluate = e => {
-    e.stopPropagation()
-    const { data } = this.props
-    if (checkLogin()) {
-      Taro.navigateTo({
-        url: '../../pages/evaluate/index',
-        success: res => {
-          res.eventChannel.emit('acceptEvaluate', {
-            data
-          })
-        }
-      })
-    }
   }
 
   gotoDetail = e => {

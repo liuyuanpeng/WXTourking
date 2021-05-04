@@ -1,4 +1,5 @@
 @import '../../common/index.scss';
+
 .day-chartered-page {
   position: relative;
   background-color: #F7F7F7;
@@ -32,41 +33,13 @@
         line-height: 34px;
         color: #777777;
       }
-      .label-place-input {
-        width: 100%;
-        height: 42px;
-        margin: 14px 0;
-      }
-
-      .label-time-input {
-        height: 42px;
-        margin: 14px 0;
-      }
-
-      .label-time-input-item {
-        font-size: 30px;
-      }
 
       .label-day {
         position: absolute;
         top: 190px;
         left: 420px;
       }
-      .label-day-input {
-        height: 42px;
-        margin: 14px 0;
-        position: absolute;
-        left: 420px;
-        top: 224px;
-      }
-
-      .label-day-input-item {
-        font-size: 30px;
-        color: #333333;
-        font-weight: bold;
-        height: 42px;
-        line-height: 42px;
-      }
+      
 
       .split-line{
         height: 1PX;

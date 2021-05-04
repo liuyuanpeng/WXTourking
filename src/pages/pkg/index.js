@@ -1,7 +1,8 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Text, Label, Swiper, ScrollView } from '@tarojs/components'
 import NavBar from '@components/NavBar'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 // import '../../common/index.scss'
 import './index.scss'
 
@@ -43,12 +44,12 @@ class Pkg extends Component {
   componentWillMount() {}
 
   componentDidMount() {
-    const current = this.$router.params.index || 0
+    const current = Taro.getCurrentInstance().router.params.index || 0
     this.setState({
       current: parseInt(current)
     })
 
-    const eventChannel = this.$scope.getOpenerEventChannel()
+    const eventChannel = Taro.getCurrentInstance().page.getOpenerEventChannel()
     eventChannel.on('acceptCharterData', data => {
       this.setState({
         charterData: data || {}
@@ -175,8 +176,8 @@ class Pkg extends Component {
       <View
         className='pkg-page'
         style={{
-          top: 88 + Taro.$statusBarHeight + 'rpx',
-          minHeight: Taro.$windowHeight - 88 - Taro.$statusBarHeight + 'rpx'
+          top: 88 + window.$statusBarHeight + 'rpx',
+          minHeight: window.$screenHeight - 88 - window.$statusBarHeight + 'rpx'
         }}
       >
         <SysNavBar title='选择里程套餐' />

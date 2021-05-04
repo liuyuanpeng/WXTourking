@@ -1,9 +1,10 @@
 import Taro from '@tarojs/taro'
+import React from 'react'
 import { View } from '@tarojs/components'
 
 import './index.scss'
 
-class SysNavBar extends Taro.Component {
+class SysNavBar extends React.Component {
   static defaultProps = {
     title: '',
     transparent: false,
@@ -31,7 +32,7 @@ class SysNavBar extends Taro.Component {
 
   render() {
     const { title, transparent, hideBack, noBorder } = this.props
-    const barHeight = Taro.$statusBarHeight + 88 + 'rpx'
+    const barHeight = window.$statusBarHeight + 88 + 'rpx'
     return (
       <View
         className='sys-nav-bar'
@@ -47,7 +48,7 @@ class SysNavBar extends Taro.Component {
             : { height: barHeight }
         }
       >
-        {!hideBack && <View className='back-btn' onClick={this.onBack} />}
+        {!hideBack && <View className='back-btn-ex' onClick={this.onBack} />}
         <View className='sys-nav-title'>{title}</View>
       </View>
     )

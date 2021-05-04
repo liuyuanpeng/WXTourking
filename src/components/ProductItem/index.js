@@ -1,9 +1,10 @@
 import Taro from '@tarojs/taro'
+import React from 'react'
 import { View, Image, Label } from '@tarojs/components'
 
-import './index.less'
+import './index.scss'
 
-class ProductItem extends Taro.Component {
+class ProductItem extends React.Component {
   static defaultProps = {
     type: 'scene', // scene, food, gift
     image: '',

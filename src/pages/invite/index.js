@@ -1,8 +1,9 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Image, ScrollView, Button, Label } from '@tarojs/components'
 import NavBar from '@components/NavBar'
 import { AtTabs, AtTabsPane } from 'taro-ui'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 import '../../common/index.scss'
 import './index.scss'
 
@@ -23,7 +24,7 @@ class Home extends Component {
   }
 
   componentDidMount() {
-    const { user_id } = this.$router.params
+    const { user_id } = Taro.getCurrentInstance().router.params
     this.user_id = user_id || ''
     Taro.setStorageSync(STORAGE.USER_FANLI, user_id)
     this.props.dispatch({
@@ -63,7 +64,7 @@ class Home extends Component {
   render() {
     const { pool } = this.props
     return (
-      <View className='new-page' style={{ height: Taro.$windowHeight + 'rpx' }}>
+      <View className='new-page' style={{ height: window.$screenHeight + 'rpx' }}>
         <NavBar
           title='邀请好友'
           navigate

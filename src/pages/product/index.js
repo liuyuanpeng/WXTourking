@@ -1,7 +1,8 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Image, Label, Swiper, SwiperItem } from '@tarojs/components'
 import NavBar from '@components/NavBar'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 import '../../common/index.scss'
 import './index.scss'
 
@@ -23,7 +24,7 @@ class ProductDetail extends Component {
   }
 
   componentDidMount() {
-    const id = this.$router.params.id
+    const id = Taro.getCurrentInstance().router.params.id
     if (id) {
       this.props.dispatch({
         type: 'product/getProduct',
@@ -54,7 +55,7 @@ class ProductDetail extends Component {
       })
       return
     }
-    const eventChannel = this.$scope.getOpenerEventChannel()
+    const eventChannel = Taro.getCurrentInstance().page.getOpenerEventChannel()
     eventChannel.on('acceptProductData', detail => {
       this.setState({
         detail
@@ -221,7 +222,7 @@ class ProductDetail extends Component {
           </View>
 
           <View className='subtitle'>{pDetail.subtitle}</View>
-          {pDetail.location && (
+          {!!pDetail.location && (
             <View>
               <AtDivider lineColor='#F3F3F3' />
               <View className='location-icon' />

@@ -1,9 +1,10 @@
 import Taro from '@tarojs/taro'
+import React from 'react'
 import { View, Image } from '@tarojs/components'
 
 import './index.scss'
 
-class ProfileItem extends Taro.Component {
+class ProfileItem extends React.Component {
   static defaultProps = {
     title: '',
     subtitle: '',

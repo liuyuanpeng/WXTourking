@@ -1,7 +1,8 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Label, Text, ScrollView, Image } from '@tarojs/components'
 import NavBar from '@components/NavBar'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 // import '../../common/index.scss'
 import './index.scss'
 
@@ -48,7 +49,7 @@ class CarType extends Component {
   }
 
   componentDidMount() {
-    const eventChannel = this.$scope.getOpenerEventChannel()
+    const eventChannel = Taro.getCurrentInstance().page.getOpenerEventChannel()
     eventChannel.on('acceptData', data => {
       this.setState({
         preData: data || {}
@@ -187,7 +188,7 @@ class CarType extends Component {
     ]
 
     const scrollStyle = {
-      height: `${Taro.$windowHeight - Taro.$statusBarHeight - 320}rpx`
+      height: `${window.$screenHeight - window.$statusBarHeight - 320}rpx`
     }
 
     return (

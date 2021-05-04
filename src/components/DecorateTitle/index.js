@@ -1,9 +1,10 @@
 import Taro from '@tarojs/taro'
+import React from 'react'
 import { View, Label } from '@tarojs/components'
 
 import './index.scss'
 
-class DecorateTitle extends Taro.Component {
+class DecorateTitle extends React.Component {
   static defaultProps = {
     isGift: false,
     image: '',

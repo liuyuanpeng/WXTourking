@@ -1,7 +1,8 @@
-import Taro, { PureComponent } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Image, ScrollView, Button } from '@tarojs/components'
 import MineListItem from '@components/MineListItem'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 
 import '../../common/index.scss'
 import './index.scss'
@@ -19,52 +20,40 @@ const profilePng = IMAGE_HOST + '/images/profile.png'
 import { AtButton, AtIcon } from 'taro-ui'
 import STORAGE from '@constants/storage'
 import { debounce } from 'debounce'
-import { isLogin } from '../../utils/tool'
+import { checkLogin, isLogin } from '../../utils/tool'
 
 @connect(({ user }) => ({
-  userInfo: user
+  userInfo: user,
 }))
-class Home extends PureComponent {
+class Mine extends Component {
   config = {
-    navigationBarTitleText: '我的'
+    navigationBarTitleText: '我的',
+  }
+
+  componentDidMount() {
+    checkLogin()
   }
 
   componentDidShow() {
-    if (
-      Taro.getEnv() === Taro.ENV_TYPE.WEAPP &&
-      typeof this.$scope.getTabBar === 'function' &&
-      this.$scope.getTabBar()
-    ) {
-      this.$scope.getTabBar().$component.setState({
-        selected: 3
-      })
-    }
     if (isLogin()) {
       this.props.dispatch({
-        type: 'user/getUserInfo'
+        type: 'user/getUserInfo',
       })
     }
-    
   }
 
-  showAllOrders = e => {
+  showAllOrders = (e) => {
     e.stopPropagation()
     Taro.navigateTo({
-      url: `../allOrders/index`
+      url: `../allOrders/index`,
     })
   }
 
   showOrder = (index, e) => {
     e.stopPropagation()
     Taro.navigateTo({
-      url: `../allOrders/index?index=${index}`
+      url: `../allOrders/index?index=${index}`,
     })
-  }
-
-  onGetUserInfo = result => {
-    const {nickName, avatarUrl} = result.detail.userInfo
-    Taro.setStorageSync(STORAGE.NICKNAME, nickName)
-    Taro.setStorageSync(STORAGE.AVATAR, avatarUrl)
   }
 
   render() {
@@ -78,18 +67,18 @@ class Home extends PureComponent {
           //   url: '../myBill/index'
           // })
           Taro.navigateTo({
-            url: '../billManager/index'
+            url: '../billManager/index',
           })
-        }
+        },
       },
       {
         title: '我的收藏',
         icon: myFavorPng,
         action: () => {
           Taro.navigateTo({
-            url: `../allFavors/index`
+            url: `../allFavors/index`,
           })
-        }
+        },
       },
       // {
       //   title: '我的余额',
@@ -106,56 +95,59 @@ class Home extends PureComponent {
         action: () => {
           this.props.dispatch({
             type: 'evaluate/getEvaluateList',
-            payload: { page: 0, size: 100 },
+            payload: {
+              page: 0,
+              size: 100,
+            },
             success: () => {
               Taro.navigateTo({
-                url: '../comments/index'
+                url: '../comments/index',
               })
             },
-            fail: msg => {
+            fail: (msg) => {
               Taro.showToast({
                 title: msg || '获取评论失败',
-                icon: 'none'
+                icon: 'none',
               })
-            }
+            },
           })
-        }
+        },
       },
       {
         title: '我的点赞',
         icon: myLikePng,
         action: () => {
           Taro.navigateTo({
-            url: `../allLikes/index`
+            url: `../allLikes/index`,
           })
-        }
+        },
       },
       {
         title: '我的客服',
         icon: customerServicePng,
         action: () => {
           Taro.navigateTo({
-            url: `../customerService/index`
+            url: `../customerService/index`,
           })
-        }
+        },
       },
       {
         title: '收货地址管理',
         icon: locationPng,
         action: () => {
           Taro.navigateTo({
-            url: '../address/index'
+            url: '../address/index',
           })
-        }
+        },
       },
       {
         title: '邀请有礼',
         icon: inviteGiftPng,
         action: () => {
           Taro.navigateTo({
-            url: '../invite/index'
+            url: '../invite/index',
           })
-        }
+        },
       },
       {
         title: '我的优惠券',
@@ -165,58 +157,63 @@ class Home extends PureComponent {
             type: 'coupon/getCouponList',
             payload: {
               status: 1,
-              user_id: Taro.getStorageSync(STORAGE.USER_ID)
+              user_id: Taro.getStorageSync(STORAGE.USER_ID),
             },
             success: () => {
               Taro.navigateTo({
-                url: '../coupon/index'
+                url: '../coupon/index',
               })
             },
-            fail: msg => {
+            fail: (msg) => {
               Taro.showToast({
                 title: msg || '获取优惠券失败',
-                icon: 'none'
+                icon: 'none',
               })
-            }
+            },
           })
-        }
+        },
       },
       {
         title: '我的资料',
         icon: profilePng,
         action: () => {
           Taro.navigateTo({
-            url: '../profile/index'
+            url: '../profile/index',
           })
-        }
-      }
+        },
+      },
     ]
 
     const scrollStyle = {
-      height: Taro.$windowHeight - 690 - Taro.$statusBarHeight + 'rpx',
-      top: Taro.$statusBarHeight + 590 + 'rpx',
-      position: 'absolute'
+      height: window.$screenHeight - 690 - window.$statusBarHeight + 'rpx',
+      top: window.$statusBarHeight + 590 + 'rpx',
+      position: 'absolute',
     }
 
-    const app = Taro.getApp()
-    const avatarUrl = app.globalData.wxInfo.avatarUrl
-    const nickName = app.globalData.wxInfo.nickName
+    const avatarUrl = Taro.getStorageSync(STORAGE.WX_AVATAR)
+    const nickName = Taro.getStorageSync(STORAGE.WX_NICKNAME)
 
     return (
       <View
         className='page-mine'
-        style={{ height: Taro.$windowHeight - 100 + 'rpx' }}
+        style={{
+          height: window.$windowHeight + 'rpx',
+        }}
       >
         <View
           className='navigation-bar'
-          style={{ height: Taro.$statusBarHeight + 88 + 'rpx' }}
+          style={{
+            height: window.$statusBarHeight + 88 + 'rpx',
+          }}
         >
           我的
         </View>
         <View className='mine-bkg' />
         <View
           className='mine-header'
-          style={{ top: Taro.$statusBarHeight + 108 + 'rpx' }}
+          style={{
+            top: window.$statusBarHeight + 108 + 'rpx',
+          }}
         >
           {avatarUrl ? (
             <Image className='mine-avatar' src={avatarUrl} mode='aspectFill' />
@@ -224,22 +221,25 @@ class Home extends PureComponent {
             <AtIcon className='mine-avatar' size={64} value='user' />
           )}
           <View className='mine-info'>
-            <View className='mine-nickname'>{nickName || userInfo.name || '昵称未设置'}</View>
+            <View className='mine-nickname'>
+              {nickName || userInfo.name || '昵称未设置'}
+            </View>
             <View className='mine-signature'>
               {userInfo.remark || '签名未设置'}
             </View>
           </View>
-
-          {/* <Button style={{margin: '30rpx'}} open-type='getUserInfo' onGetUserInfo={this.onGetUserInfo}>
-            测试版获取微信用户信息
-          </Button> */}
         </View>
         <View
           className='mine-order-container'
-          style={{ top: Taro.$statusBarHeight + 302 + 'rpx' }}
+          style={{
+            top: window.$statusBarHeight + 302 + 'rpx',
+          }}
         >
-          <View className='mine-order-title'>我的订单</View>
-          <View className='mine-all-order' onClick={debounce(this.showAllOrders, 100)}>
+          <View className='mine-order-title'> 我的订单 </View>
+          <View
+            className='mine-all-order'
+            onClick={debounce(this.showAllOrders, 100)}
+          >
             全部订单
           </View>
           <View className='mine-order-split' />
@@ -249,28 +249,28 @@ class Home extends PureComponent {
               onClick={debounce(this.showOrder.bind(this, 1), 100)}
             >
               <View className='mine-order-icon-1' />
-              <View className='mine-order-category-text'>待付款</View>
+              <View className='mine-order-category-text'> 待付款 </View>
             </View>
             <View
               className='mine-order-category-item'
               onClick={debounce(this.showOrder.bind(this, 2), 100)}
             >
               <View className='mine-order-icon-2' />
-              <View className='mine-order-category-text'>待出行</View>
+              <View className='mine-order-category-text'> 待出行 </View>
             </View>
             <View
               className='mine-order-category-item'
               onClick={debounce(this.showOrder.bind(this, 3), 100)}
             >
               <View className='mine-order-icon-3' />
-              <View className='mine-order-category-text'>已完成</View>
+              <View className='mine-order-category-text'> 已完成 </View>
             </View>
             <View
               className='mine-order-category-item'
               onClick={debounce(this.showOrder.bind(this, 4), 100)}
             >
               <View className='mine-order-icon-4' />
-              <View className='mine-order-category-text'>待评价</View>
+              <View className='mine-order-category-text'> 待评价 </View>
             </View>
           </View>
         </View>
@@ -297,4 +297,4 @@ class Home extends PureComponent {
   }
 }
 
-export default Home
+export default Mine

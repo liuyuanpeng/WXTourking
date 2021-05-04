@@ -1,9 +1,11 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Image, Label, ScrollView } from '@tarojs/components'
 import NavBar from '@components/NavBar'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 import '../../common/index.scss'
 import './index.scss'
+import styles from './index.module.scss'
 
 import { AtDivider, AtNavBar, AtInputNumber, AtInput, AtModal } from 'taro-ui'
 import CommentItem from '@components/CommentItem'
@@ -22,11 +24,11 @@ let qqMapSDK = null
 
 @connect(({ city, coupon }) => ({
   currentCity: city.current,
-  usableList: coupon.usableList
+  usableList: coupon.usableList,
 }))
 class PayProduct extends Component {
   config = {
-    navigationBarTitleText: '订单支付'
+    navigationBarTitleText: '订单支付',
   }
 
   state = {
@@ -37,7 +39,7 @@ class PayProduct extends Component {
     start_time: dayjs().add(5, 'm'),
     price: 0,
     coupon: '',
-    showTip: false
+    showTip: false,
   }
 
   componentDidShow() {
@@ -47,57 +49,57 @@ class PayProduct extends Component {
         type: 'coupon/getUsableCoupon',
         payload: {
           price: price || 0,
-          user_id: Taro.getStorageSync(STORAGE.USER_ID)
-        }
+          user_id: Taro.getStorageSync(STORAGE.USER_ID),
+        },
       })
     }
   }
 
   componentDidMount() {
-    const eventChannel = this.$scope.getOpenerEventChannel()
-    eventChannel.on('orderData', data => {
+    const eventChannel = Taro.getCurrentInstance().page.getOpenerEventChannel()
+    eventChannel.on('orderData', (data) => {
       this.setState({
-        order: data
+        order: data,
       })
     })
     const name = Taro.getStorageSync(STORAGE.ORDER_USER_NAME) || ''
     const phone = Taro.getStorageSync(STORAGE.ORDER_USER_MOBILE) || ''
     this.setState({
       name,
-      phone
+      phone,
     })
   }
 
-  goToCoupon = e => {
+  goToCoupon = (e) => {
     e.stopPropagation()
     if (checkLogin()) {
       Taro.navigateTo({
         url: '../coupon/index?canEdit=true&price=' + this.state.order.price,
         events: {
-          acceptCoupon: coupon => {
+          acceptCoupon: (coupon) => {
             this.setState({
-              coupon
+              coupon,
             })
-          }
-        }
+          },
+        },
       })
     }
   }
 
-  onMoreAddress = e => {
+  onMoreAddress = (e) => {
     e.stopPropagation()
   }
 
-  getDistance = params => {
+  getDistance = (params) => {
     qqMapSDK = new QQMapWX({
-      key: 'JTKBZ-LCG6U-GYOVE-BJMJ5-E3DA5-HTFAJ' // 必填
+      key: 'JTKBZ-LCG6U-GYOVE-BJMJ5-E3DA5-HTFAJ', // 必填
     })
     const { from, to, success } = params
     qqMapSDK.calculateDistance({
       mode: 'driving', //可选值：'driving'（驾车）、'walking'（步行），不填默认：'walking',可不填
       from, //若起点有数据则采用起点坐标，若为空默认当前地址
       to, //终点坐标
-      success: res => {
+      success: (res) => {
         //成功后的回调
 
         if (res.status == 0 && res.result.elements.length > 0) {
@@ -108,11 +110,11 @@ class PayProduct extends Component {
       },
       fail: function(error) {
         console.error(error)
-      }
+      },
     })
   }
 
-  handlePay = e => {
+  handlePay = (e) => {
     e.stopPropagation()
     if (!checkLogin()) {
       return
@@ -125,7 +127,7 @@ class PayProduct extends Component {
       name,
       order,
       price,
-      coupon
+      coupon,
     } = this.state
     const regex = /^(13|14|15|16|17|18|19)\d{9}$/
     if (start_time.isBefore(dayjs())) {
@@ -144,7 +146,7 @@ class PayProduct extends Component {
     if (msg) {
       Taro.showToast({
         title: msg,
-        icon: 'none'
+        icon: 'none',
       })
       return
     }
@@ -158,7 +160,7 @@ class PayProduct extends Component {
       zuowei,
       consume,
       days = 1,
-      private_consume
+      private_consume,
     } = order
 
     const payload = {
@@ -187,7 +189,7 @@ class PayProduct extends Component {
       order_source: 'USER',
       consume_id: consume.id,
       private_consume_id: private_consume.id,
-      username: name
+      username: name,
     }
 
     // 使用优惠券信息
@@ -211,7 +213,7 @@ class PayProduct extends Component {
     this.props.dispatch({
       type: 'order/createOrder',
       payload,
-      success: result => {
+      success: (result) => {
         // 存储手机号和用户名
         Taro.setStorageSync(STORAGE.ORDER_USER_NAME, name)
         Taro.setStorageSync(STORAGE.ORDER_USER_MOBILE, phone)
@@ -222,7 +224,7 @@ class PayProduct extends Component {
           this.props.dispatch({
             type: 'order/confirmUserOrder',
             payload: {
-              id: result.id
+              id: result.id,
             },
             success: () => {
               this.props.dispatch({
@@ -233,11 +235,11 @@ class PayProduct extends Component {
                   chexing,
                   zuowei,
                   consume,
-                  private_consume
+                  private_consume,
                 },
                 success: () => {
                   Taro.navigateTo({
-                    url: '../orderStatus/index?goHome=true'
+                    url: '../orderStatus/index?goHome=true',
                   })
                 },
                 fail: () => {
@@ -248,17 +250,17 @@ class PayProduct extends Component {
                       chexing,
                       zuowei,
                       consume,
-                      private_consume
+                      private_consume,
                     },
                     success: () => {
                       Taro.navigateTo({
-                        url: '../orderStatus/index?goHome=true'
+                        url: '../orderStatus/index?goHome=true',
                       })
-                    }
+                    },
                   })
-                }
+                },
               })
-            }
+            },
           })
         } else {
           // 拉起支付
@@ -273,17 +275,21 @@ class PayProduct extends Component {
                 type: 'order/setUserOrder',
                 payload: {
                   // 付款成功修改订单状态
-                  order: { ...result, order_status: 'WAIT_ACCEPT', has_pay: true },
+                  order: {
+                    ...result,
+                    order_status: 'WAIT_ACCEPT',
+                    has_pay: true,
+                  },
                   chexing,
                   zuowei,
                   consume,
-                  private_consume
+                  private_consume,
                 },
                 success: () => {
                   Taro.navigateTo({
-                    url: '../orderStatus/index?goHome=true'
+                    url: '../orderStatus/index?goHome=true',
                   })
-                }
+                },
               })
             },
             fail: () => {
@@ -294,47 +300,47 @@ class PayProduct extends Component {
                   chexing,
                   zuowei,
                   consume,
-                  private_consume
+                  private_consume,
                 },
                 success: () => {
                   Taro.navigateTo({
-                    url: '../orderStatus/index?goHome=true'
+                    url: '../orderStatus/index?goHome=true',
                   })
-                }
+                },
               })
-            }
+            },
           })
         }
       },
-      fail: message => {
+      fail: (message) => {
         if (message === 'no_pay') {
           this.setState({
-            showTip: true
+            showTip: true,
           })
           return
         }
         Taro.showToast({
           title: message || '创建订单失败',
-          icon: 'none'
+          icon: 'none',
         })
-      }
+      },
     })
   }
 
-  timeAction = e => {
+  timeAction = (e) => {
     e.stopPropagation()
   }
 
-  getPrice = options => {
+  getPrice = (options) => {
     this.props.dispatch({
       type: 'order/getPrice',
-      ...options
+      ...options,
     })
   }
 
-  handleLocationChange = location => {
+  handleLocationChange = (location) => {
     this.setState({
-      start_place: location
+      start_place: location,
     })
     const { start_time, order } = this.state
     const { price_strategy_id = {}, target_place } = order
@@ -354,47 +360,47 @@ class PayProduct extends Component {
                 start_time: start_time.valueOf(),
                 kilo,
                 time,
-                price_strategy_id
+                price_strategy_id,
               },
-              success: finalPrice => {
+              success: (finalPrice) => {
                 this.setState({
-                  price: finalPrice
+                  price: finalPrice,
                 })
                 this.props.dispatch({
                   type: 'coupon/getUsableCoupon',
                   payload: {
                     price: finalPrice || 0,
-                    user_id: Taro.getStorageSync(STORAGE.USER_ID)
-                  }
+                    user_id: Taro.getStorageSync(STORAGE.USER_ID),
+                  },
                 })
               },
               fail: () => {
                 Taro.showToast({
                   title: '无法获取订单价格',
-                  icon: 'none'
+                  icon: 'none',
                 })
-              }
+              },
             })
-        }
+        },
       })
     }
   }
 
-  changeName = name => {
+  changeName = (name) => {
     this.setState({
-      name
+      name,
     })
   }
 
-  changePhone = phone => {
+  changePhone = (phone) => {
     this.setState({
-      phone
+      phone,
     })
   }
 
-  handleChangeTime = value => {
+  handleChangeTime = (value) => {
     this.setState({
-      start_time: value
+      start_time: value,
     })
     const { order } = this.state
     const { price_strategy_id } = order
@@ -404,19 +410,19 @@ class PayProduct extends Component {
           start_time: value.valueOf(),
           kilo: this.kilo,
           time: this.time,
-          price_strategy_id
+          price_strategy_id,
         },
-        success: finalPrice => {
+        success: (finalPrice) => {
           this.setState({
-            price: finalPrice
+            price: finalPrice,
           })
         },
         fail: () => {
           Taro.showToast({
             title: '无法获取订单价格',
-            icon: 'none'
+            icon: 'none',
           })
-        }
+        },
       })
     }
   }
@@ -425,13 +431,13 @@ class PayProduct extends Component {
     this.handleClose()
     Taro.setStorageSync(STORAGE.SWITCH_INDEX, 3)
     Taro.switchTab({
-      url: '../schedule/index'
+      url: '../schedule/index',
     })
   }
 
   handleClose = () => {
     this.setState({
-      showTip: false
+      showTip: false,
     })
   }
 
@@ -444,16 +450,16 @@ class PayProduct extends Component {
       price,
       order,
       coupon,
-      showTip
+      showTip,
     } = this.state
     const { private_consume = {} } = order
     const { usableList } = this.props
     const couponClassName =
-      usableList && usableList.length
+      !!usableList && usableList.length
         ? 'coupon-right'
         : 'coupon-right coupon-right-gray'
     const scrollStyle = {
-      height: `${Taro.$windowHeight - -Taro.$statusBarHeight - 274}rpx`
+      height: `${window.$screenHeight - -window.$statusBarHeight - 274}rpx`,
     }
     let productImg
     try {
@@ -464,7 +470,7 @@ class PayProduct extends Component {
     return (
       <View
         className='pay-product'
-        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+        style={{ top: 88 + window.$statusBarHeight + 'rpx' }}
       >
         <SysNavBar title='订单支付' />
 
@@ -486,7 +492,7 @@ class PayProduct extends Component {
             <View className='detail-item'>
               <View className='detail-label'>上车地点</View>
               <LocationInput
-                wrap-class='detail-content'
+                externalClass={styles.detailContent}
                 title={start_place.title}
                 placeholder='请选择上车地点'
                 onChange={this.handleLocationChange}
@@ -501,6 +507,7 @@ class PayProduct extends Component {
               <View className='detail-label'>乘车人姓名</View>
               <AtInput
                 className='detail-input'
+                name='detail-input-name'
                 value={name}
                 placeholder='请输入姓名'
                 onChange={this.changeName}
@@ -512,6 +519,7 @@ class PayProduct extends Component {
               <AtInput
                 type='phone'
                 className='detail-input'
+                name='detail-input-phone'
                 value={phone}
                 placeholder='请输入手机号'
                 onChange={this.changePhone}
@@ -521,7 +529,7 @@ class PayProduct extends Component {
             <View className='detail-item' onClick={this.timeAction}>
               <View className='detail-label'>用车时间</View>
               <DateTimePicker
-                wrap-class='detail-content'
+                wrapClass={styles.detailContent}
                 onOk={this.handleChangeTime}
                 hidePassed
                 initValue={start_time}
@@ -537,7 +545,7 @@ class PayProduct extends Component {
               className={couponClassName}
               onClick={debounce(this.goToCoupon, 100)}
             >
-              {coupon
+              {!!coupon
                 ? `-${coupon.price}￥`
                 : usableList && usableList.length
                 ? `${usableList.length}张优惠券`

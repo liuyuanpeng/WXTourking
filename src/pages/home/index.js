@@ -1,8 +1,9 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Image, ScrollView, Label } from '@tarojs/components'
 import NavBar from '../../components/NavBar'
 import { AtTabs, AtTabsPane } from 'taro-ui'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 import '../../common/index.scss'
 import './index.scss'
 
@@ -21,38 +22,29 @@ import { checkLogin } from '../../utils/tool'
 
 let qqMapSDK = null
 
-@connect(({ product, city }) => ({
+@connect(({ product, city, user }) => ({
   hot: product.hot,
   hotJINGDIAN: product.hotJINGDIAN,
   hotMEISHI: product.hotMEISHI,
   hotBANSHOU: product.hotBANSHOU,
-  currentCity: city.current
+  currentCity: city.current,
+  user: user,
 }))
 class Home extends Component {
   config = {
-    navigationBarTitleText: '旅王出行'
+    navigationBarTitleText: '旅王出行',
   }
 
   state = {
     opacity: 0,
     current: 0,
-    visible: false
+    visible: false,
   }
 
   componentDidShow() {
-    if (
-      Taro.getEnv() === Taro.ENV_TYPE.WEAPP &&
-      typeof this.$scope.getTabBar === 'function' &&
-      this.$scope.getTabBar()
-    ) {
-      this.$scope.getTabBar().$component.setState({
-        selected: 0
-      })
-    }
-
     this.props.dispatch({
       type: 'city/getCityList',
-      success: city => {
+      success: (city) => {
         this.props.dispatch({
           type: 'carTypes/getCarTypes',
           success: () => {
@@ -61,11 +53,11 @@ class Home extends Component {
               success: () => {
                 this.fetchData(city)
                 this.getCoupon()
-              }
+              },
             })
-          }
+          },
         })
-      }
+      },
     })
 
     // 显示活动页面
@@ -87,23 +79,23 @@ class Home extends Component {
         dispatch({
           type: 'coupon/getPool',
           payload: {
-            coupon_category: 'FANLI'
+            coupon_category: 'FANLI',
           },
-          success: pool => {
+          success: (pool) => {
             if (pool && pool.id) {
               dispatch({
                 type: 'coupon/obtainCoupon',
                 payload: {
                   mobile: Taro.getStorageSync(STORAGE.USER_PHONE),
                   user_id: Taro.getStorageSync(STORAGE.USER_FANLI),
-                  coupon_pool_id: pool.id
+                  coupon_pool_id: pool.id,
                 },
                 success: () => {
                   Taro.setStorageSync(STORAGE.USER_FANLI, 1)
-                }
+                },
               })
             }
-          }
+          },
         })
       }
 
@@ -113,47 +105,47 @@ class Home extends Component {
         dispatch({
           type: 'coupon/getPool',
           payload: {
-            coupon_category: 'XINYONGHU'
+            coupon_category: 'XINYONGHU',
           },
-          success: pool => {
+          success: (pool) => {
             if (pool && pool.id) {
               dispatch({
                 type: 'coupon/obtainCoupon',
                 payload: {
                   mobile: Taro.getStorageSync(STORAGE.USER_PHONE),
-                  coupon_pool_id: pool.id
+                  coupon_pool_id: pool.id,
                 },
                 success: () => {
                   Taro.setStorageSync(STORAGE.OLD_USER, 1)
-                }
+                },
               })
             }
-          }
+          },
         })
       }
     }
   }
 
-  fetchData = city => {
+  fetchData = (city) => {
     const { dispatch } = this.props
     dispatch({
       type: 'product/getHotProduct',
-      city
+      city,
     })
     dispatch({
       type: 'product/getHotProduct',
       target: 'hotJINGDIAN',
-      city
+      city,
     })
     dispatch({
       type: 'product/getHotProduct',
       target: 'hotMEISHI',
-      city
+      city,
     })
     dispatch({
       type: 'product/getHotProduct',
       target: 'hotBANSHOU',
-      city
+      city,
     })
   }
 
@@ -164,11 +156,11 @@ class Home extends Component {
   handleClick = (value, e) => {
     e.stopPropagation()
     this.setState({
-      current: value
+      current: value,
     })
   }
 
-  showAD = visible => {
+  showAD = (visible) => {
     if (!visible) {
       Taro.setStorageSync(
         STORAGE.AD_TIME,
@@ -178,17 +170,39 @@ class Home extends Component {
       )
     }
     this.setState({
-      visible
+      visible,
     })
   }
 
   componentDidMount() {
-    const publicity = this.$router.params.scene
+    Taro.checkSession({
+      success: () => {
+        // 判断是否有code
+        if (!Taro.getStorageSync(STORAGE.OPEN_ID)) {
+          this.login2WX()
+        }
+        // 判断是否登录旅王系统
+        if (this.checkLogin()) {
+          // 获取用户信息
+          this.props.dispatch({
+            type: 'user/getUserInfo',
+          })
+        }
+      },
+      fail: () => {
+        // session_key过期，删除老的session_key
+        Taro.removeStorageSync(STORAGE.SESSION_KEY)
+        // 获取code、open_id、session_key
+        this.login2WX()
+      },
+    })
+
+    const publicity = Taro.getCurrentInstance().router.params.scene
     if (publicity) {
       const driverIndex = publicity.indexOf('driver')
       if (publicity === 'coupon') {
         Taro.navigateTo({
-          url: `../coupon/index`
+          url: `../coupon/index`,
         })
       } else if (driverIndex != -1) {
         // 司机推荐
@@ -196,10 +210,16 @@ class Home extends Component {
           STORAGE.SOURCE_DRIVER_ID,
           publicity.substring(driverIndex + 7)
         )
+        // 跳转接送机下单页面
         this.gotoAirport()
       } else {
         if (publicity) {
           Taro.setStorageSync(STORAGE.SOURCE_SHOP_ID, publicity)
+          // 统计扫码用户
+          this.props.dispatch({
+            type: 'user/scanCount',
+          })
+          // 跳转接送机下单页面
           this.gotoAirport()
         }
       }
@@ -207,71 +227,38 @@ class Home extends Component {
 
     // 获取城市
     qqMapSDK = new QQMapWX({
-      key: 'JTKBZ-LCG6U-GYOVE-BJMJ5-E3DA5-HTFAJ' // 必填
+      key: 'JTKBZ-LCG6U-GYOVE-BJMJ5-E3DA5-HTFAJ', // 必填
     })
     Taro.getLocation({
       type: 'gcj02',
-      success: loc => {
+      success: (loc) => {
         qqMapSDK.reverseGeocoder({
           //逆地址解析（经纬度 ==> 坐标位置）
           location: loc,
-          success: result => {
+          success: (result) => {
             let curCity = result.result.ad_info.city
             curCity = curCity.substr(0, curCity.length - 1)
             this.props.dispatch({
               type: 'city/setCurrent',
-              name: curCity
+              name: curCity,
             })
-            Taro.checkSession({
-              success: () => {
-                // 统计扫码用户
-                this.props.dispatch({
-                  type: 'user/scanCount'
-                })
-                // 判断是否登录旅王系统
-                if (Taro.getStorageSync(STORAGE.TOKEN)) {
-                  // 获取用户信息
-                  this.props.dispatch({
-                    type: 'user/getUserInfo',
-                    success: user => {
-                      const app = Taro.getApp()
-                      const { avatarUrl, nickName } = app.globalData.wxInfo
-                      if (avatarUrl && nickName) {
-                        this.props.dispatch({
-                          type: 'user/updateUserInfo',
-                          payload: {
-                            user_id: user.id,
-                            avatar: avatarUrl,
-                            nick_name: nickName
-                          }
-                        })
-                      }
-                    }
-                  })
-                }
-              },
-              fail: () => {
-                Taro.login({
-                  success: res => {
-                    // 尝试获取/更新微信信息
-                    Taro.getUserInfo({
-                      lang: 'zh_CN',
-                      success: response => {
-                        const app = Taro.getApp()
-                        app.globalData.wxInfo = { ...response.userInfo }
-                        Taro.setStorageSync(STORAGE.NICKNAME, response.userInfo.nickName)
-                        Taro.setStorageSync(STORAGE.AVATAR, response.userInfo.avatarUrl)
-                      }
-                    })
-                    Taro.setStorageSync(STORAGE.USER_CODE, res.code)
-                    this.fetchSession()
-                  }
-                })
-              }
-            })
-          }
+          },
         })
-      }
+      },
+    })
+  }
+
+  login2WX = () => {
+    Taro.login({
+      success: (res) => {
+        Taro.setStorageSync(STORAGE.USER_CODE, res.code)
+        this.fetchSession()
+      },
+      fail: () => {
+        setTimeout(() => {
+          this.login2WX()
+        }, 200)
+      },
     })
   }
 
@@ -286,20 +273,20 @@ class Home extends Component {
           this.fetchSession()
         }, 200)
       },
-      fail: msg => {
+      fail: (msg) => {
         Taro.showToast({
           title: msg || '获取session失败，请稍后重试。',
-          icon: 'none'
+          icon: 'none',
         })
-      }
+      },
     })
   }
 
-  onScroll = e => {
+  onScroll = (e) => {
     const rate = e.detail.scrollTop / 200
     const opacity = rate > 0.8 ? 0.8 : rate
     this.setState({
-      opacity
+      opacity,
     })
   }
 
@@ -310,70 +297,70 @@ class Home extends Component {
     if (scene === 'ROAD_PRIVATE') {
       Taro.navigateTo({
         url: '../routeDetail/index',
-        success: res => {
+        success: (res) => {
           res.eventChannel.emit('roadData', {
-            ...detail
+            ...detail,
           })
-        }
+        },
       })
     } else {
       Taro.navigateTo({
         url: `../product/index`,
-        success: res => {
+        success: (res) => {
           res.eventChannel.emit('acceptProductData', {
-            ...detail
+            ...detail,
           })
-        }
+        },
       })
     }
   }
 
-  onSeeMore = e => {
+  onSeeMore = (e) => {
     e.stopPropagation()
     Taro.navigateTo({
-      url: '../more/index'
+      url: '../more/index',
     })
   }
 
-  onMoreScene = e => {
+  onMoreScene = (e) => {
     e.stopPropagation()
     Taro.navigateTo({
-      url: `../moreProduct/index?type=scene`
+      url: `../moreProduct/index?type=scene`,
     })
   }
 
-  onMoreFood = e => {
+  onMoreFood = (e) => {
     e.stopPropagation()
     Taro.navigateTo({
-      url: `../moreProduct/index?type=food`
+      url: `../moreProduct/index?type=food`,
     })
   }
 
-  onMoreGift = e => {
+  onMoreGift = (e) => {
     e.stopPropagation()
 
     Taro.navigateTo({
-      url: `../moreProduct/index?type=gift`
+      url: `../moreProduct/index?type=gift`,
     })
   }
 
   gotoAirport = () => {
-    setTimeout(()=>{
+    setTimeout(() => {
       Taro.showToast({
         title: 'navigate...',
-        icon: 'none'
+        icon: 'none',
       })
       this.gotoHref('airport')
     }, 500)
   }
 
-  gotoHref = href => {
+  gotoHref = (href) => {
     Taro.navigateTo({
-      url: `../${href}/index`
+      url: `../${href}/index`,
     })
   }
 
-  handleJoin = e => {
+  handleJoin = (e) => {
     e.stopPropagation()
     if (!checkLogin()) {
       return
@@ -385,16 +372,61 @@ class Home extends Component {
         .valueOf()
     )
     Taro.navigateTo({
-      url: '../invite/index'
+      url: '../invite/index',
     })
     this.setState({
-      visible: false
+      visible: false,
     })
+  }
+
+  updateWXInfo = (userInfo) => {
+    const { nickName, avatarUrl } = userInfo
+    Taro.setStorageSync(STORAGE.WX_AVATAR, avatarUrl)
+    Taro.setStorageSync(STORAGE.WX_NICKNAME, nickName)
+    if (this.checkLogin()) {
+      const { user, dispatch } = this.props
+      // 更新用户信息
+      dispatch({
+        type: 'user/updateUserInfo',
+        payload: {
+          user_id: user.id,
+          avatar: avatarUrl,
+          nick_name: nickName,
+        },
+      })
+    }
+  }
+
+  handleGlobalClick = (e) => {
+    e.stopPropagation()
+    if (Taro.getStorageSync(STORAGE.WX_NICKNAME)) {
+      // 已有用户信息，返回
+      return
+    }
+    // 获取用户信息
+    if (Taro.canIUse('getUserProfile')) {
+      Taro.getUserProfile({
+        desc: '用于完善乘客资料',
+        lang: 'zh_CN',
+        success: (res) => {
+          const { userInfo = {} } = res
+          this.updateWXInfo(userInfo)
+        },
+      })
+    } else {
+      Taro.getUserInfo({
+        lang: 'zh_CN',
+        success: (res) => {
+          const { userInfo = {} } = res
+          this.updateWXInfo(userInfo)
+        },
+      })
+    }
   }
 
   render() {
     const scrollStyle = {
-      height: `${Taro.$windowHeight - 100}rpx`
+      height: `${window.$windowHeight}rpx`,
     }
     const { opacity, visible } = this.state
 
@@ -402,23 +434,23 @@ class Home extends Component {
       {
         name: '按天包车',
         icon: daySchedulePng,
-        href: 'dayChartered'
+        href: 'dayChartered',
       },
       {
         name: '接送机',
         icon: airCarPng,
-        href: 'airport'
+        href: 'airport',
       },
       {
         name: '线路包车',
         icon: routeSchedulePng,
-        href: 'more'
-      }
+        href: 'more',
+      },
     ]
     const tabList = [
       { title: '热门景点' },
       { title: '人气美食' },
-      { title: '伴手礼' }
+      { title: '伴手礼' },
     ]
 
     const {
@@ -426,11 +458,11 @@ class Home extends Component {
       hotJINGDIAN,
       hotMEISHI,
       hotBANSHOU,
-      currentCity = { name: '' }
+      currentCity = { name: '' },
     } = this.props
 
     return (
-      <View className='page'>
+      <View className='page' onClick={this.handleGlobalClick}>
         <NavBar opacity={opacity} title='旅王出行' navigate />
         <ScrollView
           style={scrollStyle}
@@ -474,6 +506,7 @@ class Home extends Component {
                   >
                     <Image
                       className='like-image'
+                      mode='widthFix'
                       src={hot[0].private_consume.images.split(',')[0]}
                     />
                     <View className='like-tag'>
@@ -495,6 +528,7 @@ class Home extends Component {
                     >
                       <Image
                         className='like-image'
+                        mode='widthFix'
                         src={hot[1].private_consume.images.split(',')[1]}
                       />
 
@@ -516,6 +550,7 @@ class Home extends Component {
                     >
                       <Image
                         className='like-image'
+                        mode='widthFix'
                         src={hot[2].private_consume.images.split(',')[2]}
                       />
                       <View className='like-tag'>

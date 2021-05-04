@@ -1,4 +1,5 @@
 import Taro from '@tarojs/taro'
+import React from 'react'
 import { View, Image, Label } from '@tarojs/components'
 
 import './index.scss'
@@ -6,30 +7,28 @@ import './index.scss'
 const checkPng = IMAGE_HOST + '/images/check.png'
 const checkedPng = IMAGE_HOST + '/images/check_focus.png'
 
-class CheckBox extends Taro.Component {
-  static externalClasses = ['wrap-class', 'text-class']
-
-
+class CheckBox extends React.Component {
   static defaultProps = {
     checked: false,
     onChange: null,
-    title: ''
+    title: '',
+    wrapClass: '',
+    textClass: ''
   }
 
   onChange = e => {
     e.stopPropagation();
-    const {onChange} = this.props
-    const {checked} = this.state
+    const {onChange, checked} = this.props
     onChange && onChange(!checked)
   }
 
   render() {
-    const { checked, title } = this.props
+    const { checked, title, wrapClass, textClass } = this.props
     return (
-      <View className='wrap-class'>
+      <View className={wrapClass}>
         <View className='check-box' onClick={this.onChange}>
         <Image className='check-box-icon' src={checked?checkedPng:checkPng} mode='aspectFill' />
-        <Label className='check-box-title text-class'>{title}</Label>
+        <Label className={`check-box-title ${textClass}`}>{title}</Label>
       </View>
       </View>
     )

@@ -1,11 +1,10 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 // import PropTypes from 'prop-types';
 import { View, Text, PickerView, PickerViewColumn } from '@tarojs/components'
 import './index.scss'
 
 class DaysPicker extends Component {
-  static externalClasses = ['wrap-class', 'selected-item-class']
-
   state = {
     dayList: [], //日 -下拉
     fmtInitValue: 1, //初始值
@@ -92,7 +91,7 @@ class DaysPicker extends Component {
     } = this.state
     const { placeholder = '请选择包车天数' } = this.props
     return (
-      <View className='datetime-picker-wrap wrap-class'>
+      <View className='datetime-picker-wrap-ex'>
         <View className='selector-wrap'>
           <View
             className={`selected-item-class ${current ? 'valuation' : ''}`}
@@ -125,7 +124,7 @@ class DaysPicker extends Component {
                   >
                     {/*日*/}
                     <PickerViewColumn className='picker-view-column'>
-                      {dayList.length &&
+                      {dayList.length > 0 &&
                         dayList.map((item, index) => (
                           <View
                             key={String(index)}

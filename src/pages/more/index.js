@@ -1,8 +1,9 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Image, ScrollView, Label } from '@tarojs/components'
 import { AtTag } from 'taro-ui'
 import NavBar from '@components/NavBar'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 import '../../common/index.scss'
 import './index.less'
 
@@ -29,7 +30,7 @@ class More extends Component {
   componentDidMount() {
     this.fetchData()
     this.setState({
-      searchText: this.$router.params.value || ''
+      searchText: Taro.getCurrentInstance().router.params.value || ''
     })
   }
 
@@ -80,7 +81,7 @@ class More extends Component {
 
   render() {
     const scrollStyle = {
-      height: `${Taro.$windowHeight}rpx`
+      height: `${window.$screenHeight}rpx`
     }
     const { opacity, searchText } = this.state
 
@@ -98,7 +99,7 @@ class More extends Component {
         >
           <Image
             className='home-png'
-            style={{ marginTop: Taro.$statusBarHeight + 220 + 'rpx' }}
+            style={{ marginTop: window.$statusBarHeight + 220 + 'rpx' }}
             src={homePng}
             mode='widthFix'
           />
@@ -120,7 +121,7 @@ class More extends Component {
                     </View>
                     <View className='choice-point'>{`${item.private_consume
                       .evaluate_score || 0}分 ${item.private_consume.evaluate_score>=7?'非常棒': ''}`}</View>
-                    {item.private_consume.price && (
+                    {!!item.private_consume.price && (
                       <View>
                         <Label className='choice-price'>
                           {item.private_consume.price || 0}

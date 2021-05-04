@@ -1,4 +1,5 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 // import PropTypes from 'prop-types';
 import { AtIcon } from 'taro-ui'
 import { View, Text, PickerView, PickerViewColumn } from '@tarojs/components'
@@ -7,13 +8,6 @@ import dayjs from 'dayjs'
 import './index.scss'
 
 class DateTimePicker extends Component {
-  static externalClasses = [
-    'wrap-class',
-    'selected-item-class',
-    'selected-item-day-extern',
-    'selected-item-week-extern'
-  ]
-
   state = {
     dayList: [], //日 -下拉
     hourList: [], //时 -下拉
@@ -22,7 +16,7 @@ class DateTimePicker extends Component {
     fmtInitValue: '', //初始值
     current: '', //当前选择的数据
     visible: false, //是否可见
-    dateTime: dayjs()
+    dateTime: dayjs(),
   }
   // 打开时间选择的模态框 - 根据当前时间初始化picker-view的数据
   openModal = () => {
@@ -56,7 +50,7 @@ class DateTimePicker extends Component {
 
     //根据arr  数据索引
     selectIndexList[0] = dayListValue.findIndex(
-      value =>
+      (value) =>
         value.year === Number(year) &&
         value.month === Number(month) &&
         value.day === Number(day)
@@ -70,13 +64,13 @@ class DateTimePicker extends Component {
       dayList,
       hourList,
       minuteList,
-      dateTime
+      dateTime,
     })
   }
   // 取消
   cancelHandel = () => {
     this.setState({
-      visible: false
+      visible: false,
     })
   }
   // 确定
@@ -92,13 +86,13 @@ class DateTimePicker extends Component {
 
     this.setState({
       current,
-      visible: false
+      visible: false,
     })
     this.props.onOk &&
       this.props.onOk(showDayOnly ? dateTime.startOf('day') : dateTime)
   }
   // 切换
-  changeHandel = e => {
+  changeHandel = (e) => {
     const selectIndexList = e.detail.value
     const [dayIndex, hourIndex, minuteIndex] = selectIndexList
     const { hourList, minuteList } = this.state
@@ -108,13 +102,14 @@ class DateTimePicker extends Component {
     const { year, month, day } = dayArr
 
     this.setState({
-      dateTime: dayjs(`${year}-${month}-${day} ${hourStr}:${minuteStr}`)
+      dateTime: dayjs(`${year}-${month}-${day} ${hourStr}:${minuteStr}`),
+      selectIndexList
     })
   }
   // 清除数据
   clear = () => {
     this.setState({
-      current: ''
+      current: '',
     })
     this.props.onClear && this.props.onClear({ current: '' })
   }
@@ -140,12 +135,16 @@ class DateTimePicker extends Component {
       hourList,
       minuteList,
       selectIndexList,
-      dateTime
+      dateTime,
     } = this.state
     const WeekArr = ['日', '一', '二', '三', '四', '五', '六']
-    const { placeholder = '请选择时间', showDayOnly = false } = this.props
+    const {
+      placeholder = '请选择时间',
+      showDayOnly = false,
+      wrapClass = '',
+    } = this.props
     return (
-      <View className='datetime-picker-wrap wrap-class'>
+      <View className={wrapClass}>
         <View className='selector-wrap'>
           <View
             className={`selected-item-class ${current ? 'valuation' : ''}`}
@@ -155,7 +154,7 @@ class DateTimePicker extends Component {
               showDayOnly ? (
                 current
               ) : (
-                <View>
+                <View className='date-time-show'>
                   <View className='selected-item-day selected-item-day-extern'>
                     {dateTime.format('MM-DD日')}
                   </View>
@@ -169,7 +168,7 @@ class DateTimePicker extends Component {
             )}
           </View>
         </View>
-        {visible && (
+        {visible ? (
           <View className='wrapper'>
             {/*日期模态框 */}
             <View className='model-box-bg' onClick={this.cancelHandel}></View>
@@ -193,7 +192,7 @@ class DateTimePicker extends Component {
                   >
                     {/*日*/}
                     <PickerViewColumn className='picker-view-column'>
-                      {dayList.length &&
+                      {dayList.length ?
                         dayList.map((item, index) => (
                           <View
                             key={String(index)}
@@ -201,12 +200,12 @@ class DateTimePicker extends Component {
                           >
                             {item}
                           </View>
-                        ))}
+                        )):null}
                     </PickerViewColumn>
                     {/*时*/}
                     {!showDayOnly && (
                       <PickerViewColumn className='picker-view-column'>
-                        {hourList.length &&
+                        {hourList.length > 0 &&
                           hourList.map((item, index) => (
                             <View
                               key={String(index)}
@@ -220,7 +219,7 @@ class DateTimePicker extends Component {
                     {/*分*/}
                     {!showDayOnly && (
                       <PickerViewColumn className='picker-view-column'>
-                        {minuteList.length &&
+                        {minuteList.length > 0 &&
                           minuteList.map((item, index) => (
                             <View
                               key={String(index)}
@@ -236,7 +235,7 @@ class DateTimePicker extends Component {
               </View>
             </View>
           </View>
-        )}
+        ) : null}
       </View>
     )
   }

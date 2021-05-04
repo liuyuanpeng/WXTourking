@@ -15,9 +15,9 @@ const STORAGE = {
   USER_FANLI: 'user-fanli',
   OLD_USER: 'old-user',
   AD_TIME: 'ad-time',
-  AVATAR: 'wx-avatar',
-  NICKNAME: 'wx-nickname',
-  SWITCH_INDEX: 'switch_index'
+  WX_AVATAR: 'wx-avatar-ex',
+  WX_NICKNAME: 'wx-nickname-ex',
+  SWITCH_INDEX: 'switch-index',
 }
 
 export default STORAGE

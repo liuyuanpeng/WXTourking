@@ -40,7 +40,7 @@ export default modelExtend(commonModel, {
   },
   reducers: {},
   effects: {
-    *payOrder({ payload, success, fail }, { call, select, put }) {
+    *payOrderFake({ payload, success, fail }, { call, select, put }) {
       const res = yield call(payOrder, payload.id)
       if (res.code === 'SUCCESS') {
         const userOrder = yield select(state => state.order.userOrder)
@@ -51,7 +51,8 @@ export default modelExtend(commonModel, {
               ...userOrder,
               order: {
                 ...userOrder.order,
-                order_status: 'WAIT_ACCEPT'
+                order_status: 'WAIT_ACCEPT',
+                has_pay: true
               }
             }
           }
@@ -309,7 +310,7 @@ export default modelExtend(commonModel, {
         const resultOrders = res.data.data_list.filter(item=>{
           if (item.order.order_status.indexOf('CANCEL') < 0) {
             return true
-          } else if (item.order.wechat_fee_order_id) {
+          } else if (!item.order.has_pay && item.order.wechat_fee_order_id) {
             return true
           }
           return false

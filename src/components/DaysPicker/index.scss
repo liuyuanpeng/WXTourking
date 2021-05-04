@@ -1,4 +1,17 @@
-.datetime-picker-wrap {
+.datetime-picker-wrap-ex {
+    height: 42px;
+    margin: 14px 0;
+    position: absolute;
+    left: 420px;
+    top: 224px;
+
+  .selected-item-class {
+    font-size: 30px;
+    color: #333333;
+    font-weight: bold;
+    height: 42px;
+    line-height: 42px;
+  }
   .selector-wrap {
     display: flex;
     

@@ -1,12 +1,13 @@
-import Taro, { PureComponent } from '@tarojs/taro'
-import { connect } from '@tarojs/redux'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import {
   View,
   ScrollView,
   Button,
   Label,
   Input,
-  Image
+  Image,
 } from '@tarojs/components'
 import {
   AtTabs,
@@ -19,22 +20,23 @@ import {
   AtImagePicker,
   AtInput,
   AtIcon,
-  AtProgress
+  AtProgress,
 } from 'taro-ui'
+import '../../common/index.scss'
 import SysNavBar from '@components/SysNavBar'
 import OrderItem from '@components/OrderItem'
 import LocationInput from '@components/LocationInput'
-import '../../common/index.scss'
 import './index.scss'
+import styles from './index.module.scss'
 import STORAGE from '../../constants/storage'
 import { debounce } from 'debounce'
 
 let RESULTS = []
 
 @connect(({}) => ({}))
-class Publish extends PureComponent {
+class Publish extends Component {
   config = {
-    navigationBarTitleText: '投稿'
+    navigationBarTitleText: '投稿',
   }
 
   state = {
@@ -46,60 +48,60 @@ class Publish extends PureComponent {
     file: '',
     progress: 0,
     cover: '',
-    status: ''
+    status: '',
   }
 
-  handleLocationChange = location => {
+  handleLocationChange = (location) => {
     this.setState({
-      location
+      location,
     })
   }
 
-  handleNameChange = name => {
+  handleNameChange = (name) => {
     this.setState({
-      name
+      name,
     })
   }
 
-  handleContentChange = content => {
+  handleContentChange = (content) => {
     this.setState({
-      content
+      content,
     })
   }
 
-  handleImages = files => {
+  handleImages = (files) => {
     this.setState({
-      images: files
+      images: files,
     })
   }
 
   categories = [
     {
       name: '# 景点',
-      value: 'JINGDIAN'
+      value: 'JINGDIAN',
     },
     {
       name: '# 美食',
-      value: 'MEISHI'
+      value: 'MEISHI',
     },
     {
       name: '# 视频',
-      value: 'SHIPIN'
+      value: 'SHIPIN',
     },
     {
       name: '# 攻略',
-      value: 'GONGLUE'
-    }
+      value: 'GONGLUE',
+    },
   ]
 
   handleCategoryChange = (category, e) => {
     e.stopPropagation()
     this.setState({
-      category
+      category,
     })
   }
 
-  saveDiscovery = payload => {
+  saveDiscovery = (payload) => {
     const { dispatch } = this.props
     dispatch({
       type: 'discovery/saveDiscovery',
@@ -108,15 +110,15 @@ class Publish extends PureComponent {
         Taro.navigateBack()
         Taro.showToast({
           title: '投稿成功，请等待审核',
-          icon: 'none'
+          icon: 'none',
         })
       },
-      fail: msg => {
+      fail: (msg) => {
         Taro.showToast({
           title: msg || '投稿失败',
-          icon: 'none'
+          icon: 'none',
         })
-      }
+      },
     })
   }
 
@@ -131,19 +133,19 @@ class Publish extends PureComponent {
       filePath: image.file.path,
       name: 'file',
       header: {
-        token: Taro.getStorageSync(STORAGE.TOKEN)
+        token: Taro.getStorageSync(STORAGE.TOKEN),
       },
-      success: res => {
+      success: (res) => {
         const DATA = JSON.parse(res.data)
         if (DATA.code === 'SUCCESS') {
           RESULTS.push(DATA.data.path)
           this.uploadImages(IMAGES, callback)
         }
-      }
+      },
     })
   }
 
-  handlePublish = e => {
+  handlePublish = (e) => {
     e.stopPropagation()
 
     const {
@@ -154,7 +156,7 @@ class Publish extends PureComponent {
       status,
       file,
       category,
-      location
+      location,
     } = this.state
 
     // 判断合法性
@@ -180,7 +182,7 @@ class Publish extends PureComponent {
     if (msg) {
       Taro.showToast({
         title: msg,
-        icon: 'none'
+        icon: 'none',
       })
       return
     }
@@ -194,13 +196,13 @@ class Publish extends PureComponent {
       target_place: title,
       target_longitude: longitude,
       target_latitude: latitude,
-      images: ''
+      images: '',
     }
     if (category !== 'SHIPIN') {
       if (images && images.length) {
         RESULTS = []
         Taro.showLoading({
-          title: '上传图片...'
+          title: '上传图片...',
         })
 
         this.uploadImages(images, () => {
@@ -222,37 +224,37 @@ class Publish extends PureComponent {
         filePath: cover,
         name: 'file',
         header: {
-          token: Taro.getStorageSync(STORAGE.TOKEN)
+          token: Taro.getStorageSync(STORAGE.TOKEN),
         },
-        success: res => {
+        success: (res) => {
           Taro.hideLoading()
           const DATA = JSON.parse(res.data)
           // 上传成功,创建表单
           payload.images = file + ',' + DATA.data.path // 格式: 视频地址+封面地址
           this.saveDiscovery(payload)
-        }
+        },
       })
     }
   }
 
-  handleVideoUpload = e => {
+  handleVideoUpload = (e) => {
     e.stopPropagation()
     Taro.chooseVideo({
       sourceType: ['album', 'camera'],
       maxDuration: 60,
       camera: 'back',
-      success: res => {
+      success: (res) => {
         if (res.size >= 10 * 1024 * 1024) {
           Taro.showToast({
             title: '视频大小不能大于10M',
-            icon: 'none'
+            icon: 'none',
           })
           return
         }
         this.setState({
           file: res.tempFilePath,
           cover: res.thumbTempFilePath,
-          status: 'progress'
+          status: 'progress',
         })
         // 上传文件
         this.uploadTask = Taro.uploadFile({
@@ -260,35 +262,35 @@ class Publish extends PureComponent {
           filePath: res.tempFilePath,
           name: 'file',
           header: {
-            token: Taro.getStorageSync(STORAGE.TOKEN)
+            token: Taro.getStorageSync(STORAGE.TOKEN),
           },
-          success: result => {
+          success: (result) => {
             const DATA = JSON.parse(result.data)
             if (DATA.code === 'SUCCESS') {
               this.setState({
                 file: DATA.data.path,
-                status: 'success'
+                status: 'success',
               })
             }
           },
           fail: () => {
             this.setState({
-              status: 'error'
+              status: 'error',
             })
-          }
+          },
         })
-        this.uploadTask.progress(uploadRes => {
+        this.uploadTask.progress((uploadRes) => {
           this.setState({
-            progress: uploadRes.progress
+            progress: uploadRes.progress,
           })
         })
-      }
+      },
     })
   }
 
   render() {
     const scrollStyle = {
-      height: `${Taro.$windowHeight - Taro.$statusBarHeight - 88}rpx`
+      height: `${window.$screenHeight - window.$statusBarHeight - 88}rpx`,
     }
 
     const {
@@ -300,18 +302,19 @@ class Publish extends PureComponent {
       category,
       location,
       progress,
-      status
+      status,
     } = this.state
 
     return (
       <View
         className='publish-page'
-        style={{ top: 88 + Taro.$statusBarHeight + 'rpx' }}
+        style={{ top: 88 + window.$statusBarHeight + 'rpx' }}
       >
         <SysNavBar title='投稿' />
         <ScrollView className='publish' scrollY style={scrollStyle}>
           <AtInput
             className='publish-input'
+            name='publish-input-name'
             value={name}
             onChange={this.handleNameChange}
             type='text'
@@ -373,7 +376,7 @@ class Publish extends PureComponent {
             <AtIcon value='map-pin' size='16' color='#333333'></AtIcon>
             <Label className='publish-location-label'>你在哪里</Label>
             <LocationInput
-              wrap-class='publish-location-input'
+              externalClass={styles.publishLocationInput}
               title={location.title}
               placeholder='(必填，越详细越容易被推荐)'
               onChange={this.handleLocationChange}
@@ -393,7 +396,7 @@ class Publish extends PureComponent {
               </View>
             </View>
             <View className='publish-category-list'>
-              {this.categories.map(item => (
+              {this.categories.map((item) => (
                 <View
                   key={item.value}
                   onClick={this.handleCategoryChange.bind(this, item.value)}

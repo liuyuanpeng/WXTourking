@@ -1,17 +1,19 @@
-import Taro, { PureComponent } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import { View, Image, Label, ScrollView } from '@tarojs/components'
 import { AtInput, AtInputNumber } from 'taro-ui'
-import { connect } from '@tarojs/redux'
+import { connect } from 'react-redux'
 
 import '../../common/index.scss'
 import './index.scss'
+import styles from './index.module.scss'
 
+import CommentItem from '@components/CommentItem'
 import SysNavBar from '@components/SysNavBar'
-import LocationInput from '@components/LocationInput'
 import DateTimePicker from '@components/DateTimePicker'
+import LocationInput from '@components/LocationInput'
 import DaysPicker from '@components/DaysPicker'
 import DecorateTitle from '@components/DecorateTitle'
-import CommentItem from '@components/CommentItem'
 import dayjs from 'dayjs'
 import { debounce } from 'debounce'
 
@@ -20,43 +22,46 @@ const precious_png = IMAGE_HOST + '/images/precious.png'
 const free_waiting_png = IMAGE_HOST + '/images/free_waiting.png'
 const safe_png = IMAGE_HOST + '/images/safe.png'
 
-@connect(({})=>({
-}))
-class DayChartered extends PureComponent {
+@connect(({}) => ({}))
+class DayChartered extends Component {
   config = {
-    navigationBarTitleText: ''
+    navigationBarTitleText: '',
   }
 
   state = {
-    start_place: {title: ''},
+    start_place: { title: '' },
     start_time: dayjs().add(5, 'm'),
-    days: 1
+    days: 1,
   }
 
-  onOK = value => {
+  onOK = (value) => {
     this.setState({
-      start_time: value
+      start_time: value,
     })
   }
 
-  handleDaysChange = value => {
+  handleDaysChange = (value) => {
     this.setState({
-      days: value.currentDays
-    })
-  }
-  
-
-  handleLocationChange = location => {
-    this.setState({
-      start_place: location
+      days: value.currentDays,
     })
   }
 
-  handleChartered = e => {
+  handleLocationChange = (location) => {
+    this.setState({
+      start_place: location,
+    })
+  }
+
+  handleChartered = (e) => {
     e.stopPropagation()
-    const {start_place, start_time, days} = this.state
+    const { start_place, start_time, days } = this.state
     let msg = ''
-    if (start_place && start_place.title && start_place.latitude && start_place.longitude) {
+    if (
+      start_place &&
+      start_place.title &&
+      start_place.latitude &&
+      start_place.longitude
+    ) {
       if (start_time && start_time.isBefore(dayjs())) {
         msg = '请输入正确的用车时间'
       }
@@ -67,28 +72,27 @@ class DayChartered extends PureComponent {
     if (msg) {
       Taro.showToast({
         title: msg,
-        icon: 'none'
+        icon: 'none',
       })
       return
     }
     Taro.navigateTo({
       url: '../pkg/index',
-      success: res => {
+      success: (res) => {
         res.eventChannel.emit('acceptCharterData', {
           start_place,
           target_place: start_place,
           start_time,
           scene: 'DAY_PRIVATE',
-          days
+          days,
         })
-      }
+      },
     })
   }
 
   render() {
-    
     const scrollStyle = {
-      height: `${Taro.$windowHeight}rpx`
+      height: `${window.$screenHeight}rpx`,
     }
     const comments = [
       {
@@ -97,61 +101,61 @@ class DayChartered extends PureComponent {
         time: new Date().getTime(),
         images: [safe_png, safe_png, safe_png],
         comment:
-          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
+          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞',
       },
       {
         user: 'test',
         avatar: safe_png,
         time: new Date().getTime(),
         comment:
-          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
+          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞',
       },
       {
         user: 'test',
         avatar: safe_png,
         time: new Date().getTime(),
         comment:
-          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
+          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞',
       },
       {
         user: 'test',
         avatar: safe_png,
         time: new Date().getTime(),
         comment:
-          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
+          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞',
       },
       {
         user: 'test',
         avatar: safe_png,
         time: new Date().getTime(),
         comment:
-          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
+          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞',
       },
       {
         user: 'test',
         avatar: safe_png,
         time: new Date().getTime(),
         comment:
-          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
+          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞',
       },
       {
         user: 'test',
         avatar: safe_png,
         time: new Date().getTime(),
         comment:
-          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞'
-      }
+          '司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞司机人很好，全称讲解的也很细致，点赞',
+      },
     ]
 
     const ensures = [
       {
         icon: service_assurance_png,
         title: '服务保障',
-        subtitle: '7x24小时客服贴心服务'
+        subtitle: '7x24小时客服贴心服务',
       },
       { icon: precious_png, title: '价格优选', subtitle: '一口模式拒绝绕路' },
       { icon: free_waiting_png, title: '免费等待', subtitle: '免费等待30分钟' },
-      { icon: safe_png, title: '出行安心', subtitle: '百万保险&爽约包赔' }
+      { icon: safe_png, title: '出行安心', subtitle: '百万保险&爽约包赔' },
     ]
 
     const products = [
@@ -161,7 +165,7 @@ class DayChartered extends PureComponent {
         title: '厦门世茂双子塔',
         look_count: 928,
         price: 70,
-        pay_count: 912
+        pay_count: 912,
       },
       {
         image:
@@ -169,8 +173,8 @@ class DayChartered extends PureComponent {
         title: '厦门鼓浪屿往返船票',
         look_count: 928,
         price: 35,
-        pay_count: 912
-      }
+        pay_count: 912,
+      },
     ]
 
     const { start_place, start_time, days } = this.state
@@ -183,7 +187,7 @@ class DayChartered extends PureComponent {
             <View className='day-chartered-header'>
               <View className='label-name label-place'>上下车地点</View>
               <LocationInput
-                wrap-class='label-place-input'
+                externalClass={styles.labelPlaceInput}
                 title={start_place.title}
                 placeholder='请选择上下车地点'
                 onChange={this.handleLocationChange}
@@ -191,22 +195,19 @@ class DayChartered extends PureComponent {
               <View className='split-line' />
               <View className='label-name label-time'>用车时间</View>
               <DateTimePicker
-                wrap-class='label-time-input'
-                selected-item-class='label-time-input-item'
+                wrapClass={styles.labelTimeInput}
                 onOk={this.onOK}
                 hidePassed
                 initValue={start_time}
                 placeholder='请选择用车时间'
               />
               <View className='label-name label-day'>包车天数</View>
-              <DaysPicker
-                wrap-class='label-day-input'
-                selected-item-class='label-day-input-item'
-                initValue={days}
-                onOk={this.handleDaysChange}
-              />
+              <DaysPicker initValue={days} onOk={this.handleDaysChange} />
               <View className='split-line' />
-              <View className='chartered-btn' onClick={debounce(this.handleChartered, 100)}>
+              <View
+                className='chartered-btn'
+                onClick={debounce(this.handleChartered, 100)}
+              >
                 立即包车
               </View>
               <View className='chartered-ensure'>

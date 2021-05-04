@@ -1,92 +1,92 @@
-.datetime-picker-wrap {
-  .selector-wrap {
-    display: flex;
-    
-    background: #ffffff;
-    color: #bdbdbd;
-    font-size: 34px;
-    .valuation {
+.selector-wrap {
+  display: flex;
+
+  background: #ffffff;
+  color: #bdbdbd;
+  font-size: 34px;
+  .valuation {
+    color: #333333;
+    .date-time-show {
+      padding-top: 20px;
+    }
+    .selected-item-day {
+      display: inline-block;
       color: #333333;
-      .selected-item-day {
-        display: inline-block;
-        color: #333333;
-        font-size: 30px;
-        font-weight: bold;
-        height: 42px;
-        line-height: 42px;
-      }
-      .selected-item-week {
-        display: inline-block;
-        color: #404040;
-        height: 34px;
-        line-height: 34px;
-        font-size: 24px;
-        font-weight: 400;
-        margin-left: 16px;
-      }
+      font-size: 30px;
+      font-weight: bold;
+      height: 42px;
+      line-height: 42px;
     }
-    
+    .selected-item-week {
+      display: inline-block;
+      color: #404040;
+      height: 34px;
+      line-height: 34px;
+      font-size: 24px;
+      font-weight: 400;
+      margin-left: 16px;
+    }
   }
-  .wrapper {
-    .model-box-bg {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 10000;
-      width: 100%;
-      height: 100%;
-      background: #000;
-      opacity: 0.3;
-    }
-    .model-box {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      z-index: 999999;
+}
+.wrapper {
+  .model-box-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10000;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    opacity: 0.3;
+  }
+  .model-box {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 999999;
+    width: 100%;
+    background: #fff;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    overflow: hidden;
+  }
+
+  .model-picker {
+    position: relative;
+    .button-model {
+      height: 80px;
       width: 100%;
       background: #fff;
-      border-top-left-radius: 20px;
-      border-top-right-radius: 20px;
-      overflow: hidden;
-    }
-
-    .model-picker {
       position: relative;
-      .button-model {
-        height: 80px;
-        width: 100%;
-        background: #fff;
+      text-align: center;
+      font-size: 32px;
+      font-weight: bold;
+      .placeholder-txt {
+        top: 20px;
+        color: #333333;
         position: relative;
-        text-align: center;
-        font-size: 32px;
-        font-weight: bold;
-        .placeholder-txt {
-            top: 20px;
-            color: #333333;
-            position: relative;
+      }
+      .btn-txt {
+        color: #f6ba31;
+        position: absolute;
+        background: transparent;
+        border: none;
+        line-height: 80px;
+        &:first-child {
+          left: 32px;
         }
-        .btn-txt {
-          color: #F6BA31;
-          position: absolute;
-          background: transparent;
-          border: none;
-          line-height: 80px;
-          &:first-child {
-            left: 32px;
-          }
-          &:last-child {
-            right: 32px;
-          }
+        &:last-child {
+          right: 32px;
         }
       }
-      .pick-view {
-        width: 100%;
-        height: 600px;
-        .picker-view-column {
-          text-align: center;
-          .pick-view-column-item {
-            line-height: 50PX;
-          }
+    }
+    .pick-view {
+      width: 100%;
+      height: 600px;
+      .picker-view-column {
+        text-align: center;
+        .pick-view-column-item {
+          line-height: 50px;
         }
       }
     }

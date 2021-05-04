@@ -1,4 +1,5 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import React, { Component } from 'react'
 import {
   View,
   Image,
@@ -9,13 +10,13 @@ import {
   Video,
   Input
 } from '@tarojs/components'
-import SysNavBar from '@components/SysNavBar'
-import { connect } from '@tarojs/redux'
 import '../../common/index.scss'
+import CommentItem from '@components/CommentItem'
+import SysNavBar from '@components/SysNavBar'
+import { connect } from 'react-redux'
 import './index.scss'
 
 import { AtDivider, AtInput, AtTabs } from 'taro-ui'
-import CommentItem from '@components/CommentItem'
 import PopView from '@components/PopView'
 import dayjs from 'dayjs'
 import STORAGE from '../../constants/storage'
@@ -34,7 +35,7 @@ class DiscoveryDetail extends Component {
   }
 
   componentDidMount() {
-    const eventChannel = this.$scope.getOpenerEventChannel()
+    const eventChannel = Taro.getCurrentInstance().page.getOpenerEventChannel()
     eventChannel.on('discoveryData', detail => {
       this.setState({
         detail
@@ -301,6 +302,7 @@ class DiscoveryDetail extends Component {
           <View className='discovery-detail-footer-comment'>
             <AtInput
               className='discovery-detail-footer-comment-input'
+              naem='discovery-detail-footer-comment-input-send'
               placeholder='写个评论吧...'
               value={inputValue}
               onChange={this.changeInputValue}
