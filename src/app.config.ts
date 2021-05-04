@@ -68,12 +68,12 @@ export default {
         iconPath: './asset/images/home.png',
         selectedIconPath: './asset/images/home_focus.png',
       },
-      {
-        pagePath: 'pages/discovery/index',
-        text: '发现',
-        iconPath: './asset/images/discovery.png',
-        selectedIconPath: './asset/images/discovery_focus.png'
-      },
+      // {
+      //   pagePath: 'pages/discovery/index',
+      //   text: '发现',
+      //   iconPath: './asset/images/discovery.png',
+      //   selectedIconPath: './asset/images/discovery_focus.png'
+      // },
       {
         pagePath: 'pages/schedule/index',
         text: '行程',

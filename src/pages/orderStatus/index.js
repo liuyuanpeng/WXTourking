@@ -198,13 +198,13 @@ class PayProduct extends Component {
     const { data, dispatch } = this.props
     const { order } = data
 
-    dispatch({
-      type: 'order/payOrderFake',
-      payload: {
-        id: order.id
-      }
-    })
-    return
+    // dispatch({
+    //   type: 'order/payOrderFake',
+    //   payload: {
+    //     id: order.id
+    //   }
+    // })
+    // return
 
     dispatch({
       type: 'order/payOrderFee',
@@ -244,13 +244,13 @@ class PayProduct extends Component {
     this.handleClose()
     const { data, dispatch } = this.props
     const { order } = data
-    dispatch({
-      type: 'order/payOrderFake',
-      payload: {
-        id: order.id
-      }
-    })
-    return
+    // dispatch({
+    //   type: 'order/payOrderFake',
+    //   payload: {
+    //     id: order.id
+    //   }
+    // })
+    // return
     dispatch({
       type: 'order/payOrder',
       payload: {
