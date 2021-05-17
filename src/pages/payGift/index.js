@@ -156,22 +156,22 @@ class PayGift extends Component {
 
     if (payload.price <= 0) return
 
-    const sourceShopId = Taro.getStorageSync(STORAGE.SOURCE_SHOP_ID)
-    if (sourceShopId) {
-      payload.source_shop_id = sourceShopId
-    }
+    // 伴手礼不给提成
+    // const sourceShopId = Taro.getStorageSync(STORAGE.SOURCE_SHOP_ID)
+    // if (sourceShopId) {
+    //   payload.source_shop_id = sourceShopId
+    // }
 
-    const sourceDriverId = Taro.getStorageSync(STORAGE.SOURCE_DRIVER_ID)
-    if (sourceDriverId) {
-      payload.source_driver_id = sourceDriverId
-    }
+    // const sourceDriverId = Taro.getStorageSync(STORAGE.SOURCE_DRIVER_ID)
+    // if (sourceDriverId) {
+    //   payload.source_driver_id = sourceDriverId
+    // }
 
     dispatch({
       type: 'order/createOrder',
       payload,
       success: result => {
 
-        Taro.setStorageSync(STORAGE.SOURCE_SHOP_ID, 0)
         Taro.setStorageSync(STORAGE.SOURCE_DRIVER_ID, 0)
         
         // 拉起支付

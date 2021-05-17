@@ -218,7 +218,6 @@ class PayProduct extends Component {
         Taro.setStorageSync(STORAGE.ORDER_USER_NAME, name)
         Taro.setStorageSync(STORAGE.ORDER_USER_MOBILE, phone)
 
-        Taro.setStorageSync(STORAGE.SOURCE_SHOP_ID, 0)
         Taro.setStorageSync(STORAGE.SOURCE_DRIVER_ID, 0)
         if (scene === 'JINGDIAN_PRIVATE' || scene === 'MEISHI_PRIVATE') {
           this.props.dispatch({

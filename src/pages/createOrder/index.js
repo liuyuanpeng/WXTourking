@@ -266,7 +266,6 @@ class CarType extends Component {
         Taro.setStorageSync(STORAGE.ORDER_USER_MOBILE, phoneNum)
         Taro.setStorageSync(STORAGE.ORDER_USER_MOBILE_BACKUP, phoneNumBackup)
 
-        Taro.setStorageSync(STORAGE.SOURCE_SHOP_ID, 0)
         Taro.setStorageSync(STORAGE.SOURCE_DRIVER_ID, 0)
 
         if (scene === 'JIEJI' || scene === 'SONGJI') {

@@ -441,7 +441,7 @@ export default modelExtend(commonModel, {
       const res = yield call(fetchOrders, {
         query: {
           user_id: Taro.getStorageSync(STORAGE.USER_ID),
-          scene: ['DAY_PRIVATE', 'JINGDIAN_PRIVATE'].toString()
+          scene: ['DAY_PRIVATE', 'JINGDIAN_PRIVATE', 'MEISHI_PRIVATE'].toString()
         },
         body
       })

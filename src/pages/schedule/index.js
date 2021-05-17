@@ -40,9 +40,10 @@ class Home extends Component {
     }
 
     let current = Taro.getStorageSync(STORAGE.SWITCH_INDEX)
-    current >= 0 && this.setState({
-      current
-    })
+    current >= 0 &&
+      this.setState({
+        current
+      })
     current = this.state.current || 0
     Taro.setStorageSync(STORAGE.SWITCH_INDEX, 0)
     let scene
@@ -130,9 +131,7 @@ class Home extends Component {
       { title: '包车行程' },
       { title: '接机行程' },
       { title: '线路行程' },
-      {
-        title: '结算行程'
-      }
+      { title: '结算行程' }
     ]
 
     const scrollStyle = {
