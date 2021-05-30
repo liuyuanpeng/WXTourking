@@ -123,7 +123,7 @@ class Pkg extends Component {
 
   render() {
     const { current, charterData = {}, prices } = this.state
-    const tabList = [{ title: '8小时100公里' }, { title: '8小时200公里' }]
+    const tabList = [{ title: '8小时200公里' }, { title: '8小时400公里' }]
     const { start_place, target_place, start_time, days } = charterData
     if (!start_place) return null
     const headers = [
@@ -152,7 +152,7 @@ class Pkg extends Component {
         {
           title: '套餐说明',
           subtitle: `用车当日可使用8小时，包含${
-            current === 0 ? 1 : 2
+            current === 0 ? 2 : 4
           }00公里（多日包车中当日未用完的部分不可累计）`
         },
         {
