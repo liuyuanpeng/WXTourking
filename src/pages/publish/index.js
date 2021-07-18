@@ -33,7 +33,7 @@ import { debounce } from 'debounce'
 
 let RESULTS = []
 
-@connect(({}) => ({}))
+@connect(({ }) => ({}))
 class Publish extends Component {
   config = {
     navigationBarTitleText: '投稿',
@@ -73,6 +73,19 @@ class Publish extends Component {
     this.setState({
       images: files,
     })
+  }
+
+  handleCover = (files) => {
+    if (files && files.length === 1) {
+      this.setState({
+        cover: files[0]
+      })
+    }
+    else {
+      this.setState({
+        cover: ''
+      })
+    }
   }
 
   categories = [
@@ -221,7 +234,7 @@ class Publish extends Component {
       Taro.showLoading({ title: '上传封面...' })
       Taro.uploadFile({
         url: HOST + '/v5/file/local/qiniu_wechat_upload?file_key=file',
-        filePath: cover,
+        filePath: cover.file.path,
         name: 'file',
         header: {
           token: Taro.getStorageSync(STORAGE.TOKEN),
@@ -233,6 +246,9 @@ class Publish extends Component {
           payload.images = file + ',' + DATA.data.path // 格式: 视频地址+封面地址
           this.saveDiscovery(payload)
         },
+        fail: () => {
+          Taro.hideLoading()
+        }
       })
     }
   }
@@ -241,6 +257,7 @@ class Publish extends Component {
     e.stopPropagation()
     Taro.chooseVideo({
       sourceType: ['album', 'camera'],
+      compressed: true,
       maxDuration: 60,
       camera: 'back',
       success: (res) => {
@@ -253,7 +270,6 @@ class Publish extends Component {
         }
         this.setState({
           file: res.tempFilePath,
-          cover: res.thumbTempFilePath,
           status: 'progress',
         })
         // 上传文件
@@ -354,10 +370,12 @@ class Publish extends Component {
           {file && category === 'SHIPIN' && (
             <View className='publish-video'>
               <View className='publish-video-label'>封面:</View>
-              <Image
-                className='publish-video-cover'
-                src={cover}
-                mode='aspectFill'
+              <AtImagePicker
+                files={cover ? [cover] : []}
+                count={1}
+                multiple={false}
+                showAddBtn={!cover}
+                onChange={this.handleCover}
               />
               <View className='publish-video-label'>
                 {status === 'progress'
@@ -365,8 +383,8 @@ class Publish extends Component {
                     ? '文件写入，请耐心等待...'
                     : '文件上传...'
                   : status === 'success'
-                  ? '上传成功'
-                  : '上传失败'}
+                    ? '上传成功'
+                    : '上传失败'}
               </View>
               <AtProgress percent={progress} status={status} />
             </View>
@@ -400,11 +418,10 @@ class Publish extends Component {
                 <View
                   key={item.value}
                   onClick={this.handleCategoryChange.bind(this, item.value)}
-                  className={`publish-category-item${
-                    item.value === category
-                      ? ' publish-category-item-selected'
-                      : ''
-                  }`}
+                  className={`publish-category-item${item.value === category
+                    ? ' publish-category-item-selected'
+                    : ''
+                    }`}
                 >
                   {item.name}
                 </View>
